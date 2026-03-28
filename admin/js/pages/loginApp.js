@@ -74,6 +74,12 @@ function handleLogin(e) {
 
   // Nếu không có lỗi gì, in ra console (sau này sẽ dùng fetch gọi API ở đây)
   if (isValid) {
+    // 1. Lưu cờ "đã đăng nhập" vào bộ nhớ trình duyệt
+    localStorage.setItem("isAdminLoggedIn", "true");
+
+    // 2. Chuyển sang trang dashboard bằng lệnh replace()
+    // Lệnh replace() sẽ xóa trang login khỏi lịch sử web, nên người dùng không thể bấm nút Back quay lại trang login được nữa.
+    window.location.replace("dashboard.html");
     console.log("Dữ liệu hợp lệ! Sẵn sàng gửi API với:", { email: emailVal });
     // window.location.href = "dashboard.html"; // Chuyển trang nếu thành công
   }
