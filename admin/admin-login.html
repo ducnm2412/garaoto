@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Gara Xe Việt</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/login.css" />
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="login-card">
+        <form id="adminLoginForm" class="login-form" novalidate>
+          <h2 class="form-title">Đăng nhập hệ thống</h2>
+
+          <div class="logo-container">
+            <img
+              src="assets/images/logo.png"
+              alt="Logo Gara Xe Việt"
+              class="logo-img"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-input"
+              placeholder="admin@gara.com"
+            />
+            <span class="error-text" id="emailError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="password" class="form-label">Mật khẩu</label>
+            <div class="input-wrapper">
+              <input
+                type="password"
+                id="password"
+                class="form-input"
+                placeholder="Nhập mật khẩu"
+              />
+              <button
+                type="button"
+                id="togglePassword"
+                class="toggle-password-btn"
+              >
+                <svg
+                  id="eyeIcon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            <span class="error-text" id="passwordError"></span>
+          </div>
+
+          <button type="submit" id="loginBtn" class="btn-login">
+            Đăng nhập
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/pages/loginApp.js"></script>
+  </body>
+</html>

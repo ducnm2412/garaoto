@@ -1,0 +1,171 @@
+/* Thiết lập cơ bản */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Background với hình ảnh mờ */
+body {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1920&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+}
+
+/* Container chính để căn giữa */
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Card chứa form đăng nhập */
+.login-card {
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 450px;
+}
+
+/* Tiêu đề form */
+.form-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Container cho logo */
+.logo-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Style cho logo */
+.logo-img {
+  max-width: 200px;
+  height: auto;
+}
+
+/* Nhóm input */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* Label của input */
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+/* Input field */
+.form-input {
+  width: 100%;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  font-size: 16px;
+  color: #ffffff; /* Chữ nhập vào màu trắng */
+  transition: all 0.3s ease;
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Input field khi focus */
+.form-input:focus {
+  border-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.2);
+  outline: none;
+}
+
+/* Input field khi có lỗi */
+.input-error {
+  border-color: #dc3545 !important;
+}
+
+/* Text báo lỗi */
+.error-text {
+  display: block;
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-top: 5px;
+  min-height: 15px;
+}
+
+/* Nút Đăng nhập */
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff; /* Chữ trắng */
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+/* Nút Đăng nhập khi hover */
+.btn-login:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+/* --- CSS CHO NÚT ẨN HIỆN MẬT KHẨU --- */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Đẩy chữ bên trong input sang trái để không bị đè lên icon con mắt */
+.input-wrapper .form-input {
+  padding-right: 40px;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+/* Sáng icon lên khi rê chuột vào */
+.toggle-password-btn:hover {
+  color: #ffffff;
+}
+
+/* Responsive cho điện thoại */
+@media (max-width: 576px) {
+  .login-card {
+    padding: 30px;
+  }
+}
