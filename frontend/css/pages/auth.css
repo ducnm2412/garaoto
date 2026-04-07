@@ -1,0 +1,252 @@
+/* ============================================
+   GARAOTO — Auth Pages CSS
+   Login & Register
+   ============================================ */
+
+.auth-page {
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8) var(--space-4);
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--primary-50) 100%);
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 480px;
+}
+
+.auth-card {
+    background: white;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+}
+
+.auth-header {
+    text-align: center;
+    padding: var(--space-10) var(--space-8) var(--space-6);
+    background: linear-gradient(135deg, var(--primary-700), var(--primary-900));
+    color: white;
+}
+
+.auth-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    font-size: var(--font-size-2xl);
+    font-weight: 800;
+    margin-bottom: var(--space-4);
+    color: white;
+    text-decoration: none;
+}
+
+.auth-logo i {
+    color: var(--accent-400);
+    font-size: var(--font-size-3xl);
+}
+
+.auth-header h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: white;
+    margin-bottom: var(--space-2);
+}
+
+.auth-header p {
+    color: var(--primary-200);
+    font-size: var(--font-size-sm);
+    margin: 0;
+}
+
+.auth-body {
+    padding: var(--space-8);
+}
+
+.auth-body .form-group:last-of-type {
+    margin-bottom: var(--space-6);
+}
+
+/* Password toggle */
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper .form-control {
+    padding-right: var(--space-12);
+}
+
+.password-toggle {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    cursor: pointer;
+    padding: var(--space-2);
+    font-size: var(--font-size-sm);
+    transition: color var(--transition-fast);
+}
+
+.password-toggle:hover {
+    color: var(--gray-600);
+}
+
+/* Auth divider */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin: var(--space-6) 0;
+    color: var(--gray-400);
+    font-size: var(--font-size-sm);
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+}
+
+/* Auth footer link */
+.auth-footer {
+    text-align: center;
+    padding: var(--space-6) var(--space-8);
+    border-top: 1px solid var(--gray-100);
+    background: var(--gray-50);
+    font-size: var(--font-size-sm);
+    color: var(--gray-500);
+}
+
+.auth-footer a {
+    color: var(--primary-600);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    color: var(--primary-700);
+    text-decoration: underline;
+}
+
+/* Alert box */
+.auth-alert {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-5);
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.auth-alert.show {
+    display: flex;
+}
+
+.auth-alert.alert-error {
+    background: var(--danger-light);
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.auth-alert.alert-success {
+    background: var(--success-light);
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+/* Remember me & forgot pass */
+.auth-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+    font-size: var(--font-size-sm);
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--gray-600);
+    cursor: pointer;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-600);
+    cursor: pointer;
+}
+
+.forgot-password {
+    color: var(--primary-600);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* Forgot password section (below login button) */
+.forgot-password-section {
+    text-align: center;
+    padding-top: var(--space-5);
+}
+
+.forgot-password-link {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--gray-700);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    position: relative;
+}
+
+.forgot-password-link:hover {
+    color: var(--primary-600);
+}
+
+.forgot-password-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 2px;
+    background: var(--primary-600);
+    transition: width var(--transition-base);
+}
+
+.forgot-password-link:hover::after {
+    width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-page {
+        padding: var(--space-4);
+        align-items: flex-start;
+        padding-top: var(--space-8);
+    }
+
+    .auth-header {
+        padding: var(--space-8) var(--space-6) var(--space-4);
+    }
+
+    .auth-body {
+        padding: var(--space-6);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}

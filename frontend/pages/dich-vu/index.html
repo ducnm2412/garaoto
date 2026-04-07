@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Danh sách dịch vụ sửa chữa, bảo dưỡng ô tô tại GaraOto">
+    <title>Dịch vụ sửa chữa — GaraOto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/dich-vu.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="main-content">
+        <!-- Page Hero -->
+        <section class="page-hero">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a>
+                    <span>/</span>
+                    <span class="current">Dịch vụ</span>
+                </div>
+                <h1>Dịch vụ sửa chữa & bảo dưỡng</h1>
+                <p>Đa dạng dịch vụ chăm sóc xe với đội ngũ kỹ thuật viên chuyên nghiệp</p>
+            </div>
+        </section>
+
+        <!-- Services List -->
+        <section class="section">
+            <div class="container">
+                <!-- Search -->
+                <div class="dv-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="form-control" id="search-input" placeholder="Tìm kiếm dịch vụ...">
+                </div>
+
+                <!-- Grid -->
+                <div class="dv-grid" id="services-grid">
+                    <!-- Loading skeleton -->
+                    <div class="dv-card">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                    </div>
+                    <div class="dv-card">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                    </div>
+                    <div class="dv-card">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="section" style="background: var(--primary-50); text-align: center;">
+            <div class="container">
+                <h2 style="margin-bottom: var(--space-3);">Bạn cần tư vấn dịch vụ?</h2>
+                <p style="max-width: 500px; margin: 0 auto var(--space-6);">
+                    Liên hệ ngay hoặc đặt lịch hẹn để được tư vấn và báo giá chi tiết miễn phí
+                </p>
+                <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+                    <a href="/pages/dat-lich/index.html" class="btn btn-accent btn-lg" id="btn-datlich">
+                        <i class="fa-solid fa-calendar-plus"></i> Đặt lịch hẹn
+                    </a>
+                    <a href="/pages/lien-he.html" class="btn btn-outline btn-lg">
+                        <i class="fa-solid fa-phone"></i> Liên hệ tư vấn
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script type="module">
+        import Components from '/js/components.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Utils from '/js/utils.js';
+
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        // CTA button guard
+        document.getElementById('btn-datlich')?.addEventListener('click', (e) => {
+            if (!Auth.isLoggedIn()) {
+                e.preventDefault();
+                Components.showLoginRequired();
+            }
+        });
+
+        const grid = document.getElementById('services-grid');
+        const searchInput = document.getElementById('search-input');
+        let allServices = [];
+
+        // Default services (fallback when API unavailable)
+        const defaultServices = [
+            { maDichVu: 1, tenDichVu: 'Thay dầu máy', moTa: 'Thay dầu nhớt động cơ, kiểm tra mức dầu và lọc dầu. Sử dụng dầu chính hãng, đảm bảo vận hành mượt mà.', giaCoBan: 500000, trangThai: 'HoatDong' },
+            { maDichVu: 2, tenDichVu: 'Sửa phanh', moTa: 'Kiểm tra và sửa chữa hệ thống phanh đĩa, phanh tang trống. Thay má phanh, dầu phanh, đảm bảo an toàn.', giaCoBan: 800000, trangThai: 'HoatDong' },
+            { maDichVu: 3, tenDichVu: 'Bảo dưỡng định kỳ', moTa: 'Gói bảo dưỡng toàn diện: kiểm tra động cơ, hệ thống điện, lốp xe, phanh, và các hạng mục quan trọng khác.', giaCoBan: 1500000, trangThai: 'HoatDong' },
+            { maDichVu: 4, tenDichVu: 'Sửa hộp số', moTa: 'Chẩn đoán và sửa chữa hộp số tự động, hộp số sàn. Thay dầu hộp số, khắc phục lỗi sang số.', giaCoBan: 2000000, trangThai: 'HoatDong' },
+            { maDichVu: 5, tenDichVu: 'Thay lốp xe', moTa: 'Thay lốp mới các thương hiệu uy tín. Cân bằng, đảo lốp, kiểm tra áp suất đảm bảo vận hành an toàn.', giaCoBan: 1200000, trangThai: 'HoatDong' },
+            { maDichVu: 6, tenDichVu: 'Sửa điều hòa ô tô', moTa: 'Kiểm tra, sạc gas, sửa chữa hệ thống điều hòa. Vệ sinh giàn lạnh, thay lọc gió điều hòa.', giaCoBan: 600000, trangThai: 'HoatDong' },
+            { maDichVu: 7, tenDichVu: 'Sửa hệ thống điện', moTa: 'Chẩn đoán và sửa chữa hệ thống điện ô tô, ắc quy, máy phát điện, hệ thống đèn chiếu sáng.', giaCoBan: 700000, trangThai: 'HoatDong' },
+            { maDichVu: 8, tenDichVu: 'Đồng sơn ô tô', moTa: 'Dịch vụ đồng sơn chuyên nghiệp, khôi phục bề mặt xe bị trầy xước, va chạm. Sơn đúng màu chính hãng.', giaCoBan: 3000000, trangThai: 'HoatDong' },
+        ];
+
+        const icons = [
+            'fa-solid fa-oil-can', 'fa-solid fa-brake-warning', 'fa-solid fa-gear',
+            'fa-solid fa-gears', 'fa-solid fa-tire', 'fa-solid fa-snowflake',
+            'fa-solid fa-bolt', 'fa-solid fa-spray-can-sparkles', 'fa-solid fa-wrench',
+            'fa-solid fa-screwdriver-wrench',
+        ];
+
+        function renderServices(services) {
+            if (services.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <h3>Không tìm thấy dịch vụ</h3>
+                        <p>Thử tìm kiếm với từ khóa khác</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = services.map((dv, i) => `
+                <div class="dv-card">
+                    <div class="dv-card-header">
+                        <div class="dv-icon">
+                            <i class="${icons[i % icons.length]}"></i>
+                        </div>
+                        <div>
+                            <h3>${dv.tenDichVu}</h3>
+                            ${Utils.getStatusBadge(dv.trangThai || 'HoatDong')}
+                        </div>
+                    </div>
+                    <p>${dv.moTa || 'Liên hệ để biết chi tiết dịch vụ.'}</p>
+                    <div class="dv-card-footer">
+                        <div class="dv-price">
+                            ${Utils.formatMoney(dv.giaCoBan)}
+                            <span>Giá từ</span>
+                        </div>
+                        <button class="btn btn-primary btn-sm btn-datlich-dv" data-id="${dv.maDichVu}">
+                            <i class="fa-solid fa-calendar-plus"></i> Đặt lịch
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Guard buttons
+            grid.querySelectorAll('.btn-datlich-dv').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!Auth.isLoggedIn()) {
+                        Components.showLoginRequired();
+                    } else {
+                        window.location.href = '/pages/dat-lich/index.html';
+                    }
+                });
+            });
+        }
+
+        // Load services
+        async function loadServices() {
+            try {
+                const result = await Api.get('/dich-vu');
+                const list = Array.isArray(result) ? result : (result?.data || result?.content || []);
+                allServices = list.length > 0 ? list : defaultServices;
+            } catch {
+                allServices = defaultServices;
+            }
+            renderServices(allServices);
+        }
+
+        // Search
+        searchInput.addEventListener('input', Utils.debounce(() => {
+            const query = searchInput.value.toLowerCase().trim();
+            if (!query) {
+                renderServices(allServices);
+                return;
+            }
+            const filtered = allServices.filter(dv =>
+                dv.tenDichVu.toLowerCase().includes(query) ||
+                (dv.moTa && dv.moTa.toLowerCase().includes(query))
+            );
+            renderServices(filtered);
+        }, 300));
+
+        loadServices();
+    </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Giới thiệu về GaraOto — Gara ô tô chuyên nghiệp hàng đầu">
+    <title>Giới thiệu — GaraOto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/dich-vu.css">
+    <style>
+        .about-section { background: white; }
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-12);
+            align-items: center;
+        }
+        .about-img {
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+            height: 360px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            color: var(--primary-400);
+        }
+        .about-content h2 { margin-bottom: var(--space-4); }
+        .about-content p { line-height: 1.8; margin-bottom: var(--space-4); }
+        .about-list { margin-top: var(--space-4); }
+        .about-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+            font-size: var(--font-size-sm);
+            color: var(--gray-600);
+        }
+        .about-list li i {
+            color: var(--success);
+            margin-top: 3px;
+        }
+        .stats-section { background: linear-gradient(135deg, var(--primary-700), var(--primary-900)); }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-8);
+            text-align: center;
+        }
+        .stat-item h3 {
+            font-size: var(--font-size-4xl);
+            color: white;
+            margin-bottom: var(--space-2);
+        }
+        .stat-item p {
+            color: var(--primary-200);
+            font-size: var(--font-size-sm);
+            margin: 0;
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-8);
+        }
+        .team-card {
+            text-align: center;
+            padding: var(--space-8);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+            transition: all var(--transition-base);
+        }
+        .team-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin: 0 auto var(--space-4);
+        }
+        .team-card h4 { margin-bottom: var(--space-1); }
+        .team-card .role {
+            font-size: var(--font-size-sm);
+            color: var(--primary-600);
+            font-weight: 500;
+        }
+        @media (max-width: 768px) {
+            .about-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .team-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main class="main-content">
+        <section class="page-hero">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a>
+                    <span>/</span>
+                    <span class="current">Giới thiệu</span>
+                </div>
+                <h1>Về GaraOto</h1>
+                <p>Đối tác đáng tin cậy trong việc chăm sóc và cho thuê xe ô tô</p>
+            </div>
+        </section>
+
+        <section class="section about-section">
+            <div class="container">
+                <div class="about-grid">
+                    <div class="about-img"><i class="fa-solid fa-car-side"></i></div>
+                    <div class="about-content">
+                        <h2>Câu chuyện của chúng tôi</h2>
+                        <p>GaraOto được thành lập với sứ mệnh mang đến dịch vụ chăm sóc xe ô tô chuyên nghiệp, minh bạch và tiện lợi nhất cho khách hàng Việt Nam.</p>
+                        <p>Với đội ngũ kỹ thuật viên giàu kinh nghiệm và trang thiết bị hiện đại, chúng tôi cam kết cung cấp dịch vụ chất lượng cao với giá cả hợp lý.</p>
+                        <ul class="about-list">
+                            <li><i class="fa-solid fa-circle-check"></i> Đội ngũ kỹ thuật viên chuyên nghiệp, được đào tạo bài bản</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Trang thiết bị, công nghệ sửa chữa hiện đại</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Phụ tùng chính hãng, bảo hành rõ ràng</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Quy trình minh bạch, báo giá chi tiết trước khi thực hiện</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Hệ thống đặt lịch online tiện lợi, theo dõi tiến độ realtime</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item"><h3>5,000+</h3><p>Xe đã sửa chữa</p></div>
+                    <div class="stat-item"><h3>50+</h3><p>Xe cho thuê</p></div>
+                    <div class="stat-item"><h3>15+</h3><p>Kỹ thuật viên</p></div>
+                    <div class="stat-item"><h3>4.8★</h3><p>Đánh giá trung bình</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2 class="section-title">Đội ngũ lãnh đạo</h2>
+                <p class="section-subtitle">Những người đứng sau thành công của GaraOto</p>
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-avatar">NV</div>
+                        <h4>Nguyễn Văn A</h4>
+                        <div class="role">Giám đốc</div>
+                        <p class="text-muted mt-4" style="font-size: var(--font-size-sm);">15 năm kinh nghiệm trong ngành ô tô</p>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar">TH</div>
+                        <h4>Trần Hữu B</h4>
+                        <div class="role">Trưởng xưởng kỹ thuật</div>
+                        <p class="text-muted mt-4" style="font-size: var(--font-size-sm);">Chuyên gia sửa chữa xe cao cấp</p>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar">LT</div>
+                        <h4>Lê Thị C</h4>
+                        <div class="role">Quản lý dịch vụ cho thuê</div>
+                        <p class="text-muted mt-4" style="font-size: var(--font-size-sm);">10 năm kinh nghiệm quản lý đội xe</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script type="module">
+        import Components from '/js/components.js';
+        await Components.loadHeader();
+        await Components.loadFooter();
+    </script>
+</body>
+</html>

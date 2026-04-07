@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Liên hệ GaraOto — Gara ô tô chuyên nghiệp tại TP.HCM">
+    <title>Liên hệ — GaraOto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/dich-vu.css">
+    <style>
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: var(--space-10);
+            padding: var(--space-10) 0;
+        }
+        .contact-info-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            border: 1px solid var(--gray-200);
+            height: fit-content;
+        }
+        .contact-info-card h2 {
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--space-2);
+        }
+        .contact-info-card > p {
+            color: var(--gray-500);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-6);
+        }
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+        .contact-item-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-lg);
+            background: var(--primary-50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-600);
+            font-size: var(--font-size-lg);
+            flex-shrink: 0;
+        }
+        .contact-item-content h4 {
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-1);
+        }
+        .contact-item-content p {
+            font-size: var(--font-size-sm);
+            color: var(--gray-500);
+            margin: 0;
+        }
+        .contact-item-content a {
+            color: var(--primary-600);
+            font-weight: 500;
+        }
+        .contact-social {
+            display: flex;
+            gap: var(--space-3);
+            margin-top: var(--space-6);
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--gray-200);
+        }
+        .contact-social a {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+        .contact-social a:hover {
+            background: var(--primary-600);
+            color: white;
+            transform: translateY(-2px);
+        }
+        .contact-form-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            border: 1px solid var(--gray-200);
+        }
+        .contact-form-card h2 {
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--space-2);
+        }
+        .contact-form-card > p {
+            color: var(--gray-500);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-6);
+        }
+        .map-section {
+            background: var(--gray-200);
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-400);
+            font-size: var(--font-size-lg);
+        }
+        .map-section iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        @media (max-width: 768px) {
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main class="main-content">
+        <section class="page-hero">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a>
+                    <span>/</span>
+                    <span class="current">Liên hệ</span>
+                </div>
+                <h1>Liên hệ với chúng tôi</h1>
+                <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn mọi lúc</p>
+            </div>
+        </section>
+
+        <section>
+            <div class="container">
+                <div class="contact-grid">
+                    <!-- Info -->
+                    <div class="contact-info-card">
+                        <h2>Thông tin liên hệ</h2>
+                        <p>Hãy liên hệ với chúng tôi qua các kênh dưới đây</p>
+
+                        <div class="contact-item">
+                            <div class="contact-item-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            <div class="contact-item-content">
+                                <h4>Địa chỉ</h4>
+                                <p>123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-item-icon"><i class="fa-solid fa-phone"></i></div>
+                            <div class="contact-item-content">
+                                <h4>Điện thoại</h4>
+                                <p><a href="tel:0123456789">0123 456 789</a></p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-item-icon"><i class="fa-solid fa-envelope"></i></div>
+                            <div class="contact-item-content">
+                                <h4>Email</h4>
+                                <p><a href="mailto:contact@garaoto.vn">contact@garaoto.vn</a></p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-item-icon"><i class="fa-solid fa-clock"></i></div>
+                            <div class="contact-item-content">
+                                <h4>Giờ làm việc</h4>
+                                <p>Thứ 2 — Chủ nhật: 7:00 — 19:00</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-social">
+                            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                            <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                            <a href="#"><i class="fa-brands fa-tiktok"></i></a>
+                            <a href="#"><i class="fa-solid fa-envelope"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Form -->
+                    <div class="contact-form-card">
+                        <h2>Gửi tin nhắn</h2>
+                        <p>Điền thông tin bên dưới, chúng tôi sẽ phản hồi trong thời gian sớm nhất</p>
+
+                        <form id="contact-form" novalidate>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="name">Họ và tên <span class="required">*</span></label>
+                                    <input type="text" id="name" class="form-control" placeholder="Nguyễn Văn A" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone">Số điện thoại <span class="required">*</span></label>
+                                    <input type="tel" id="phone" class="form-control" placeholder="0912 345 678" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email</label>
+                                <input type="email" id="email" class="form-control" placeholder="email@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="subject">Chủ đề</label>
+                                <select class="form-control" id="subject">
+                                    <option value="">Chọn chủ đề</option>
+                                    <option>Tư vấn dịch vụ sửa chữa</option>
+                                    <option>Hỏi giá thuê xe</option>
+                                    <option>Khiếu nại / Góp ý</option>
+                                    <option>Hợp tác kinh doanh</option>
+                                    <option>Khác</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="message">Nội dung <span class="required">*</span></label>
+                                <textarea id="message" class="form-control" placeholder="Nhập nội dung tin nhắn..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg btn-block" id="send-btn">
+                                <i class="fa-solid fa-paper-plane"></i> Gửi tin nhắn
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="map-section">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3920.024!2d106.7!3d10.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQyJzAwLjAiTiAxMDbCsDQyJzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1" allowfullscreen loading="lazy"></iframe>
+        </section>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script type="module">
+        import Components from '/js/components.js';
+        import Toast from '/js/toast.js';
+
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        document.getElementById('contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const message = document.getElementById('message').value.trim();
+            if (!name || !message) {
+                Toast.warning('Vui lòng điền đầy đủ thông tin bắt buộc');
+                return;
+            }
+            Toast.success('Cảm ơn bạn! Chúng tôi đã nhận được tin nhắn và sẽ phản hồi sớm.');
+            e.target.reset();
+        });
+    </script>
+</body>
+</html>

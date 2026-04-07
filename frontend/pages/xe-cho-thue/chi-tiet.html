@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chi tiết xe cho thuê tại GaraOto">
+    <title>Chi tiết xe — GaraOto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/dich-vu.css">
+    <link rel="stylesheet" href="/css/pages/xe-cho-thue.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="main-content">
+        <section class="page-hero" style="padding: var(--space-10) 0 var(--space-8);">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a>
+                    <span>/</span>
+                    <a href="/pages/xe-cho-thue/index.html">Xe cho thuê</a>
+                    <span>/</span>
+                    <span class="current" id="breadcrumb-name">Chi tiết</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="container">
+                <div class="xe-detail" id="xe-detail">
+                    <div class="xe-detail-img skeleton skeleton-img" style="min-height: 400px;"></div>
+                    <div>
+                        <div class="skeleton skeleton-title" style="height: 32px; width: 70%; margin-bottom: 16px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 40%; margin-bottom: 32px;"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script type="module">
+        import Components from '/js/components.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Utils from '/js/utils.js';
+
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        const id = Utils.getUrlParam('id');
+        const container = document.getElementById('xe-detail');
+
+        if (!id) {
+            container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-circle-exclamation"></i><h3>Không tìm thấy xe</h3><p>Vui lòng quay lại danh sách xe</p><a href="/pages/xe-cho-thue/index.html" class="btn btn-primary mt-4">← Quay lại</a></div>`;
+        } else {
+            try {
+                const result = await Api.get(`/xe-cho-thue/${id}`);
+                const car = result?.data || result;
+
+                document.title = `${car.hangXe} ${car.dongXe} — GaraOto`;
+                document.getElementById('breadcrumb-name').textContent = `${car.hangXe} ${car.dongXe}`;
+
+                container.innerHTML = `
+                    <div class="xe-detail-img">
+                        ${car.hinhAnh ? `<img src="${car.hinhAnh}" alt="${car.hangXe} ${car.dongXe}">` : `<i class="fa-solid fa-car"></i>`}
+                    </div>
+                    <div class="xe-detail-info">
+                        <div style="margin-bottom: var(--space-3);">
+                            ${Utils.getStatusBadge(car.tinhTrang || 'SanSang')}
+                        </div>
+                        <h1>${car.hangXe} ${car.dongXe}</h1>
+                        <div class="xe-detail-price">
+                            ${Utils.formatMoney(car.giaTheoNgay)} <span>/ngày</span>
+                        </div>
+
+                        <div class="xe-detail-specs">
+                            <div class="xe-detail-spec">
+                                <i class="fa-solid fa-chair"></i>
+                                <div><div class="label">Số chỗ</div><div class="value">${car.soCho || '—'} chỗ</div></div>
+                            </div>
+                            <div class="xe-detail-spec">
+                                <i class="fa-solid fa-gears"></i>
+                                <div><div class="label">Hộp số</div><div class="value">${car.hopSo || '—'}</div></div>
+                            </div>
+                            <div class="xe-detail-spec">
+                                <i class="fa-solid fa-gas-pump"></i>
+                                <div><div class="label">Nhiên liệu</div><div class="value">${car.nhienLieu || '—'}</div></div>
+                            </div>
+                            <div class="xe-detail-spec">
+                                <i class="fa-solid fa-calendar"></i>
+                                <div><div class="label">Năm SX</div><div class="value">${car.namSanXuat || '—'}</div></div>
+                            </div>
+                            <div class="xe-detail-spec">
+                                <i class="fa-solid fa-id-card"></i>
+                                <div><div class="label">Biển số</div><div class="value">${car.bienSo}</div></div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-accent btn-lg btn-block" id="btn-thuexe" ${car.tinhTrang !== 'SanSang' ? 'disabled' : ''}>
+                            <i class="fa-solid fa-key"></i>
+                            ${car.tinhTrang === 'SanSang' ? 'Thuê xe này' : 'Xe không khả dụng'}
+                        </button>
+
+                        <a href="/pages/xe-cho-thue/index.html" class="btn btn-ghost btn-block mt-4">
+                            <i class="fa-solid fa-arrow-left"></i> Quay lại danh sách
+                        </a>
+                    </div>
+                `;
+
+                document.getElementById('btn-thuexe')?.addEventListener('click', () => {
+                    if (!Auth.isLoggedIn()) {
+                        Components.showLoginRequired();
+                    } else {
+                        window.location.href = `/pages/dat-thue/index.html?xeId=${car.maXeThue}`;
+                    }
+                });
+
+            } catch (err) {
+                container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-circle-exclamation"></i><h3>Không tìm thấy xe</h3><p>${err.message}</p><a href="/pages/xe-cho-thue/index.html" class="btn btn-primary mt-4">← Quay lại</a></div>`;
+            }
+        }
+    </script>
+</body>
+</html>

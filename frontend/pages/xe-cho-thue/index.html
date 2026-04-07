@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Danh sách xe cho thuê chất lượng cao tại GaraOto">
+    <title>Xe cho thuê — GaraOto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/dich-vu.css">
+    <link rel="stylesheet" href="/css/pages/xe-cho-thue.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="main-content">
+        <!-- Page Hero -->
+        <section class="page-hero">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a>
+                    <span>/</span>
+                    <span class="current">Xe cho thuê</span>
+                </div>
+                <h1>Xe cho thuê</h1>
+                <p>Đa dạng mẫu xe chất lượng, giá cả hợp lý, thủ tục nhanh gọn</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <!-- Filter -->
+                <div class="filter-bar">
+                    <div class="filter-row">
+                        <div class="form-group">
+                            <label class="form-label">Hãng xe</label>
+                            <select class="form-control" id="filter-hang">
+                                <option value="">Tất cả</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Số chỗ</label>
+                            <select class="form-control" id="filter-cho">
+                                <option value="">Tất cả</option>
+                                <option value="4">4 chỗ</option>
+                                <option value="5">5 chỗ</option>
+                                <option value="7">7 chỗ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hộp số</label>
+                            <select class="form-control" id="filter-hopso">
+                                <option value="">Tất cả</option>
+                                <option value="Tự động">Tự động</option>
+                                <option value="Số sàn">Số sàn</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sắp xếp</label>
+                            <select class="form-control" id="filter-sort">
+                                <option value="default">Mặc định</option>
+                                <option value="price-asc">Giá tăng dần</option>
+                                <option value="price-desc">Giá giảm dần</option>
+                                <option value="year-desc">Mới nhất</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="btn-reset-filter">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-count" id="filter-count"></div>
+
+                <!-- Grid -->
+                <div class="xe-grid" id="xe-grid">
+                    <div class="xe-card"><div class="xe-card-img"><div class="skeleton skeleton-img" style="height:220px;width:100%;"></div></div><div class="xe-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></div></div>
+                    <div class="xe-card"><div class="xe-card-img"><div class="skeleton skeleton-img" style="height:220px;width:100%;"></div></div><div class="xe-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></div></div>
+                    <div class="xe-card"><div class="xe-card-img"><div class="skeleton skeleton-img" style="height:220px;width:100%;"></div></div><div class="xe-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></div></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script type="module">
+        import Components from '/js/components.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Utils from '/js/utils.js';
+
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        const grid = document.getElementById('xe-grid');
+        const countEl = document.getElementById('filter-count');
+        let allCars = [];
+
+        // Default fallback data
+        const defaultCars = [
+            { maXeThue: 1, bienSo: '51A-12345', hangXe: 'Toyota', dongXe: 'Vios', soCho: 5, hopSo: 'Tự động', nhienLieu: 'Xăng', giaTheoNgay: 600000, namSanXuat: 2023, tinhTrang: 'SanSang', hinhAnh: null },
+            { maXeThue: 2, bienSo: '51A-67890', hangXe: 'Hyundai', dongXe: 'Accent', soCho: 5, hopSo: 'Tự động', nhienLieu: 'Xăng', giaTheoNgay: 550000, namSanXuat: 2023, tinhTrang: 'SanSang', hinhAnh: null },
+            { maXeThue: 3, bienSo: '51A-11111', hangXe: 'Toyota', dongXe: 'Innova', soCho: 7, hopSo: 'Số sàn', nhienLieu: 'Xăng', giaTheoNgay: 800000, namSanXuat: 2022, tinhTrang: 'SanSang', hinhAnh: null },
+            { maXeThue: 4, bienSo: '51A-22222', hangXe: 'Honda', dongXe: 'City', soCho: 5, hopSo: 'Tự động', nhienLieu: 'Xăng', giaTheoNgay: 650000, namSanXuat: 2024, tinhTrang: 'SanSang', hinhAnh: null },
+            { maXeThue: 5, bienSo: '51A-33333', hangXe: 'Mazda', dongXe: 'CX-5', soCho: 5, hopSo: 'Tự động', nhienLieu: 'Xăng', giaTheoNgay: 900000, namSanXuat: 2024, tinhTrang: 'SanSang', hinhAnh: null },
+            { maXeThue: 6, bienSo: '51A-44444', hangXe: 'Ford', dongXe: 'Everest', soCho: 7, hopSo: 'Tự động', nhienLieu: 'Dầu', giaTheoNgay: 1200000, namSanXuat: 2023, tinhTrang: 'SanSang', hinhAnh: null },
+        ];
+
+        function renderCars(cars) {
+            countEl.innerHTML = `Hiển thị <strong>${cars.length}</strong> xe`;
+
+            if (cars.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fa-solid fa-car-side"></i>
+                        <h3>Không tìm thấy xe phù hợp</h3>
+                        <p>Thử thay đổi bộ lọc</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = cars.map(car => `
+                <div class="xe-card">
+                    <div class="xe-card-img">
+                        ${car.hinhAnh ? `<img src="${car.hinhAnh}" alt="${car.hangXe} ${car.dongXe}">` : `<i class="fa-solid fa-car"></i>`}
+                        <span class="xe-status">${Utils.getStatusBadge(car.tinhTrang || 'SanSang')}</span>
+                    </div>
+                    <div class="xe-card-body">
+                        <h3 class="xe-card-title">${car.hangXe} ${car.dongXe}</h3>
+                        <div class="xe-card-year"><i class="fa-solid fa-calendar"></i> ${car.namSanXuat || '—'}</div>
+                        <div class="xe-specs">
+                            <div class="xe-spec"><i class="fa-solid fa-chair"></i> ${car.soCho} chỗ</div>
+                            <div class="xe-spec"><i class="fa-solid fa-gears"></i> ${car.hopSo || '—'}</div>
+                            <div class="xe-spec"><i class="fa-solid fa-gas-pump"></i> ${car.nhienLieu || '—'}</div>
+                            <div class="xe-spec"><i class="fa-solid fa-id-card"></i> ${car.bienSo}</div>
+                        </div>
+                    </div>
+                    <div class="xe-card-footer">
+                        <div class="xe-price">
+                            ${Utils.formatMoney(car.giaTheoNgay)} <span>/ngày</span>
+                        </div>
+                        <a href="/pages/xe-cho-thue/chi-tiet.html?id=${car.maXeThue}" class="btn btn-primary btn-sm">
+                            Chi tiết <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function applyFilters() {
+            const hang = document.getElementById('filter-hang').value;
+            const cho = document.getElementById('filter-cho').value;
+            const hopso = document.getElementById('filter-hopso').value;
+            const sort = document.getElementById('filter-sort').value;
+
+            let filtered = [...allCars];
+
+            if (hang) filtered = filtered.filter(c => c.hangXe === hang);
+            if (cho) filtered = filtered.filter(c => c.soCho === parseInt(cho));
+            if (hopso) filtered = filtered.filter(c => c.hopSo === hopso);
+
+            if (sort === 'price-asc') filtered.sort((a, b) => (a.giaTheoNgay || 0) - (b.giaTheoNgay || 0));
+            if (sort === 'price-desc') filtered.sort((a, b) => (b.giaTheoNgay || 0) - (a.giaTheoNgay || 0));
+            if (sort === 'year-desc') filtered.sort((a, b) => (b.namSanXuat || 0) - (a.namSanXuat || 0));
+
+            renderCars(filtered);
+        }
+
+        function populateFilters(cars) {
+            const hangSet = [...new Set(cars.map(c => c.hangXe).filter(Boolean))].sort();
+            const hangSelect = document.getElementById('filter-hang');
+            hangSet.forEach(h => {
+                const opt = document.createElement('option');
+                opt.value = h;
+                opt.textContent = h;
+                hangSelect.appendChild(opt);
+            });
+        }
+
+        // Events
+        ['filter-hang', 'filter-cho', 'filter-hopso', 'filter-sort'].forEach(id => {
+            document.getElementById(id).addEventListener('change', applyFilters);
+        });
+
+        document.getElementById('btn-reset-filter').addEventListener('click', () => {
+            document.getElementById('filter-hang').value = '';
+            document.getElementById('filter-cho').value = '';
+            document.getElementById('filter-hopso').value = '';
+            document.getElementById('filter-sort').value = 'default';
+            renderCars(allCars);
+        });
+
+        // Load
+        async function loadCars() {
+            try {
+                const result = await Api.get('/xe-cho-thue');
+                const list = Array.isArray(result) ? result : (result?.data || result?.content || []);
+                allCars = list.length > 0 ? list : defaultCars;
+            } catch {
+                allCars = defaultCars;
+            }
+            populateFilters(allCars);
+            renderCars(allCars);
+        }
+
+        loadCars();
+    </script>
+</body>
+</html>
