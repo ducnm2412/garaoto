@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Đăng ký tài khoản GaraOto — Sửa chữa & Cho thuê xe ô tô">
+    <title>Đăng ký — GaraOto</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/auth.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="auth-page">
+            <div class="auth-container" style="max-width: 560px;">
+                <div class="auth-card">
+                    <!-- Header -->
+                    <div class="auth-header">
+                        <a href="/" class="auth-logo">
+                            <i class="fa-solid fa-car-side"></i>
+                            GaraOto
+                        </a>
+                        <h1>Tạo tài khoản</h1>
+                        <p>Đăng ký để đặt lịch sửa xe & thuê xe nhanh chóng</p>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="auth-body">
+                        <!-- Alert -->
+                        <div class="auth-alert" id="auth-alert">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span id="alert-message"></span>
+                        </div>
+
+                        <!-- Register Form -->
+                        <form id="register-form" novalidate>
+                            <!-- Họ tên -->
+                            <div class="form-group">
+                                <label class="form-label" for="hoTen">
+                                    Họ và tên <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="hoTen" 
+                                    class="form-control" 
+                                    placeholder="Nguyễn Văn A"
+                                    required
+                                    autocomplete="name"
+                                >
+                                <div class="form-error" id="hoTen-error"></div>
+                            </div>
+
+                            <!-- Email & SĐT -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="email">
+                                        Email <span class="required">*</span>
+                                    </label>
+                                    <input 
+                                        type="email" 
+                                        id="email" 
+                                        class="form-control" 
+                                        placeholder="email@example.com"
+                                        required
+                                        autocomplete="email"
+                                    >
+                                    <div class="form-error" id="email-error"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="soDienThoai">
+                                        Số điện thoại <span class="required">*</span>
+                                    </label>
+                                    <input 
+                                        type="tel" 
+                                        id="soDienThoai" 
+                                        class="form-control" 
+                                        placeholder="0912 345 678"
+                                        required
+                                        autocomplete="tel"
+                                    >
+                                    <div class="form-error" id="soDienThoai-error"></div>
+                                </div>
+                            </div>
+
+                            <!-- Mật khẩu -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="matKhau">
+                                        Mật khẩu <span class="required">*</span>
+                                    </label>
+                                    <div class="password-wrapper">
+                                        <input 
+                                            type="password" 
+                                            id="matKhau" 
+                                            class="form-control" 
+                                            placeholder="Ít nhất 6 ký tự"
+                                            required
+                                            minlength="6"
+                                            autocomplete="new-password"
+                                        >
+                                        <button type="button" class="password-toggle" data-target="matKhau">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-error" id="matKhau-error"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="xacNhanMatKhau">
+                                        Xác nhận mật khẩu <span class="required">*</span>
+                                    </label>
+                                    <div class="password-wrapper">
+                                        <input 
+                                            type="password" 
+                                            id="xacNhanMatKhau" 
+                                            class="form-control" 
+                                            placeholder="Nhập lại mật khẩu"
+                                            required
+                                            autocomplete="new-password"
+                                        >
+                                        <button type="button" class="password-toggle" data-target="xacNhanMatKhau">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-error" id="xacNhanMatKhau-error"></div>
+                                </div>
+                            </div>
+
+                            <!-- Địa chỉ -->
+                            <div class="form-group">
+                                <label class="form-label" for="diaChi">Địa chỉ</label>
+                                <input 
+                                    type="text" 
+                                    id="diaChi" 
+                                    class="form-control" 
+                                    placeholder="Số nhà, đường, quận/huyện, TP"
+                                    autocomplete="street-address"
+                                >
+                            </div>
+
+                            <!-- CCCD & GPLX -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="cccd">Số CCCD</label>
+                                    <input 
+                                        type="text" 
+                                        id="cccd" 
+                                        class="form-control" 
+                                        placeholder="Số căn cước công dân"
+                                        maxlength="12"
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="soGplx">Số GPLX</label>
+                                    <input 
+                                        type="text" 
+                                        id="soGplx" 
+                                        class="form-control" 
+                                        placeholder="Số giấy phép lái xe"
+                                    >
+                                    <div class="form-hint">Cần thiết khi thuê xe</div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg btn-block" id="register-btn">
+                                <i class="fa-solid fa-user-plus"></i>
+                                Đăng ký tài khoản
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="auth-footer">
+                        Đã có tài khoản? <a href="/pages/auth/login.html">Đăng nhập</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- JS -->
+    <script type="module">
+        import Components from '/js/components.js';
+        import Guard from '/js/guard.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Toast from '/js/toast.js';
+        import Utils from '/js/utils.js';
+
+        // Load shared components
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        // If already logged in, redirect to home
+        Guard.guestOnly();
+
+        // --- Elements ---
+        const form = document.getElementById('register-form');
+        const registerBtn = document.getElementById('register-btn');
+        const alertBox = document.getElementById('auth-alert');
+        const alertMessage = document.getElementById('alert-message');
+
+        // --- Password toggles ---
+        document.querySelectorAll('.password-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.dataset.target;
+                const input = document.getElementById(targetId);
+                const type = input.type === 'password' ? 'text' : 'password';
+                input.type = type;
+                btn.querySelector('i').className = 
+                    type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+            });
+        });
+
+        // --- Show/Hide alert ---
+        function showAlert(message, type = 'error') {
+            alertBox.className = `auth-alert show alert-${type}`;
+            alertBox.querySelector('i').className = type === 'error' 
+                ? 'fa-solid fa-circle-xmark' 
+                : 'fa-solid fa-circle-check';
+            alertMessage.textContent = message;
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function hideAlert() {
+            alertBox.className = 'auth-alert';
+        }
+
+        // --- Field error helper ---
+        function setFieldError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const errorEl = document.getElementById(fieldId + '-error');
+            if (input) input.classList.add('error');
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.add('show');
+            }
+        }
+
+        function clearFieldError(fieldId) {
+            const input = document.getElementById(fieldId);
+            const errorEl = document.getElementById(fieldId + '-error');
+            if (input) input.classList.remove('error');
+            if (errorEl) errorEl.classList.remove('show');
+        }
+
+        // --- Clear errors on input ---
+        ['hoTen', 'email', 'soDienThoai', 'matKhau', 'xacNhanMatKhau'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => {
+                    clearFieldError(id);
+                    hideAlert();
+                });
+            }
+        });
+
+        // --- Validate ---
+        function validate() {
+            let valid = true;
+            hideAlert();
+
+            const hoTen = document.getElementById('hoTen').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const soDienThoai = document.getElementById('soDienThoai').value.trim();
+            const matKhau = document.getElementById('matKhau').value;
+            const xacNhanMatKhau = document.getElementById('xacNhanMatKhau').value;
+
+            // Họ tên
+            if (!hoTen) {
+                setFieldError('hoTen', 'Họ tên không được để trống');
+                valid = false;
+            } else {
+                clearFieldError('hoTen');
+            }
+
+            // Email
+            if (!email) {
+                setFieldError('email', 'Email không được để trống');
+                valid = false;
+            } else if (!Utils.isValidEmail(email)) {
+                setFieldError('email', 'Email không đúng định dạng');
+                valid = false;
+            } else {
+                clearFieldError('email');
+            }
+
+            // SĐT
+            if (!soDienThoai) {
+                setFieldError('soDienThoai', 'Số điện thoại không được để trống');
+                valid = false;
+            } else if (!Utils.isValidPhone(soDienThoai)) {
+                setFieldError('soDienThoai', 'Số điện thoại không hợp lệ (VD: 0912345678)');
+                valid = false;
+            } else {
+                clearFieldError('soDienThoai');
+            }
+
+            // Mật khẩu
+            if (!matKhau) {
+                setFieldError('matKhau', 'Mật khẩu không được để trống');
+                valid = false;
+            } else if (matKhau.length < 6) {
+                setFieldError('matKhau', 'Mật khẩu phải có ít nhất 6 ký tự');
+                valid = false;
+            } else {
+                clearFieldError('matKhau');
+            }
+
+            // Xác nhận mật khẩu
+            if (!xacNhanMatKhau) {
+                setFieldError('xacNhanMatKhau', 'Vui lòng xác nhận mật khẩu');
+                valid = false;
+            } else if (matKhau !== xacNhanMatKhau) {
+                setFieldError('xacNhanMatKhau', 'Mật khẩu xác nhận không khớp');
+                valid = false;
+            } else {
+                clearFieldError('xacNhanMatKhau');
+            }
+
+            return valid;
+        }
+
+        // --- Submit ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validate()) return;
+
+            registerBtn.classList.add('btn-loading');
+            registerBtn.disabled = true;
+
+            try {
+                const requestBody = {
+                    hoTen: document.getElementById('hoTen').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    soDienThoai: document.getElementById('soDienThoai').value.trim(),
+                    matKhau: document.getElementById('matKhau').value,
+                    diaChi: document.getElementById('diaChi').value.trim() || null,
+                    vaiTro: 'KhachHang',  // Customer registration
+                    cccd: document.getElementById('cccd').value.trim() || null,
+                    soGplx: document.getElementById('soGplx').value.trim() || null,
+                    hangGplx: null,
+                    chuyenMon: null,
+                    caLamViec: null,
+                    chucVu: null,
+                };
+
+                const result = await Api.post('/auth/register', requestBody);
+
+                // Backend returns ApiResponse<AuthResponse>
+                const authData = result.data || result;
+
+                // Auto-login after registration
+                Auth.saveAuth(authData.token, {
+                    maNguoiDung: authData.maNguoiDung,
+                    hoTen: authData.hoTen,
+                    email: authData.email,
+                    vaiTro: authData.vaiTro,
+                });
+
+                showAlert('Đăng ký thành công! Đang chuyển hướng...', 'success');
+                Toast.success('Chào mừng bạn đến với GaraOto!');
+
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+
+            } catch (err) {
+                showAlert(err.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+            } finally {
+                registerBtn.classList.remove('btn-loading');
+                registerBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
