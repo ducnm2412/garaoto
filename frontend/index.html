@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GaraOto — Hệ thống gara ô tô chuyên nghiệp. Dịch vụ sửa chữa, bảo dưỡng và cho thuê xe uy tín.">
+    
+    <title>GaraOto — Sửa chữa & Cho thuê xe ô tô</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/home.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- ===== HERO SECTION ===== -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="fa-solid fa-star"></i>
+                        Gara uy tín hàng đầu Việt Nam
+                    </div>
+                    <h1>Chăm sóc xe của bạn <span>chuyên nghiệp</span> & tận tâm</h1>
+                    <p>
+                        Dịch vụ sửa chữa, bảo dưỡng ô tô chất lượng cao và cho thuê xe đa dạng. 
+                        Đặt lịch nhanh chóng, theo dõi tiến độ minh bạch.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="/pages/dat-lich/index.html" class="btn btn-accent btn-lg" id="hero-btn-datlich">
+                            <i class="fa-solid fa-calendar-plus"></i>
+                            Đặt lịch sửa xe
+                        </a>
+                        <a href="/pages/xe-cho-thue/index.html" class="btn btn-outline btn-lg" style="border-color: rgba(255,255,255,0.3); color: white;">
+                            <i class="fa-solid fa-car"></i>
+                            Thuê xe ngay
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <div class="hero-stat-number">5,000+</div>
+                            <div class="hero-stat-label">Xe đã sửa chữa</div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-number">50+</div>
+                            <div class="hero-stat-label">Xe cho thuê</div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-number">4.8</div>
+                            <div class="hero-stat-label">Đánh giá TB</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SERVICES SECTION ===== -->
+        <section class="section services-section">
+            <div class="container">
+                <h2 class="section-title">Dịch vụ của chúng tôi</h2>
+                <p class="section-subtitle">
+                    Đa dạng dịch vụ chăm sóc xe từ sửa chữa, bảo dưỡng đến cho thuê xe chất lượng cao
+                </p>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon repair">
+                            <i class="fa-solid fa-wrench"></i>
+                        </div>
+                        <h3>Sửa chữa ô tô</h3>
+                        <p>Đội ngũ kỹ thuật viên giàu kinh nghiệm, trang thiết bị hiện đại. Chẩn đoán chính xác, sửa chữa nhanh chóng.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon maintenance">
+                            <i class="fa-solid fa-oil-can"></i>
+                        </div>
+                        <h3>Bảo dưỡng định kỳ</h3>
+                        <p>Bảo dưỡng toàn diện giúp xe luôn trong tình trạng tốt nhất. Thay dầu, lọc gió, kiểm tra phanh và nhiều hơn nữa.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon rental">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                        <h3>Cho thuê xe</h3>
+                        <p>Hàng chục mẫu xe đa dạng từ 4-7 chỗ. Thủ tục nhanh gọn, giá cả hợp lý, hỗ trợ giao nhận xe tận nơi.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FEATURED CARS SECTION ===== -->
+        <section class="section cars-section">
+            <div class="container">
+                <h2 class="section-title">Xe cho thuê nổi bật</h2>
+                <p class="section-subtitle">
+                    Khám phá bộ sưu tập xe cho thuê chất lượng với giá cả phải chăng
+                </p>
+                <div class="cars-grid" id="featured-cars">
+                    <!-- Loaded by JS -->
+                </div>
+                <div class="text-center mt-8">
+                    <a href="/pages/xe-cho-thue/index.html" class="btn btn-outline">
+                        Xem tất cả xe <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== WHY CHOOSE US ===== -->
+        <section class="section why-section">
+            <div class="container">
+                <h2 class="section-title">Tại sao chọn GaraOto?</h2>
+                <p class="section-subtitle">
+                    Chúng tôi mang đến trải nghiệm dịch vụ tốt nhất cho khách hàng
+                </p>
+                <div class="why-grid">
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h4>Uy tín & Chất lượng</h4>
+                        <p>Cam kết chất lượng dịch vụ, bảo hành rõ ràng</p>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <h4>Nhanh chóng</h4>
+                        <p>Đặt lịch online, tiếp nhận nhanh, trả xe đúng hẹn</p>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                        <h4>Giá cả minh bạch</h4>
+                        <p>Báo giá chi tiết trước khi thực hiện, không phát sinh</p>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <h4>Hỗ trợ 24/7</h4>
+                        <p>Đội ngũ tư vấn luôn sẵn sàng hỗ trợ bạn mọi lúc</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CTA SECTION ===== -->
+        <section class="section cta-section">
+            <div class="container">
+                <h2>Sẵn sàng chăm sóc xe của bạn?</h2>
+                <p>Đặt lịch ngay hôm nay để được tư vấn và phục vụ tốt nhất</p>
+                <div class="cta-buttons">
+                    <a href="/pages/dat-lich/index.html" class="btn btn-accent btn-lg" id="cta-btn-datlich">
+                        <i class="fa-solid fa-calendar-plus"></i>
+                        Đặt lịch sửa xe
+                    </a>
+                    <a href="/pages/lien-he.html" class="btn btn-outline btn-lg" style="border-color: rgba(255,255,255,0.3); color: white;">
+                        <i class="fa-solid fa-phone"></i>
+                        Liên hệ tư vấn
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- JS -->
+    <script type="module">
+        import Components from '/js/components.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Utils from '/js/utils.js';
+
+        // Load shared components
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        // --- Hero CTA buttons: check login ---
+        const protectedBtns = document.querySelectorAll('#hero-btn-datlich, #cta-btn-datlich');
+        protectedBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (!Auth.isLoggedIn()) {
+                    e.preventDefault();
+                    Components.showLoginRequired();
+                }
+            });
+        });
+
+        // --- Load featured cars ---
+        async function loadFeaturedCars() {
+            const container = document.getElementById('featured-cars');
+            try {
+                const cars = await Api.get('/xe-cho-thue');
+                const list = Array.isArray(cars) ? cars : (cars?.data || cars?.content || []);
+                const featured = list.filter(c => c.tinhTrang === 'SanSang').slice(0, 3);
+
+                if (featured.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <i class="fa-solid fa-car-side"></i>
+                            <h3>Đang cập nhật</h3>
+                            <p>Danh sách xe cho thuê sẽ sớm được cập nhật</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = featured.map(car => `
+                    <div class="card car-card">
+                        <div class="card-img">
+                            ${car.hinhAnh 
+                                ? `<img src="${car.hinhAnh}" alt="${car.hangXe} ${car.dongXe}">` 
+                                : `<i class="fa-solid fa-car"></i>`
+                            }
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">${car.hangXe || ''} ${car.dongXe || ''}</h3>
+                            <div class="card-meta">
+                                <span class="card-meta-item"><i class="fa-solid fa-chair"></i> ${car.soCho || '—'} chỗ</span>
+                                <span class="card-meta-item"><i class="fa-solid fa-gears"></i> ${car.hopSo || '—'}</span>
+                                <span class="card-meta-item"><i class="fa-solid fa-gas-pump"></i> ${car.nhienLieu || '—'}</span>
+                                <span class="card-meta-item"><i class="fa-solid fa-calendar"></i> ${car.namSanXuat || '—'}</span>
+                            </div>
+                            <div class="card-price">
+                                ${Utils.formatMoney(car.giaTheoNgay)} <span>/ngày</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="badge badge-success">Sẵn sàng</span>
+                            <a href="/pages/xe-cho-thue/chi-tiet.html?id=${car.maXeThue}" class="btn btn-primary btn-sm">
+                                Chi tiết <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.log('Chưa kết nối được API xe cho thuê:', err.message);
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fa-solid fa-car-side"></i>
+                        <h3>Đang cập nhật</h3>
+                        <p>Danh sách xe cho thuê sẽ sớm được cập nhật</p>
+                    </div>
+                `;
+            }
+        }
+
+        loadFeaturedCars();
+    </script>
+</body>
+</html>
