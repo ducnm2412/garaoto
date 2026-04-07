@@ -205,29 +205,90 @@
 .forgot-password-link {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--gray-700);
+    color: var(--primary-600);
     text-decoration: none;
     transition: color var(--transition-fast);
-    position: relative;
 }
 
 .forgot-password-link:hover {
+    color: var(--primary-700);
+    text-decoration: underline;
+}
+
+/* ===== FORGOT PASSWORD PAGE ===== */
+.forgot-icon-wrapper {
+    text-align: center;
+    margin-bottom: var(--space-6);
+}
+
+.forgot-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--primary-100), var(--primary-50));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: var(--font-size-2xl);
     color: var(--primary-600);
 }
 
-.forgot-password-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    width: 0;
-    height: 2px;
-    background: var(--primary-600);
-    transition: width var(--transition-base);
+.forgot-icon.success {
+    background: linear-gradient(135deg, var(--success-light), #dcfce7);
+    color: var(--success);
 }
 
-.forgot-password-link:hover::after {
-    width: 100%;
+.forgot-desc {
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--gray-500);
+    line-height: 1.7;
+    margin-bottom: var(--space-6);
+}
+
+.forgot-success-title {
+    text-align: center;
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: var(--space-3);
+}
+
+.forgot-tips {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+    padding: var(--space-4);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+}
+
+.forgot-tip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--gray-600);
+}
+
+.forgot-tip i {
+    color: var(--primary-500);
+    width: 16px;
+    text-align: center;
+}
+
+.resend-timer {
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--gray-500);
+    margin-top: var(--space-4);
+}
+
+.resend-timer span {
+    font-weight: 700;
+    color: var(--primary-600);
 }
 
 /* Responsive */
