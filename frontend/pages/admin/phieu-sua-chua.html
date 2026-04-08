@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Sửa Chữa — Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/admin.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #ffffff;
+            padding: var(--space-6);
+            border-radius: var(--radius-lg);
+            width: 100%; max-width: 550px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            position: relative;
+            z-index: 10000;
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: var(--space-5);
+            border-bottom: 2px solid var(--gray-100);
+            padding-bottom: var(--space-3);
+        }
+        .modal-header h2 { font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin: 0;}
+        .form-group { margin-bottom: var(--space-4); }
+        .form-label { display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700); font-size: 0.875rem;}
+        .form-control { width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; }
+        .form-control:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px var(--primary-100); }
+    </style>
+</head>
+<body class="admin-mode">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <a href="/pages/admin/index.html" class="admin-logo">
+                <i class="fa-solid fa-car"></i> GaraOto Admin
+            </a>
+            <nav class="admin-nav">
+                <a href="/pages/admin/index.html" class="admin-nav-item">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+                <a href="/pages/admin/index.html" class="admin-nav-item">
+                    <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
+                </a>
+                <a href="/pages/admin/don-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
+                </a>
+                <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item active">
+                    <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
+                </a>
+                <a href="#" class="admin-nav-item" onclick="alert('Tính năng đang phát triển!')">
+                    <i class="fa-solid fa-users"></i> Khách Hàng
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="#" class="btn-logout" id="btn-admin-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1>Quản lý Phiếu Sửa Chữa & Phân Công</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openCreateModal()"><i class="fa-solid fa-plus"></i> Lập Phiếu Mới</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="admin-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--warning-100); color: var(--warning-600);"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <div class="stat-info">
+                        <h3>Đang xử lý</h3>
+                        <div class="stat-value" id="stat-processing">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--success-100); color: var(--success-600);"><i class="fa-solid fa-check-double"></i></div>
+                    <div class="stat-info">
+                        <h3>Đã hoàn thành</h3>
+                        <div class="stat-value" id="stat-completed">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Danh sách Phiếu Sửa Chữa</h2>
+                    <button class="btn btn-primary btn-sm" onclick="loadPhieuSua()"><i class="fa-solid fa-rotate-right"></i> Làm mới</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã Phiếu</th>
+                            <th>Lịch Hẹn Nguồn</th>
+                            <th>Mã Xe KH</th>
+                            <th>Chẩn Đoán</th>
+                            <th>Tổng Tiền</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="phieu-tbody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: var(--space-6);">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Modal -->
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Lập Phiếu Sửa Chữa Mới</h2>
+                <button class="btn-icon" onclick="closeCreateModal()"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="create-form">
+                <div class="form-group">
+                    <label class="form-label">Mã Lịch Hẹn Gốc (Mã Lịch đang ở trạng thái Đã XNA / Đang SC)</label>
+                    <input type="number" id="inp-maLichHen" class="form-control" required placeholder="VD: 1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mã Xe Khách Hàng</label>
+                    <input type="number" id="inp-maXe" class="form-control" required placeholder="VD: 1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mã Khách Hàng</label>
+                    <input type="number" id="inp-maKhachHang" class="form-control" required placeholder="VD: 1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Chẩn Đoán Lỗi</label>
+                    <textarea id="inp-chanDoan" class="form-control" rows="3" required placeholder="Ghi nhận lỗi từ thợ..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tạm Tính (Tổng Tiền VND)</label>
+                    <input type="number" id="inp-tongTien" class="form-control" value="0" required>
+                </div>
+                <!-- Tích hợp Phân Công luôn -->
+                <div class="form-group" style="padding: 10px; border: 1px dashed var(--primary-400); background: var(--primary-50); border-radius: 5px;">
+                    <label class="form-label">Phân công Kỹ thuật viên (Tùy chọn)</label>
+                    <input type="number" id="inp-maNhanVien" class="form-control" placeholder="Nhập Mã Nhân Viên (ID NguoiDung)">
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                    <button type="button" class="btn btn-outline" onclick="closeCreateModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu Phiếu & Phân Công</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import Guard from '/js/guard.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Toast from '/js/toast.js';
+        import Utils from '/js/utils.js';
+
+        if (!Guard.requireAuth()) throw new Error('redirect');
+
+        document.getElementById('btn-admin-logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            Auth.logout();
+        });
+
+        const user = Auth.getUser();
+
+        // Modal triggers
+        window.openCreateModal = () => document.getElementById('create-modal').classList.add('active');
+        window.closeCreateModal = () => document.getElementById('create-modal').classList.remove('active');
+
+        // Load Phieu Sua Chua
+        window.loadPhieuSua = async function() {
+            const tbody = document.getElementById('phieu-tbody');
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Đang tải dữ liệu...</td></tr>`;
+            try {
+                const res = await Api.get('/phieu-sua-chua');
+                const list = Array.isArray(res) ? res : (res?.data || []);
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Chưa có phiếu sửa chữa nào</td></tr>`;
+                    document.getElementById('stat-processing').innerText = 0;
+                    document.getElementById('stat-completed').innerText = 0;
+                    return;
+                }
+
+                document.getElementById('stat-processing').innerText = list.filter(x => x.trangThai === 'DangSuaChua').length;
+                document.getElementById('stat-completed').innerText = list.filter(x => x.trangThai === 'HoanThanh').length;
+
+                list.sort((a,b) => b.maPhieuSua - a.maPhieuSua);
+
+                tbody.innerHTML = list.map(item => {
+                    let badgeClass = 'badge-pending';
+                    let displayTrangThai = item.trangThai;
+                    if (item.trangThai === 'DangSuaChua') { badgeClass = 'badge-warning'; displayTrangThai = 'Đang sửa chữa'; }
+                    if (item.trangThai === 'HoanThanh') { badgeClass = 'badge-success'; displayTrangThai = 'Hoàn thành'; }
+
+                    return `
+                        <tr>
+                            <td><strong>#${item.maPhieuSua}</strong></td>
+                            <td>Lịch #${item.maLichHen || 'N/A'}</td>
+                            <td>Xe KH: ${item.maXeKh}</td>
+                            <td>${item.chanDoan || '<em>Chưa khám</em>'}</td>
+                            <td><strong>${Utils.formatCurrency(item.tongTien || 0)}</strong></td>
+                            <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    ${item.trangThai !== 'HoanThanh' ? `
+                                        <button class="btn-icon approve" title="Đánh dấu Hoàn Thành Sửa Lỗi" onclick="updateTrangThaiPhieu(${item.maPhieuSua}, 'HoanThanh')">
+                                            <i class="fa-solid fa-check-double"></i>
+                                        </button>
+                                    ` : `
+                                        <button class="btn-icon" title="Đã xong" disabled style="opacity: 0.3;">
+                                            <i class="fa-solid fa-lock"></i>
+                                        </button>
+                                    `}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--danger-500);">Lỗi tải phiếu sửa chữa.</td></tr>`;
+            }
+        };
+
+        // Form Submit
+        document.getElementById('create-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                // 1. Tạo Phiếu
+                const bodyPhieu = {
+                    maLichHen: document.getElementById('inp-maLichHen').value,
+                    maXeKh: document.getElementById('inp-maXe').value,
+                    maKhachHang: document.getElementById('inp-maKhachHang').value,
+                    chanDoan: document.getElementById('inp-chanDoan').value,
+                    tongTien: document.getElementById('inp-tongTien').value,
+                    trangThai: 'DangSuaChua'
+                };
+                const resPhieu = await Api.post('/phieu-sua-chua', bodyPhieu);
+                const newPhieuId = resPhieu?.data?.maPhieuSua || resPhieu?.maPhieuSua;
+                
+                // 2. Phân công (Nếu có nhập mã nhân viên)
+                const maNhanVien = document.getElementById('inp-maNhanVien').value;
+                if (maNhanVien && newPhieuId) {
+                    const bodyPhanCong = {
+                        maPhieuSua: newPhieuId,
+                        maNhanVien: maNhanVien,
+                        maAdmin: user.id || 1, // Fix cứng hoặc lấy từ user
+                        ghiChu: bodyPhieu.chanDoan,
+                        trangThai: 'DaPhanCong'
+                    };
+                    await Api.post('/phan-cong-sua-chua', bodyPhanCong);
+                    Toast.success(`Phân công thợ #${maNhanVien} thành công!`);
+                }
+
+                Toast.success('Lập Phiếu Sửa Chữa thành công!');
+                closeCreateModal();
+                loadPhieuSua(); // reload table
+            } catch (err) {
+                Toast.error('Không thể lập phiếu: ' + err.message);
+            }
+        });
+
+        // Cập nhật trạng thái Phiếu
+        window.updateTrangThaiPhieu = async function(id, newStatus) {
+            if (!confirm(`Xác nhận đánh dấu Phiếu #${id} đã sửa chữa XONG?`)) return;
+            try {
+                await Api.patch(`/phieu-sua-chua/${id}/trang-thai?trangThai=${encodeURIComponent(newStatus)}`);
+                Toast.success(`Lưu trạng thái #${id} thành công!`);
+                
+                // (Tùy chọn) Mình nên đổi trạng thái Lịch Hẹn gốc thành Hoàn Thành luôn,
+                // Nhưng backend có thể sẽ tự làm hoặc chúng ta gọi thêm API ở đây.
+
+                loadPhieuSua();
+            } catch (err) {
+                Toast.error('Cập nhật thất bại: ' + err.message);
+            }
+        }
+
+        loadPhieuSua();
+    </script>
+</body>
+</html>
