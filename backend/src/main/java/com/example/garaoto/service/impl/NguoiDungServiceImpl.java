@@ -43,6 +43,25 @@ public class NguoiDungServiceImpl implements NguoiDungService {
         nguoiDungRepository.deleteById(id);
     }
 
+    @Override
+    public NguoiDungResponse update(Integer id, com.example.garaoto.dto.request.NguoiDungRequest request) {
+        NguoiDung nguoiDung = nguoiDungRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
+
+        if (request.getHoTen() != null && !request.getHoTen().isBlank()) {
+            nguoiDung.setHoTen(request.getHoTen());
+        }
+        if (request.getSoDienThoai() != null && !request.getSoDienThoai().isBlank()) {
+            nguoiDung.setSoDienThoai(request.getSoDienThoai());
+        }
+        if (request.getDiaChi() != null) {
+            nguoiDung.setDiaChi(request.getDiaChi());
+        }
+
+        NguoiDung updated = nguoiDungRepository.save(nguoiDung);
+        return mapToResponse(updated);
+    }
+
     private NguoiDungResponse mapToResponse(NguoiDung nguoiDung) {
         return NguoiDungResponse.builder()
                 .maNguoiDung(nguoiDung.getMaNguoiDung())

@@ -43,6 +43,16 @@ public class NguoiDungController {
                 .build());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<NguoiDungResponse>> update(@PathVariable Integer id,
+                                                                 @RequestBody com.example.garaoto.dto.request.NguoiDungRequest request) {
+        return ResponseEntity.ok(ApiResponse.<NguoiDungResponse>builder()
+                .success(true)
+                .message("Cập nhật thông tin người dùng thành công")
+                .data(nguoiDungService.update(id, request))
+                .build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Object>> delete(@PathVariable Integer id) {
         nguoiDungService.delete(id);

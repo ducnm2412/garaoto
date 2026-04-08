@@ -201,16 +201,8 @@
         // Load danh sách xe
         async function loadVehicles() {
             try {
-                let list = [];
-                try {
-                    const result = await Api.get(`/xe-khach-hang/khach-hang/${user.maNguoiDung}`);
-                    list = Array.isArray(result) ? result : (result?.data || []);
-                } catch (err) {
-                    list = [
-                        { maXeKh: 1, bienSo: '51A-123.45', hangXe: 'Toyota', dongXe: 'Vios' },
-                        { maXeKh: 2, bienSo: '51B-987.65', hangXe: 'Honda', dongXe: 'City' }
-                    ];
-                }
+                const result = await Api.get(`/xe-khach-hang/khach-hang/${user.maNguoiDung}`);
+                const list = Array.isArray(result) ? result : (result?.data || []);
 
                 if (list.length === 0) {
                     vehicleList.innerHTML = '';
@@ -284,18 +276,17 @@
             }
 
             const payload = {
-                khachHang: { maKhachHang: user.maNguoiDung },
-                xeKhachHang: { maXeKh: parseInt(selectedVehicleInput.value) },
+                maKhachHang: user.maNguoiDung,
+                maXeKh: parseInt(selectedVehicleInput.value),
                 ngayHen: ngayHenInput.value,
                 gioHen: gioHenInput.value + ':00',
                 moTaLoi: finalDescription.trim() || 'Không có mô tả'
             };
 
             try {
-                // TODO: Bật lại khi có backend
-                // await Api.post('/lich-hen-sua-chua', payload);
+                // Gọi API thật
+                await Api.post('/lich-hen-sua-chua', payload);
                 
-                await new Promise(r => setTimeout(r, 1000));
                 successModal.classList.add('show');
             } catch (err) {
                 Toast.error(err.message || 'Lỗi khi đặt lịch');

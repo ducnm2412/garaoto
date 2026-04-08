@@ -233,20 +233,8 @@
         // Tải thông tin xe
         async function loadCarInfo() {
             try {
-                try {
-                    const res = await Api.get(`/xe-cho-thue/${carId}`);
-                    carData = res?.data || res;
-                } catch {
-                    // Cứu cánh nếu gọi lỗi nhưng đang ở Dev Mode
-                    console.warn("Dev Mode mock data for car");
-                    carData = {
-                        maXeChoThue: carId,
-                        hangXe: "Vinfast",
-                        dongXe: "VF8",
-                        hinhAnh: "https://shop.vinfastauto.com/on/demandware.static/-/Sites-app_vinfast_vn-Library/default/dwfd8cd5f1/images/PDP/VF8/section-1.jpg",
-                        giaThueNgay: 1500000
-                    };
-                }
+                const res = await Api.get(`/xe-cho-thue/${carId}`);
+                carData = res?.data || res;
 
                 document.getElementById('car-summary-container').innerHTML = `
                     <div class="summary-car">
@@ -352,8 +340,8 @@
             submitBtn.disabled = true;
 
             const payload = {
-                khachHang: { maKhachHang: user.maNguoiDung },
-                xeChoThue: { maXeChoThue: parseInt(carId) },
+                maKhachHang: user.maNguoiDung,
+                maXeThue: parseInt(carId),
                 ngayNhan: ngayNhanInp.value,
                 ngayTra: ngayTraInp.value,
                 diaDiemNhan: locNhan.value.trim(),
@@ -361,9 +349,8 @@
             };
 
             try {
-                // TODO: Uncomment when backend ready
-                // await Api.post('/don-thue-xe', payload);
-                await new Promise(r => setTimeout(r, 1000));
+                // Gọi API tạo đơn thuê xe
+                await Api.post('/don-thue-xe', payload);
                 
                 document.getElementById('success-modal').classList.add('show');
             } catch (error) {

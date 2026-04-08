@@ -8,5 +8,6 @@ public interface NguoiDungService {
     List<NguoiDungResponse> getAll();
     NguoiDungResponse getById(Integer id);
     NguoiDungResponse getByEmail(String email);
+    NguoiDungResponse update(Integer id, com.example.garaoto.dto.request.NguoiDungRequest request);
     void delete(Integer id);
 }

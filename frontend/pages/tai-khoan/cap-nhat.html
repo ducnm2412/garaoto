@@ -122,20 +122,48 @@
             e.preventDefault();
             const hoTen = document.getElementById('hoTen').value.trim();
             const soDienThoai = document.getElementById('soDienThoai').value.trim();
+            const diaChi = document.getElementById('diaChi').value.trim();
+            const cccd = document.getElementById('cccd').value.trim();
+            const soGplx = document.getElementById('soGplx').value.trim();
 
             if (!hoTen) { Toast.warning('Họ tên không được để trống'); return; }
+            if (!soDienThoai) { Toast.warning('Số điện thoại không được để trống'); return; }
 
             const saveBtn = document.getElementById('save-btn');
             saveBtn.classList.add('btn-loading');
             saveBtn.disabled = true;
 
             try {
-                // TODO: Update when backend has a proper update profile endpoint
+                // Update NguoiDung API
+                await Api.put(`/nguoi-dung/${user.maNguoiDung}`, {
+                    hoTen,
+                    soDienThoai,
+                    diaChi
+                });
+
+                // Update KhachHang API (if CCCD or GPLX is provided)
+                if (cccd || soGplx) {
+                    try {
+                        const khRes = await Api.get(`/khach-hang/nguoi-dung/${user.maNguoiDung}`);
+                        const khData = khRes?.data || khRes;
+                        if (khData && khData.maKhachHang) {
+                            await Api.put(`/khach-hang/${khData.maKhachHang}`, {
+                                cccd: cccd || khData.cccd || '',
+                                soGplx: soGplx || khData.soGplx || '',
+                                hangGplx: khData.hangGplx || ''
+                            });
+                        }
+                    } catch (err) {
+                        console.warn("Khach hang update ignored due to missing customer record", err);
+                    }
+                }
+
                 Toast.success('Cập nhật thông tin thành công!');
 
                 // Update local storage
                 const updatedUser = { ...user, hoTen };
                 Auth.saveAuth(Auth.getToken(), updatedUser);
+                loadSidebar(); // Refresh name on sidebar
             } catch (err) {
                 Toast.error(err.message || 'Cập nhật thất bại');
             } finally {
