@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard — GaraOto</title>
+    <title>Quản lý Đơn Thuê Xe — Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/css/base.css">
     <link rel="stylesheet" href="/css/layout.css">
@@ -18,13 +18,13 @@
                 <i class="fa-solid fa-car"></i> GaraOto Admin
             </a>
             <nav class="admin-nav">
-                <a href="/pages/admin/index.html" class="admin-nav-item active">
+                <a href="/pages/admin/index.html" class="admin-nav-item">
                     <i class="fa-solid fa-gauge-high"></i> Dashboard
                 </a>
                 <a href="/pages/admin/index.html" class="admin-nav-item">
                     <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
                 </a>
-                <a href="/pages/admin/don-thue.html" class="admin-nav-item">
+                <a href="/pages/admin/don-thue.html" class="admin-nav-item active">
                     <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
                 </a>
                 <a href="#" class="admin-nav-item" onclick="alert('Tính năng đang phát triển!')">
@@ -44,7 +44,7 @@
         <!-- Main Content -->
         <main class="admin-main">
             <div class="admin-header">
-                <h1>Tổng quan Lịch hẹn sửa chữa</h1>
+                <h1>Quản lý Đơn Thuê Xe</h1>
                 <div class="header-actions">
                     <div class="badge badge-info"><i class="fa-solid fa-user-shield"></i> Xin chào, Quản trị viên</div>
                 </div>
@@ -55,21 +55,21 @@
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
                     <div class="stat-info">
-                        <h3>Chờ xác nhận</h3>
+                        <h3>Đang chờ duyệt</h3>
                         <div class="stat-value" id="stat-pending">0</div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon" style="background: var(--success-100); color: var(--success-600);"><i class="fa-solid fa-check"></i></div>
                     <div class="stat-info">
-                        <h3>Đã xác nhận</h3>
+                        <h3>Đã duyệt / Đang thuê</h3>
                         <div class="stat-value" id="stat-approved">0</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--gray-100); color: var(--gray-600);"><i class="fa-solid fa-car-burst"></i></div>
+                    <div class="stat-icon" style="background: var(--primary-100); color: var(--primary-600);"><i class="fa-solid fa-sack-dollar"></i></div>
                     <div class="stat-info">
-                        <h3>Đang sửa chữa / Hoàn thành</h3>
+                        <h3>Đã hoàn tất</h3>
                         <div class="stat-value" id="stat-completed">0</div>
                     </div>
                 </div>
@@ -78,23 +78,24 @@
             <!-- Data Table -->
             <div class="table-container">
                 <div class="table-header">
-                    <h2>Danh sách lịch hẹn mới nhất</h2>
-                    <button class="btn btn-primary btn-sm" onclick="loadLichHen()"><i class="fa-solid fa-rotate-right"></i> Làm mới</button>
+                    <h2>Danh sách yêu cầu thuê xe</h2>
+                    <button class="btn btn-primary btn-sm" onclick="loadDonThueXe()"><i class="fa-solid fa-rotate-right"></i> Làm mới</button>
                 </div>
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Mã Lịch</th>
-                            <th>Khách Hàng (Mã)</th>
-                            <th>Mã Xe KH</th>
-                            <th>Thời Gian Nhận</th>
+                            <th>Mã Đơn</th>
+                            <th>Mã KH</th>
+                            <th>Mã Xe Thuê</th>
+                            <th>Thời Gian Nhận / Trả</th>
+                            <th>Tổng Tiền</th>
                             <th>Trạng Thái</th>
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
-                    <tbody id="lich-hen-tbody">
+                    <tbody id="don-thue-tbody">
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: var(--space-6);">Đang tải dữ liệu...</td>
+                            <td colspan="7" style="text-align: center; padding: var(--space-6);">Đang tải dữ liệu...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -110,14 +111,8 @@
         import Toast from '/js/toast.js';
         import Utils from '/js/utils.js';
 
-        // Check auth (Optionally verify if user role is Admin)
+        // Check auth
         if (!Guard.requireAuth()) throw new Error('redirect');
-        
-        const user = Auth.getUser();
-        // Giả sử có logic check role ở đây: 
-        if (user.vaiTro !== 'Admin' && user.vaiTro !== 'NhanVien') {
-            // Toast.warning('Thực ra bạn không có quyền Admin, nhưng do đang dev nên mình cho lướt qua!');
-        }
 
         // Logout
         document.getElementById('btn-admin-logout').addEventListener('click', (e) => {
@@ -125,56 +120,65 @@
             Auth.logout();
         });
 
-        // Load Lịch Hẹn
-        window.loadLichHen = async function() {
-            const tbody = document.getElementById('lich-hen-tbody');
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Đang tải dữ liệu...</td></tr>`;
+        // Load Đơn Thuê Xe
+        window.loadDonThueXe = async function() {
+            const tbody = document.getElementById('don-thue-tbody');
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Đang tải dữ liệu...</td></tr>`;
             try {
-                // Lấy toàn bộ lịch hẹn (Vì bạn là Admin)
-                const res = await Api.get('/lich-hen-sua-chua');
+                const res = await Api.get('/don-thue-xe');
                 const list = Array.isArray(res) ? res : (res?.data || []);
 
                 if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Chưa có lịch hẹn nào</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Chưa có đơn thuê xe nào</td></tr>`;
                     return;
                 }
 
                 // Cập nhật thống kê
                 document.getElementById('stat-pending').innerText = list.filter(x => x.trangThai === 'ChoXacNhan').length;
-                document.getElementById('stat-approved').innerText = list.filter(x => x.trangThai === 'DaXacNhan').length;
-                document.getElementById('stat-completed').innerText = list.filter(x => x.trangThai === 'HoanThanh' || x.trangThai === 'DangSuaChua').length;
+                document.getElementById('stat-approved').innerText = list.filter(x => x.trangThai === 'DaXacNhan' || x.trangThai === 'DangThue').length;
+                document.getElementById('stat-completed').innerText = list.filter(x => x.trangThai === 'DaHoanTat').length;
 
-                // Sắp xếp lịch hẹn mới nhất lên đầu (theo Mã giảm dần hoặc Ngày)
-                list.sort((a,b) => b.maLichHen - a.maLichHen);
+                // Mới nhất lên đầu
+                list.sort((a,b) => b.maDonThue - a.maDonThue);
 
                 tbody.innerHTML = list.map(item => {
                     let badgeClass = 'badge-info';
                     let displayTrangThai = item.trangThai;
                     if (item.trangThai === 'ChoXacNhan') { badgeClass = 'badge-pending'; displayTrangThai = 'Chờ xác nhận'; }
-                    if (item.trangThai === 'DaXacNhan' || item.trangThai === 'HoanThanh') { badgeClass = 'badge-success'; }
+                    if (item.trangThai === 'DaXacNhan' || item.trangThai === 'DangThue') badgeClass = 'badge-success';
                     if (item.trangThai === 'DaXacNhan') displayTrangThai = 'Đã xác nhận';
-                    if (item.trangThai === 'HoanThanh') displayTrangThai = 'Hoàn thành';
-                    if (item.trangThai === 'DangSuaChua') displayTrangThai = 'Đang sửa chữa';
+                    if (item.trangThai === 'DangThue') displayTrangThai = 'Đang thuê';
                     if (item.trangThai === 'DaHuy') { badgeClass = 'badge-danger'; displayTrangThai = 'Đã hủy'; }
+                    if (item.trangThai === 'DaHoanTat') displayTrangThai = 'Đã hoàn tất';
 
                     return `
                         <tr>
-                            <td><strong>#${item.maLichHen}</strong></td>
-                            <td>Mã KH: ${item.maKhachHang}</td>
-                            <td>Mã Xe: ${item.maXeKh}</td>
-                            <td>${Utils.formatDate(item.ngayHen)} ${item.gioHen || ''}</td>
+                            <td><strong>#${item.maDonThue}</strong></td>
+                            <td>KH: ${item.maKhachHang}</td>
+                            <td>Xe Thuê: ${item.maXeThue}</td>
+                            <td>
+                                <div style="font-size: 0.8rem">
+                                    <i class="fa-solid fa-arrow-right-to-bracket" style="color:var(--success-500)"></i>
+                                    ${Utils.formatDate(item.ngayNhanXe)}
+                                </div>
+                                <div style="font-size: 0.8rem">
+                                    <i class="fa-solid fa-arrow-right-from-bracket" style="color:var(--danger-500)"></i>
+                                    ${Utils.formatDate(item.ngayTraXe)}
+                                </div>
+                            </td>
+                            <td><strong>${Utils.formatCurrency(item.tongTien)}</strong></td>
                             <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
                             <td>
                                 <div class="action-buttons">
                                     ${item.trangThai === 'ChoXacNhan' ? `
-                                        <button class="btn-icon approve" title="Xác nhận" onclick="updateTrangThai(${item.maLichHen}, 'DaXacNhan')">
+                                        <button class="btn-icon approve" title="Duyệt đơn" onclick="updateTrangThaiDon(${item.maDonThue}, 'DaXacNhan')">
                                             <i class="fa-solid fa-check"></i>
                                         </button>
-                                        <button class="btn-icon reject" title="Hủy bỏ" onclick="updateTrangThai(${item.maLichHen}, 'DaHuy')">
-                                            <i class="fa-solid fa-xmark"></i>
+                                        <button class="btn-icon reject" title="Từ chối" onclick="updateTrangThaiDon(${item.maDonThue}, 'DaHuy')">
+                                            <i class="fa-solid fa-ban"></i>
                                         </button>
                                     ` : `
-                                        <button class="btn-icon" title="Đã xử lý xong" disabled style="opacity: 0.3;">
+                                        <button class="btn-icon" title="Không thể đổi trạng thái" disabled style="opacity: 0.3;">
                                             <i class="fa-solid fa-lock"></i>
                                         </button>
                                     `}
@@ -185,25 +189,24 @@
                 }).join('');
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger-500);">Lỗi tải dữ liệu. Cần kiểm tra Spring Boot Console.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--danger-500);">Lỗi tải dữ liệu đơn thuê.</td></tr>`;
             }
         };
 
-        // Đổi trạng thái lịch hẹn
-        window.updateTrangThai = async function(id, newStatus) {
-            if (!confirm(`Bạn chắc chắn muốn đổi trạng thái mã #${id} thành [${newStatus}]?`)) return;
+        // Cập nhật trạng thái
+        window.updateTrangThaiDon = async function(id, newStatus) {
+            if (!confirm(`Xác nhận đổi trạng thái đơn thuê #${id} thành [${newStatus}]?`)) return;
             try {
-                // Gọi PATCH API lên Spring Boot
-                await Api.patch(`/lich-hen-sua-chua/${id}/trang-thai?trangThai=${encodeURIComponent(newStatus)}`);
-                Toast.success(`Cập nhật lịch #${id} thành công!`);
-                loadLichHen();
+                await Api.patch(`/don-thue-xe/${id}/trang-thai?trangThai=${encodeURIComponent(newStatus)}`);
+                Toast.success(`Cập nhật đơn #${id} thành công!`);
+                loadDonThueXe();
             } catch (err) {
                 Toast.error('Cập nhật thất bại: ' + err.message);
             }
         }
 
-        // Tải danh sách ngay khi vào trang
-        loadLichHen();
+        // Tải dữ liệu ban đầu
+        loadDonThueXe();
     </script>
 </body>
 </html>
