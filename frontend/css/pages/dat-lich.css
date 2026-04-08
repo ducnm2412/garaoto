@@ -1,0 +1,213 @@
+/* ============================================
+   GARAOTO — Dat Lich CSS
+   ============================================ */
+
+.dat-lich-page {
+    padding: var(--space-10) 0;
+    background: var(--gray-50);
+    min-height: calc(100vh - var(--header-height));
+}
+
+.dat-lich-header {
+    text-align: center;
+    margin-bottom: var(--space-8);
+}
+
+.dat-lich-header h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--gray-900);
+    margin-bottom: var(--space-3);
+}
+
+.dat-lich-header p {
+    color: var(--gray-600);
+    font-size: var(--font-size-lg);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.dat-lich-form-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--gray-200);
+    padding: var(--space-8);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-section {
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.form-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.form-section-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.form-section-title i {
+    color: var(--primary-500);
+}
+
+/* Vehicle selection cards */
+.vehicle-select-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.vehicle-card {
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: center;
+}
+
+.vehicle-card:hover {
+    border-color: var(--primary-300);
+    background: var(--primary-50);
+}
+
+.vehicle-card.selected {
+    border-color: var(--primary-600);
+    background: var(--primary-50);
+}
+
+.vehicle-card-icon {
+    font-size: 32px;
+    color: var(--gray-400);
+    margin-bottom: var(--space-2);
+}
+
+.vehicle-card.selected .vehicle-card-icon {
+    color: var(--primary-600);
+}
+
+.vehicle-card-title {
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 4px;
+}
+
+.vehicle-card-desc {
+    font-size: var(--font-size-sm);
+    color: var(--gray-500);
+}
+
+/* Time slot selection */
+.time-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+}
+
+.time-slot {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.time-slot:hover {
+    background: var(--gray-100);
+}
+
+.time-slot.selected {
+    background: var(--primary-600);
+    color: white;
+    border-color: var(--primary-600);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.time-slot.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--gray-100);
+    color: var(--gray-400);
+}
+
+.date-picker-wrapper {
+    position: relative;
+    margin-bottom: var(--space-4);
+}
+
+.date-picker-wrapper input {
+    padding-left: 2.5rem;
+}
+
+.date-picker-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    pointer-events: none;
+}
+
+/* Service Options */
+.service-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.service-pill {
+    padding: var(--space-2) var(--space-4);
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    user-select: none;
+}
+
+.service-pill:hover {
+    background: var(--gray-200);
+}
+
+.service-pill.selected {
+    background: var(--primary-100);
+    color: var(--primary-700);
+    border-color: var(--primary-300);
+}
+
+.service-pill i {
+    font-size: var(--font-size-xs);
+    opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+    .dat-lich-form-card {
+        padding: var(--space-5);
+    }
+    
+    .vehicle-select-grid {
+        grid-template-columns: 1fr;
+    }
+}
