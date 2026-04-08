@@ -98,6 +98,16 @@
                         <div class="forgot-password-section">
                             <a href="/pages/auth/forgot-password.html" class="forgot-password-link" id="forgot-password-link">Quên mật khẩu</a>
                         </div>
+
+                        <!-- Dev Mode: Test Login (remove in production) -->
+                        <div style="border-top: 1px dashed var(--gray-300); margin-top: var(--space-5); padding-top: var(--space-5);">
+                            <button type="button" class="btn btn-outline btn-block" id="dev-login-btn" style="border-style: dashed; opacity: 0.7;">
+                                <i class="fa-solid fa-flask"></i> Đăng nhập thử nghiệm (Dev Mode)
+                            </button>
+                            <p style="text-align: center; font-size: 11px; color: var(--gray-400); margin-top: var(--space-2);">
+                                Bỏ qua backend — dùng dữ liệu giả để test giao diện
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Footer -->
@@ -246,6 +256,28 @@
                 loginBtn.classList.remove('btn-loading');
                 loginBtn.disabled = false;
             }
+        });
+
+        // --- Dev Mode Login (bypass backend) ---
+        document.getElementById('dev-login-btn').addEventListener('click', () => {
+            // Create a fake JWT token with exp far in the future
+            const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+            const payload = btoa(JSON.stringify({ sub: '1', exp: Math.floor(Date.now() / 1000) + 86400 }));
+            const fakeToken = `${header}.${payload}.dev-mode-signature`;
+
+            const fakeUser = {
+                maNguoiDung: 1,
+                hoTen: 'Nguyễn Văn A',
+                email: 'nguyenvana@gmail.com',
+                vaiTro: 'KhachHang',
+            };
+
+            Auth.saveAuth(fakeToken, fakeUser);
+            Toast.success('Đăng nhập thử nghiệm thành công!');
+
+            setTimeout(() => {
+                window.location.href = '/pages/tai-khoan/index.html';
+            }, 500);
         });
     </script>
 </body>

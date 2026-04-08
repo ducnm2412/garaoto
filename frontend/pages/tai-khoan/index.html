@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard tài khoản khách hàng — GaraOto">
+    <title>Dashboard — GaraOto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/tai-khoan.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main class="main-content">
+        <div class="container">
+            <div class="account-layout">
+                <!-- Sidebar -->
+                <aside class="account-sidebar" id="account-sidebar"></aside>
+
+                <!-- Main -->
+                <div class="account-main">
+                    <h2 style="margin-bottom: var(--space-6);">
+                        Xin chào, <span id="user-name">...</span>! 👋
+                    </h2>
+
+                    <!-- Stats -->
+                    <div class="dash-stats" id="dash-stats">
+                        <div class="dash-stat">
+                            <div class="dash-stat-icon blue"><i class="fa-solid fa-car"></i></div>
+                            <div><div class="dash-stat-value" id="stat-xe">0</div><div class="dash-stat-label">Xe của tôi</div></div>
+                        </div>
+                        <div class="dash-stat">
+                            <div class="dash-stat-icon green"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div><div class="dash-stat-value" id="stat-lichhen">0</div><div class="dash-stat-label">Lịch hẹn</div></div>
+                        </div>
+                        <div class="dash-stat">
+                            <div class="dash-stat-icon orange"><i class="fa-solid fa-file-contract"></i></div>
+                            <div><div class="dash-stat-value" id="stat-donthue">0</div><div class="dash-stat-label">Đơn thuê xe</div></div>
+                        </div>
+                        <div class="dash-stat">
+                            <div class="dash-stat-icon purple"><i class="fa-solid fa-wrench"></i></div>
+                            <div><div class="dash-stat-value" id="stat-suachua">0</div><div class="dash-stat-label">Phiếu sửa chữa</div></div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <h3 style="margin-bottom: var(--space-4);">Thao tác nhanh</h3>
+                    <div class="quick-actions">
+                        <a href="/pages/tai-khoan/xe-cua-toi.html" class="quick-action">
+                            <i class="fa-solid fa-car-side"></i> Quản lý xe
+                        </a>
+                        <a href="/pages/dat-lich/index.html" class="quick-action">
+                            <i class="fa-solid fa-calendar-plus"></i> Đặt lịch sửa xe
+                        </a>
+                        <a href="/pages/xe-cho-thue/index.html" class="quick-action">
+                            <i class="fa-solid fa-key"></i> Thuê xe
+                        </a>
+                    </div>
+
+                    <!-- Recent appointments -->
+                    <div class="recent-section">
+                        <div class="recent-header">
+                            <h3>Lịch hẹn gần đây</h3>
+                            <a href="/pages/tai-khoan/lich-hen.html">Xem tất cả →</a>
+                        </div>
+                        <div class="item-list" id="recent-lichhen">
+                            <div class="empty-state" style="padding: var(--space-8);">
+                                <i class="fa-solid fa-calendar" style="font-size: var(--font-size-2xl); color: var(--gray-300);"></i>
+                                <p style="margin-top: var(--space-2);">Chưa có lịch hẹn nào</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent rental orders -->
+                    <div class="recent-section">
+                        <div class="recent-header">
+                            <h3>Đơn thuê xe gần đây</h3>
+                            <a href="/pages/tai-khoan/don-thue.html">Xem tất cả →</a>
+                        </div>
+                        <div class="item-list" id="recent-donthue">
+                            <div class="empty-state" style="padding: var(--space-8);">
+                                <i class="fa-solid fa-file-contract" style="font-size: var(--font-size-2xl); color: var(--gray-300);"></i>
+                                <p style="margin-top: var(--space-2);">Chưa có đơn thuê xe nào</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+
+    <script type="module">
+        import Components from '/js/components.js';
+        import Guard from '/js/guard.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Utils from '/js/utils.js';
+
+        if (!Guard.requireAuth()) throw new Error('redirect');
+
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        const user = Auth.getUser();
+        document.getElementById('user-name').textContent = user?.hoTen || 'Khách hàng';
+
+        // Load sidebar
+        loadSidebar();
+
+        // Load dashboard data
+        loadDashboard();
+
+        function loadSidebar() {
+            const sidebar = document.getElementById('account-sidebar');
+            const initials = Auth.getUserInitials();
+            const name = Auth.getUserName();
+            const email = user?.email || '';
+            const currentPath = window.location.pathname;
+
+            const links = [
+                { href: '/pages/tai-khoan/index.html', icon: 'fa-gauge-high', label: 'Dashboard' },
+                { href: '/pages/tai-khoan/cap-nhat.html', icon: 'fa-user-pen', label: 'Thông tin cá nhân' },
+                { href: '/pages/tai-khoan/xe-cua-toi.html', icon: 'fa-car', label: 'Xe của tôi' },
+                { href: '/pages/tai-khoan/lich-hen.html', icon: 'fa-calendar-check', label: 'Lịch hẹn' },
+                { href: '/pages/tai-khoan/don-thue.html', icon: 'fa-file-contract', label: 'Đơn thuê xe' },
+            ];
+
+            sidebar.innerHTML = `
+                <div class="sidebar-user-info">
+                    <div class="sidebar-avatar">${initials}</div>
+                    <div class="sidebar-user-name">${name}</div>
+                    <div class="sidebar-user-email">${email}</div>
+                </div>
+                <nav class="sidebar-nav">
+                    ${links.map(l => `
+                        <a href="${l.href}" class="${currentPath.endsWith(l.href.split('/').pop()) ? 'active' : ''}">
+                            <i class="fa-solid ${l.icon}"></i> ${l.label}
+                        </a>
+                    `).join('')}
+                </nav>
+            `;
+        }
+
+        async function loadDashboard() {
+            const maKH = user?.maNguoiDung;
+            if (!maKH) return;
+
+            try {
+                // Try to load stats from API
+                const [xeRes, lichHenRes, donThueRes, phieuRes] = await Promise.allSettled([
+                    Api.get(`/xe-khach-hang/khach-hang/${maKH}`),
+                    Api.get(`/lich-hen-sua-chua/khach-hang/${maKH}`),
+                    Api.get(`/don-thue-xe/khach-hang/${maKH}`),
+                    Api.get(`/phieu-sua-chua/khach-hang/${maKH}`),
+                ]);
+
+                const xeList = getList(xeRes);
+                const lichHenList = getList(lichHenRes);
+                const donThueList = getList(donThueRes);
+                const phieuList = getList(phieuRes);
+
+                document.getElementById('stat-xe').textContent = xeList.length;
+                document.getElementById('stat-lichhen').textContent = lichHenList.length;
+                document.getElementById('stat-donthue').textContent = donThueList.length;
+                document.getElementById('stat-suachua').textContent = phieuList.length;
+
+                // Recent lịch hẹn
+                if (lichHenList.length > 0) {
+                    const recent = lichHenList.slice(0, 3);
+                    document.getElementById('recent-lichhen').innerHTML = recent.map(lh => `
+                        <div class="item-row">
+                            <div class="item-info">
+                                <div class="item-icon"><i class="fa-solid fa-calendar"></i></div>
+                                <div class="item-details">
+                                    <h4>Lịch hẹn #${lh.maLichHen}</h4>
+                                    <p>${Utils.formatDate(lh.ngayHen)} — ${lh.moTaLoi || 'Không có mô tả'}</p>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                ${Utils.getStatusBadge(lh.trangThai)}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Recent đơn thuê
+                if (donThueList.length > 0) {
+                    const recent = donThueList.slice(0, 3);
+                    document.getElementById('recent-donthue').innerHTML = recent.map(dt => `
+                        <div class="item-row">
+                            <div class="item-info">
+                                <div class="item-icon"><i class="fa-solid fa-file-contract"></i></div>
+                                <div class="item-details">
+                                    <h4>Đơn thuê #${dt.maDonThue}</h4>
+                                    <p>${Utils.formatDate(dt.ngayNhan)} → ${Utils.formatDate(dt.ngayTra)}</p>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                ${Utils.getStatusBadge(dt.trangThai)}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.log('Dashboard data load error:', err.message);
+            }
+        }
+
+        function getList(result) {
+            if (result.status !== 'fulfilled') return [];
+            const val = result.value;
+            return Array.isArray(val) ? val : (val?.data || val?.content || []);
+        }
+    </script>
+</body>
+</html>

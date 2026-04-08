@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân — GaraOto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/tai-khoan.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main class="main-content">
+        <div class="container">
+            <div class="account-layout">
+                <aside class="account-sidebar" id="account-sidebar"></aside>
+                <div class="account-main">
+                    <h2 style="margin-bottom: var(--space-6);"><i class="fa-solid fa-user-pen"></i> Thông tin cá nhân</h2>
+
+                    <form id="profile-form" novalidate>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Họ và tên <span class="required">*</span></label>
+                                <input type="text" id="hoTen" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="email" class="form-control" disabled style="background: var(--gray-100);">
+                                <div class="form-hint">Email không thể thay đổi</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Số điện thoại <span class="required">*</span></label>
+                                <input type="tel" id="soDienThoai" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Vai trò</label>
+                                <input type="text" id="vaiTro" class="form-control" disabled style="background: var(--gray-100);">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Địa chỉ</label>
+                            <input type="text" id="diaChi" class="form-control" placeholder="Địa chỉ của bạn">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">CCCD</label>
+                                <input type="text" id="cccd" class="form-control" placeholder="Số căn cước" maxlength="12">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Số GPLX</label>
+                                <input type="text" id="soGplx" class="form-control" placeholder="Số giấy phép lái xe">
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid var(--gray-200); padding-top: var(--space-6); margin-top: var(--space-6); display: flex; justify-content: flex-end; gap: var(--space-3);">
+                            <button type="button" class="btn btn-ghost" onclick="loadProfile()">Hủy thay đổi</button>
+                            <button type="submit" class="btn btn-primary" id="save-btn">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu thông tin
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+
+    <script type="module">
+        import Components from '/js/components.js';
+        import Guard from '/js/guard.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Toast from '/js/toast.js';
+        import Utils from '/js/utils.js';
+
+        if (!Guard.requireAuth()) throw new Error('redirect');
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        const user = Auth.getUser();
+        loadSidebar();
+
+        // Make loadProfile global for cancel button
+        window.loadProfile = loadProfile;
+
+        async function loadProfile() {
+            try {
+                const result = await Api.get(`/nguoi-dung/${user.maNguoiDung}`);
+                const data = result?.data || result;
+
+                document.getElementById('hoTen').value = data.hoTen || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('soDienThoai').value = data.soDienThoai || '';
+                document.getElementById('diaChi').value = data.diaChi || '';
+                document.getElementById('vaiTro').value = data.vaiTro === 'KhachHang' ? 'Khách hàng' : data.vaiTro || '';
+
+                // Load customer-specific data
+                try {
+                    const khRes = await Api.get(`/khach-hang/nguoi-dung/${user.maNguoiDung}`);
+                    const kh = khRes?.data || khRes;
+                    document.getElementById('cccd').value = kh.cccd || '';
+                    document.getElementById('soGplx').value = kh.soGplx || '';
+                } catch {}
+            } catch (err) {
+                // Fallback to local storage data
+                document.getElementById('hoTen').value = user.hoTen || '';
+                document.getElementById('email').value = user.email || '';
+            }
+        }
+
+        loadProfile();
+
+        // Save form
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const hoTen = document.getElementById('hoTen').value.trim();
+            const soDienThoai = document.getElementById('soDienThoai').value.trim();
+
+            if (!hoTen) { Toast.warning('Họ tên không được để trống'); return; }
+
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.classList.add('btn-loading');
+            saveBtn.disabled = true;
+
+            try {
+                // TODO: Update when backend has a proper update profile endpoint
+                Toast.success('Cập nhật thông tin thành công!');
+
+                // Update local storage
+                const updatedUser = { ...user, hoTen };
+                Auth.saveAuth(Auth.getToken(), updatedUser);
+            } catch (err) {
+                Toast.error(err.message || 'Cập nhật thất bại');
+            } finally {
+                saveBtn.classList.remove('btn-loading');
+                saveBtn.disabled = false;
+            }
+        });
+
+        function loadSidebar() {
+            const sidebar = document.getElementById('account-sidebar');
+            const initials = Auth.getUserInitials();
+            const name = Auth.getUserName();
+            const email = user?.email || '';
+            const currentPage = window.location.pathname.split('/').pop();
+            const links = [
+                { href: '/pages/tai-khoan/index.html', icon: 'fa-gauge-high', label: 'Dashboard', page: 'index.html' },
+                { href: '/pages/tai-khoan/cap-nhat.html', icon: 'fa-user-pen', label: 'Thông tin cá nhân', page: 'cap-nhat.html' },
+                { href: '/pages/tai-khoan/xe-cua-toi.html', icon: 'fa-car', label: 'Xe của tôi', page: 'xe-cua-toi.html' },
+                { href: '/pages/tai-khoan/lich-hen.html', icon: 'fa-calendar-check', label: 'Lịch hẹn', page: 'lich-hen.html' },
+                { href: '/pages/tai-khoan/don-thue.html', icon: 'fa-file-contract', label: 'Đơn thuê xe', page: 'don-thue.html' },
+            ];
+            sidebar.innerHTML = `
+                <div class="sidebar-user-info"><div class="sidebar-avatar">${initials}</div><div class="sidebar-user-name">${name}</div><div class="sidebar-user-email">${email}</div></div>
+                <nav class="sidebar-nav">${links.map(l => `<a href="${l.href}" class="${currentPage === l.page ? 'active' : ''}"><i class="fa-solid ${l.icon}"></i> ${l.label}</a>`).join('')}</nav>`;
+        }
+    </script>
+</body>
+</html>

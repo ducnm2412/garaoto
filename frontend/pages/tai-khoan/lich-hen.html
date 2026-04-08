@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch hẹn sửa xe — GaraOto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/tai-khoan.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main class="main-content">
+        <div class="container">
+            <div class="account-layout">
+                <aside class="account-sidebar" id="account-sidebar"></aside>
+                <div class="account-main">
+                    <div class="page-title-bar">
+                        <h2><i class="fa-solid fa-calendar-check"></i> Lịch hẹn sửa xe</h2>
+                        <a href="/pages/dat-lich/index.html" class="btn btn-primary">
+                            <i class="fa-solid fa-plus"></i> Đặt lịch mới
+                        </a>
+                    </div>
+
+                    <!-- Filter tabs -->
+                    <div class="tabs" id="status-tabs">
+                        <button class="tab-btn active" data-status="all">Tất cả</button>
+                        <button class="tab-btn" data-status="ChoXacNhan">Chờ xác nhận</button>
+                        <button class="tab-btn" data-status="DaXacNhan">Đã xác nhận</button>
+                        <button class="tab-btn" data-status="HoanThanh">Hoàn thành</button>
+                        <button class="tab-btn" data-status="DaHuy">Đã hủy</button>
+                    </div>
+
+                    <div class="item-list" id="lichhen-list">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-calendar"></i>
+                            <h3>Chưa có lịch hẹn</h3>
+                            <p>Đặt lịch sửa xe ngay để được phục vụ tốt nhất</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+
+    <script type="module">
+        import Components from '/js/components.js';
+        import Guard from '/js/guard.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Utils from '/js/utils.js';
+
+        if (!Guard.requireAuth()) throw new Error('redirect');
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        const user = Auth.getUser();
+        loadSidebar();
+
+        let allLichHen = [];
+
+        // Load data
+        async function loadData() {
+            const container = document.getElementById('lichhen-list');
+            try {
+                const result = await Api.get(`/lich-hen-sua-chua/khach-hang/${user.maNguoiDung}`);
+                allLichHen = Array.isArray(result) ? result : (result?.data || []);
+                renderList(allLichHen);
+            } catch {
+                allLichHen = [];
+                renderList([]);
+            }
+        }
+
+        function renderList(list) {
+            const container = document.getElementById('lichhen-list');
+            if (list.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-calendar"></i><h3>Không có lịch hẹn</h3><p>Đặt lịch sửa xe ngay</p></div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(lh => `
+                <div class="item-row">
+                    <div class="item-info">
+                        <div class="item-icon" style="background: var(--success-light); color: var(--success);">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div class="item-details">
+                            <h4>Lịch hẹn #${lh.maLichHen}</h4>
+                            <p>
+                                <i class="fa-solid fa-clock" style="color: var(--gray-400);"></i> ${Utils.formatDate(lh.ngayHen)} ${lh.gioHen ? '· ' + lh.gioHen : ''}
+                                ${lh.xeKhachHang ? ` · <i class="fa-solid fa-car" style="color: var(--gray-400);"></i> ${lh.xeKhachHang.bienSo}` : ''}
+                            </p>
+                            ${lh.moTaLoi ? `<p style="margin-top: 4px;"><i class="fa-solid fa-note-sticky" style="color: var(--gray-400);"></i> ${Utils.truncate(lh.moTaLoi, 80)}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        ${Utils.getStatusBadge(lh.trangThai)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Tab filter
+        document.getElementById('status-tabs').addEventListener('click', (e) => {
+            const btn = e.target.closest('.tab-btn');
+            if (!btn) return;
+
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const status = btn.dataset.status;
+            if (status === 'all') {
+                renderList(allLichHen);
+            } else {
+                renderList(allLichHen.filter(lh => lh.trangThai === status));
+            }
+        });
+
+        loadData();
+
+        function loadSidebar() {
+            const sidebar = document.getElementById('account-sidebar');
+            const initials = Auth.getUserInitials();
+            const name = Auth.getUserName();
+            const email = user?.email || '';
+            const currentPage = window.location.pathname.split('/').pop();
+            const links = [
+                { href: '/pages/tai-khoan/index.html', icon: 'fa-gauge-high', label: 'Dashboard', page: 'index.html' },
+                { href: '/pages/tai-khoan/cap-nhat.html', icon: 'fa-user-pen', label: 'Thông tin cá nhân', page: 'cap-nhat.html' },
+                { href: '/pages/tai-khoan/xe-cua-toi.html', icon: 'fa-car', label: 'Xe của tôi', page: 'xe-cua-toi.html' },
+                { href: '/pages/tai-khoan/lich-hen.html', icon: 'fa-calendar-check', label: 'Lịch hẹn', page: 'lich-hen.html' },
+                { href: '/pages/tai-khoan/don-thue.html', icon: 'fa-file-contract', label: 'Đơn thuê xe', page: 'don-thue.html' },
+            ];
+            sidebar.innerHTML = `
+                <div class="sidebar-user-info"><div class="sidebar-avatar">${initials}</div><div class="sidebar-user-name">${name}</div><div class="sidebar-user-email">${email}</div></div>
+                <nav class="sidebar-nav">${links.map(l => `<a href="${l.href}" class="${currentPage === l.page ? 'active' : ''}"><i class="fa-solid ${l.icon}"></i> ${l.label}</a>`).join('')}</nav>`;
+        }
+    </script>
+</body>
+</html>
