@@ -92,6 +92,18 @@ const Api = {
         });
         return this._handleResponse(response);
     },
+
+    /**
+     * PATCH request
+     */
+    async patch(endpoint, body = {}) {
+        const response = await fetch(`${CONFIG.API_BASE_URL}${endpoint}`, {
+            method: 'PATCH',
+            headers: this._getHeaders(),
+            body: Object.keys(body).length > 0 ? JSON.stringify(body) : undefined,
+        });
+        return this._handleResponse(response);
+    },
 };
 
 export default Api;
