@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Sửa chữa - Gara Xe Việt</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/dashboard.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <h2><i class="fas fa-car-side"></i> GARA ADMIN</h2>
+        </div>
+        <ul class="sidebar-menu">
+          <li class="menu-item">
+            <a href="dashboard.html"
+              ><i class="fas fa-chart-line"></i> Tổng quan</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="quan-ly-phuong-tien.html"
+              ><i class="fas fa-car"></i> Quản lý Phương tiện</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="quan-ly-thue-xe.html"
+              ><i class="fas fa-file-contract"></i> Dịch vụ Cho thuê</a
+            >
+          </li>
+          <li class="menu-item active">
+            <a href="quan-ly-sua-chua.html"
+              ><i class="fas fa-tools"></i> Dịch vụ Sửa chữa</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="quan-ly-nhan-su.html"
+              ><i class="fas fa-users"></i> Quản lý Nhân sự</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="thanh-toan.html"
+              ><i class="fas fa-money-bill-wave"></i> Thanh toán & CSKH</a
+            >
+          </li>
+        </ul>
+        <div class="sidebar-footer">
+          <a href="admin-login.html" id="btnLogout" class="btn-logout"
+            ><i class="fas fa-sign-out-alt"></i> Thoát</a
+          >
+        </div>
+      </aside>
+
+      <div class="main-wrapper">
+        <header class="header">
+          <div class="header-left">
+            <h2 class="page-title">Dịch vụ Sửa chữa</h2>
+          </div>
+          <div class="header-right">
+            <div class="admin-profile">
+              <img
+                src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+                alt="Avatar"
+                class="avatar"
+              />
+              <span class="admin-name">Xin chào!</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="content">
+          <div
+            class="tabs-container"
+            style="
+              display: flex;
+              gap: 15px;
+              margin-bottom: 20px;
+              border-bottom: 2px solid #e2e8f0;
+              padding-bottom: 10px;
+            "
+          >
+            <button
+              id="btnTabLichHen"
+              class="tab-btn active"
+              style="
+                padding: 10px 20px;
+                border: none;
+                background: #2563eb;
+                color: white;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 15px;
+              "
+            >
+              <i class="far fa-calendar-alt"></i> Lịch Hẹn Chờ Xử Lý
+            </button>
+            <button
+              id="btnTabTienDo"
+              class="tab-btn"
+              style="
+                padding: 10px 20px;
+                border: none;
+                background: transparent;
+                color: #64748b;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 15px;
+              "
+            >
+              <i class="fas fa-cogs"></i> Tiến Độ Xưởng (Phiếu Sửa Chữa)
+            </button>
+          </div>
+
+          <div id="tabLichHen" class="tab-content">
+            <div
+              class="content-header"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <h3>Danh sách Lịch hẹn (Chưa giao việc)</h3>
+              <div class="action-bar">
+                <select
+                  id="filterStatus"
+                  class="form-control"
+                  style="
+                    padding: 8px;
+                    border-radius: 4px;
+                    border: 1px solid #cbd5e1;
+                    outline: none;
+                  "
+                >
+                  <option value="ALL">Tất cả trạng thái</option>
+                  <option value="ChoXacNhan">Chờ xác nhận</option>
+                  <option value="DaXacNhan">Đã xác nhận</option>
+                </select>
+              </div>
+            </div>
+            <div class="dashboard-tables" style="margin-top: 20px">
+              <div class="table-container">
+                <table class="data-table" id="fullRepairTable">
+                  <thead>
+                    <tr>
+                      <th>Mã Hẹn</th>
+                      <th>Khách Hàng</th>
+                      <th>Xe Sửa Chữa</th>
+                      <th>Thời Gian Hẹn</th>
+                      <th>Vấn Đề Báo Lỗi</th>
+                      <th>Trạng Thái</th>
+                      <th>Thao Tác</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="tabTienDo" class="tab-content" style="display: none">
+            <div
+              class="content-header"
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <h3>Quản lý Tiến độ Xưởng</h3>
+              <div class="action-bar">
+                <select
+                  id="filterTienDo"
+                  class="form-control"
+                  style="
+                    padding: 8px;
+                    border-radius: 4px;
+                    border: 1px solid #cbd5e1;
+                    outline: none;
+                  "
+                >
+                  <option value="ALL">Tất cả xe trong xưởng</option>
+                  <option value="TiepNhan">Mới tiếp nhận</option>
+                  <option value="DangSua">Đang sửa chữa</option>
+                  <option value="DaSuaXong">Đã sửa xong (Chờ giao)</option>
+                  <option value="BanGiao">Đã bàn giao</option>
+                </select>
+              </div>
+            </div>
+            <div class="dashboard-tables" style="margin-top: 20px">
+              <div class="table-container">
+                <table class="data-table" id="tienDoTable">
+                  <thead>
+                    <tr>
+                      <th>Mã Phiếu</th>
+                      <th>Tham chiếu LH</th>
+                      <th>Xe Sửa Chữa</th>
+                      <th>Tiến Độ Sửa</th>
+                      <th>Tổng Tiền</th>
+                      <th>Trạng Thái</th>
+                      <th>Thao Tác</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="infoModal" class="modal">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 id="modalTitle">Thông tin chi tiết</h3>
+                <span class="close-modal">&times;</span>
+              </div>
+              <div class="modal-body" id="modalBody">
+                <div class="loader">Đang tải dữ liệu...</div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("btnLogout")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          localStorage.removeItem("isAdminLoggedIn");
+          window.location.replace("admin-login.html");
+        });
+    </script>
+
+    <script src="js/pages/suaChuaApp.js"></script>
+  </body>
+</html>

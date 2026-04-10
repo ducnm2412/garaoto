@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Gara Xe Việt</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/dashboard.css" />
+
+    <script src="js/utils/auth.js"></script>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <h2><i class="fas fa-car-side"></i> GARA ADMIN</h2>
+        </div>
+
+        <ul class="sidebar-menu">
+          <li class="menu-item">
+            <a href="dashboard.html"
+              ><i class="fas fa-chart-line"></i> Tổng quan</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="quan-ly-phuong-tien.html"
+              ><i class="fas fa-car"></i> Quản lý Phương tiện</a
+            >
+          </li>
+          <li class="menu-item active">
+            <a href="quan-ly-thue-xe.html"
+              ><i class="fas fa-file-contract"></i> Dịch vụ Cho thuê</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="quan-ly-sua-chua.html"
+              ><i class="fas fa-tools"></i> Dịch vụ Sửa chữa</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="quan-ly-nhan-su.html"
+              ><i class="fas fa-users"></i> Quản lý Nhân sự</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="thanh-toan.html"
+              ><i class="fas fa-money-bill-wave"></i> Thanh toán & CSKH</a
+            >
+          </li>
+        </ul>
+
+        <div class="sidebar-footer">
+          <a href="admin-login.html" id="btnLogout" class="btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Thoát
+          </a>
+        </div>
+      </aside>
+
+      <div class="main-wrapper">
+        <header class="header">
+          <div class="header-left">
+            <h2 class="page-title">Tổng quan hệ thống</h2>
+          </div>
+          <div class="header-right">
+            <div class="admin-profile">
+              <img
+                src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+                alt="Avatar"
+                class="avatar"
+              />
+              <span class="admin-name">Xin chào, Admin!</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="content">
+          <div
+            class="content-header"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <h3>Quản lý Đơn Thuê Xe</h3>
+            <div class="action-bar">
+              <select
+                id="filterStatus"
+                class="form-control"
+                style="padding: 8px; border-radius: 4px"
+              >
+                <option value="ALL">Tất cả trạng thái</option>
+                <option value="ChoDuyet">Chờ duyệt</option>
+                <option value="DaXacNhan">Đã xác nhận</option>
+                <option value="DangThue">Đang thuê</option>
+                <option value="DaTra">Đã trả</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="dashboard-tables" style="margin-top: 20px">
+            <div class="table-container">
+              <div class="table-responsive">
+                <table class="data-table" id="fullRentalTable">
+                  <thead>
+                    <tr>
+                      <th>Mã Đơn</th>
+                      <th>Khách Hàng</th>
+                      <th>Xe Thuê</th>
+                      <th>Ngày Nhận - Trả</th>
+                      <th>Tổng Tiền</th>
+                      <th>Trạng Thái</th>
+                      <th>Thao Tác</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="infoModal" class="modal">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 id="modalTitle">Thông tin chi tiết</h3>
+                <span class="close-modal">&times;</span>
+              </div>
+              <div class="modal-body" id="modalBody">
+                <div class="loader">Đang tải dữ liệu...</div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("btnLogout")
+        .addEventListener("click", function (e) {
+          e.preventDefault(); // Ngăn hành vi bấm link mặc định
+
+          // 1. Xóa cờ đăng nhập khỏi bộ nhớ
+          localStorage.removeItem("isAdminLoggedIn");
+
+          // 2. Chuyển về trang login bằng lệnh replace()
+          // Vì dùng replace(), người dùng bấm nút Back trên trình duyệt sẽ KHÔNG THỂ quay lại trang dashboard này được nữa.
+          window.location.replace("admin-login.html");
+        });
+
+      // Hiển thị tên người đăng nhập góc trên bên phải màn hình
+      document.addEventListener("DOMContentLoaded", () => {
+        const adminName = localStorage.getItem("adminName");
+        if (adminName) {
+          document.querySelector(".admin-name").textContent =
+            "Xin chào, " + adminName + "!";
+        }
+      });
+    </script>
+
+    <script src="js/pages/thueXeApp.js"></script>
+  </body>
+</html>

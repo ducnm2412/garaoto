@@ -37,6 +37,10 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // --- ĐÃ THÊM DÒNG NÀY ---
+                        // Cho phép trình duyệt gửi request OPTIONS để kiểm tra CORS
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                        
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/swagger-ui/**",

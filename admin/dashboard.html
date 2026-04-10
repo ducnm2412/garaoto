@@ -25,24 +25,32 @@
 
         <ul class="sidebar-menu">
           <li class="menu-item active">
-            <a href="#"><i class="fas fa-chart-line"></i> Tổng quan</a>
+            <a href="dashboard.html"
+              ><i class="fas fa-chart-line"></i> Tổng quan</a
+            >
           </li>
           <li class="menu-item">
-            <a href="#"><i class="fas fa-car"></i> Quản lý Phương tiện</a>
+            <a href="quan-ly-phuong-tien.html"
+              ><i class="fas fa-car"></i> Quản lý Phương tiện</a
+            >
           </li>
           <li class="menu-item">
-            <a href="#"
+            <a href="quan-ly-thue-xe.html"
               ><i class="fas fa-file-contract"></i> Dịch vụ Cho thuê</a
             >
           </li>
           <li class="menu-item">
-            <a href="#"><i class="fas fa-tools"></i> Dịch vụ Sửa chữa</a>
+            <a href="quan-ly-sua-chua.html"
+              ><i class="fas fa-tools"></i> Dịch vụ Sửa chữa</a
+            >
           </li>
           <li class="menu-item">
-            <a href="#"><i class="fas fa-users"></i> Quản lý Nhân sự</a>
+            <a href="quan-ly-nhan-su.html"
+              ><i class="fas fa-users"></i> Quản lý Nhân sự</a
+            >
           </li>
           <li class="menu-item">
-            <a href="#"
+            <a href="thanh-toan.html"
               ><i class="fas fa-money-bill-wave"></i> Thanh toán & CSKH</a
             >
           </li>
@@ -73,11 +81,236 @@
         </header>
 
         <main class="content">
-          <div class="welcome-box">
-            <h3>Chào mừng bạn đến với Bảng điều khiển!</h3>
-            <p>
-              Hãy chọn một chức năng ở thanh menu bên trái để bắt đầu làm việc.
-            </p>
+          <div class="content-header">
+            <h3>Tổng quan hôm nay</h3>
+          </div>
+
+          <div class="dashboard-cards">
+            <div class="stat-card border-blue">
+              <div class="stat-card-info">
+                <p class="stat-title">Doanh thu tháng</p>
+                <h3 class="stat-value" id="stat-revenue">0 đ</h3>
+              </div>
+              <div class="stat-card-icon icon-blue">
+                <i class="fas fa-wallet"></i>
+              </div>
+            </div>
+
+            <div class="stat-card border-green">
+              <div class="stat-card-info">
+                <p class="stat-title">Xe sẵn sàng thuê</p>
+                <h3 class="stat-value" id="stat-available-cars">0</h3>
+              </div>
+              <div class="stat-card-icon icon-green">
+                <i class="fas fa-car"></i>
+              </div>
+            </div>
+
+            <div class="stat-card border-orange">
+              <div class="stat-card-info">
+                <p class="stat-title">Đơn thuê chờ duyệt</p>
+                <h3 class="stat-value" id="stat-pending-orders">0</h3>
+              </div>
+              <div class="stat-card-icon icon-orange">
+                <i class="fas fa-file-signature"></i>
+              </div>
+            </div>
+
+            <div class="stat-card border-red">
+              <div class="stat-card-info">
+                <p class="stat-title">Xe đang sửa chữa</p>
+                <h3 class="stat-value" id="stat-repairing">0</h3>
+              </div>
+              <div class="stat-card-icon icon-red">
+                <i class="fas fa-tools"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-tables" style="margin-top: 30px">
+            <div class="table-container">
+              <div class="table-header">
+                <h3>Đơn thuê xe mới nhất</h3>
+                <a href="quan-ly-thue-xe.html" class="btn-view-all"
+                  >Xem tất cả <i class="fas fa-arrow-right"></i
+                ></a>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Mã Đơn</th>
+                      <th>Khách Hàng</th>
+                      <th>Xe Thuê</th>
+                      <th>Ngày Nhận</th>
+                      <th>Tổng Tiền</th>
+                      <th>Trạng Thái</th>
+                      <th>Thao Tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>#DT001</strong></td>
+                      <td>
+                        <div class="client-info">
+                          <strong>Nguyễn Khách Hàng</strong>
+                          <span>0912345678</span>
+                        </div>
+                      </td>
+                      <td>Ford Everest (51H-678.90)</td>
+                      <td>01/04/2026</td>
+                      <td><strong>3,000,000 đ</strong></td>
+                      <td>
+                        <span class="badge badge-warning">Chờ Duyệt</span>
+                      </td>
+                      <td>
+                        <button
+                          class="btn-action btn-approve"
+                          title="Duyệt đơn"
+                        >
+                          <i class="fas fa-check-circle"></i>
+                        </button>
+                        <button class="btn-action btn-reject" title="Từ chối">
+                          <i class="fas fa-times-circle"></i>
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td><strong>#DT002</strong></td>
+                      <td>
+                        <div class="client-info">
+                          <strong>Trần Văn Sang</strong>
+                          <span>0988777666</span>
+                        </div>
+                      </td>
+                      <td>Toyota Vios (51G-123.45)</td>
+                      <td>05/04/2026</td>
+                      <td><strong>1,600,000 đ</strong></td>
+                      <td>
+                        <span class="badge badge-success">Đã Xác Nhận</span>
+                      </td>
+                      <td>
+                        <button
+                          class="btn-action btn-view"
+                          title="Xem chi tiết"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="table-container" style="margin-top: 30px">
+              <div class="table-header">
+                <h3>Lịch hẹn sửa chữa hôm nay</h3>
+                <a href="quan-ly-sua-chua.html" class="btn-view-all"
+                  >Xem tất cả <i class="fas fa-arrow-right"></i
+                ></a>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Mã Hẹn</th>
+                      <th>Khách Hàng</th>
+                      <th>Xe Sửa Chữa</th>
+                      <th>Thời Gian Hẹn</th>
+                      <th>Vấn Đề / Báo Lỗi</th>
+                      <th>Trạng Thái</th>
+                      <th>Thao Tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>#LH089</strong></td>
+                      <td>
+                        <div class="client-info">
+                          <strong>Lê Văn Bình</strong>
+                          <span>0909111222</span>
+                        </div>
+                      </td>
+                      <td>
+                        Honda CR-V<br /><small style="color: #64748b"
+                          >51A-111.22</small
+                        >
+                      </td>
+                      <td>
+                        04/04/2026<br /><small
+                          style="color: #64748b; font-weight: 500"
+                          >08:30</small
+                        >
+                      </td>
+                      <td>Kêu rít ở phanh trước, báo lỗi động cơ</td>
+                      <td>
+                        <span class="badge badge-warning">Chờ Xác Nhận</span>
+                      </td>
+                      <td>
+                        <button
+                          class="btn-action btn-approve"
+                          title="Xác nhận lịch"
+                        >
+                          <i class="fas fa-calendar-check"></i>
+                        </button>
+                        <button class="btn-action btn-reject" title="Hủy lịch">
+                          <i class="fas fa-calendar-times"></i>
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td><strong>#LH088</strong></td>
+                      <td>
+                        <div class="client-info">
+                          <strong>Phạm Thị Hoa</strong>
+                          <span>0933444555</span>
+                        </div>
+                      </td>
+                      <td>
+                        Hyundai Accent<br /><small style="color: #64748b"
+                          >51F-333.44</small
+                        >
+                      </td>
+                      <td>
+                        04/04/2026<br /><small
+                          style="color: #64748b; font-weight: 500"
+                          >14:00</small
+                        >
+                      </td>
+                      <td>Bảo dưỡng định kỳ mốc 4 vạn km</td>
+                      <td>
+                        <span class="badge badge-success">Đã Xác Nhận</span>
+                      </td>
+                      <td>
+                        <button
+                          class="btn-action btn-view"
+                          title="Lập phiếu sửa chữa"
+                        >
+                          <i class="fas fa-file-invoice"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="infoModal" class="modal">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 id="modalTitle">Thông tin chi tiết</h3>
+                <span class="close-modal">&times;</span>
+              </div>
+              <div class="modal-body" id="modalBody">
+                <div class="loader">Đang tải dữ liệu...</div>
+              </div>
+            </div>
           </div>
         </main>
       </div>
@@ -96,6 +329,17 @@
           // Vì dùng replace(), người dùng bấm nút Back trên trình duyệt sẽ KHÔNG THỂ quay lại trang dashboard này được nữa.
           window.location.replace("admin-login.html");
         });
+
+      // Hiển thị tên người đăng nhập góc trên bên phải màn hình
+      document.addEventListener("DOMContentLoaded", () => {
+        const adminName = localStorage.getItem("adminName");
+        if (adminName) {
+          document.querySelector(".admin-name").textContent =
+            "Xin chào, " + adminName + "!";
+        }
+      });
     </script>
+
+    <script src="js/pages/dashboardApp.js"></script>
   </body>
 </html>
