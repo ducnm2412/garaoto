@@ -442,3 +442,104 @@ body {
 .link-id:hover {
   color: #1d4ed8;
 }
+
+/* ================= TÙY CHỈNH MODAL QUẢN LÝ NHÂN SỰ ================= */
+
+/* Làm cho Modal rộng rãi và chuyên nghiệp hơn */
+#nhanVienModal .modal-content {
+  max-width: 650px; /* Tăng độ rộng để hàng ngang 2 cột không bị chật */
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Header của Modal */
+#nhanVienModal .modal-header {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 20px 25px;
+  border-radius: 12px 12px 0 0;
+}
+
+#nhanVienModal .modal-header h3 {
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Body và các Form Group */
+#nhanVienModal .modal-body {
+  padding: 25px;
+}
+
+#nhanVienModal .form-group label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Style cho các ô Input đồng bộ với dashboard */
+#nhanVienModal .form-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e293b;
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+#nhanVienModal .form-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+/* Trạng thái Read-only (khi Sửa thợ máy) */
+#nhanVienModal .form-input:read-only {
+  background-color: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+/* Footer và Nút bấm */
+#nhanVienModal .modal-footer {
+  padding: 15px 25px 25px;
+  border-top: none;
+  text-align: right;
+}
+
+#nhanVienModal .btn-login {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+#nhanVienModal .btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+  filter: brightness(1.1);
+}
+
+/* Chia cột cho Mobile mượt hơn */
+@media (max-width: 600px) {
+  #nhanVienModal .modal-body > div[style*="display:flex"],
+  #nhanVienModal .modal-body > div[style*="display: flex"] {
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+}

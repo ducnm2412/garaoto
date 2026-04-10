@@ -88,16 +88,17 @@ function switchTab(tabId, btnId) {
 async function loadDashboardData() {
   const role = localStorage.getItem("adminRole");
   const myId = localStorage.getItem("adminId");
+  const token = localStorage.getItem("adminToken");
   isThoMay = role === "NhanVienKyThuat";
+
   const headers = {
-    Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+    Authorization: `Bearer ${token}`,
   };
 
   const tbodyTienDo = document.querySelector("#tienDoTable tbody");
   if (tbodyTienDo)
     tbodyTienDo.innerHTML = `<tr><td colspan="7" style="text-align:center;">Đang tải dữ liệu...</td></tr>`;
 
-  // Chặn lỗi mất ID Thợ máy
   if (isThoMay && (!myId || myId === "undefined" || myId === "null")) {
     tbodyTienDo.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red; font-weight:bold;">LỖI: Không tìm thấy ID Nhân viên.</td></tr>`;
     return;
@@ -105,26 +106,38 @@ async function loadDashboardData() {
 
   try {
     if (isThoMay) {
-      // ---> LUỒNG DỮ LIỆU CỦA THỢ MÁY
-      const resPhanCong = await fetch(
-        `http://localhost:8080/api/phan-cong-sua-chua/nhan-vien/${myId}`,
-        { headers },
+      const resProfile = await fetch(
+        `http://localhost:8080/api/nhan-vien-ky-thuat/nguoi-dung/${myId}`,
+        {
+          headers: headers,
+        },
       );
-      if (!resPhanCong.ok) throw new Error("API Phân công từ chối truy cập");
-      const dataPhanCong = await resPhanCong.json();
+      const profileData = await resProfile.json();
 
-      if (
-        dataPhanCong.success &&
-        dataPhanCong.data &&
-        dataPhanCong.data.length > 0
-      ) {
-        renderThoMayTable(dataPhanCong.data.reverse());
+      if (profileData.success && profileData.data) {
+        const realMaNhanVien = profileData.data.maNhanVien;
+        console.log("Tìm thấy mã thợ máy thật:", realMaNhanVien);
+
+        const resPhanCong = await fetch(
+          `http://localhost:8080/api/phan-cong-sua-chua/nhan-vien/${realMaNhanVien}`,
+          { headers },
+        );
+        if (!resPhanCong.ok) throw new Error("API Phân công từ chối truy cập");
+        const dataPhanCong = await resPhanCong.json();
+
+        if (
+          dataPhanCong.success &&
+          dataPhanCong.data &&
+          dataPhanCong.data.length > 0
+        ) {
+          renderThoMayTable(dataPhanCong.data.reverse());
+        } else {
+          renderThoMayTable([]);
+        }
       } else {
-        renderThoMayTable([]);
+        throw new Error("Không tìm thấy thông tin nhân viên kỹ thuật.");
       }
     } else {
-      // ---> LUỒNG DỮ LIỆU CỦA ADMIN
-      // Lấy Phiếu sửa chữa (Làm Danh sách đen)
       const resPhieu = await fetch("http://localhost:8080/api/phieu-sua-chua", {
         headers,
       });
@@ -137,7 +150,6 @@ async function loadDashboardData() {
       }
       renderTienDoTable(allPhieuSuaData);
 
-      // Lấy Lịch Hẹn & lọc bỏ các lịch đã có Phiếu
       const resLich = await fetch(
         "http://localhost:8080/api/lich-hen-sua-chua",
         { headers },

@@ -563,57 +563,79 @@ async function setupDashboardTheoVaiTro() {
   const role = localStorage.getItem("adminRole");
   if (role !== "NhanVienKyThuat") return;
 
-  // 1. Ẩn Bảng
+  // 1. Ẩn Bảng và thay đổi giao diện ban đầu
   const dashboardTables = document.querySelector(".dashboard-tables");
   if (dashboardTables) dashboardTables.style.display = "none";
 
-  // 2. Đổi Tiêu đề
   const pageTitle = document.querySelector(".page-title");
   if (pageTitle)
     pageTitle.innerHTML = `<i class="fas fa-tools"></i> Tổng quan Hiệu suất Công việc`;
 
-  // 3. Gọi API Lấy số liệu việc của Thợ
-  const myId = localStorage.getItem("adminId");
-  if (!myId) return;
+  // 2. Lấy thông tin xác thực
+  const maNguoiDung = localStorage.getItem("adminId"); // Đây là maNguoiDung từ loginApp.js
+  const token = localStorage.getItem("adminToken");
+  if (!maNguoiDung || !token) return;
 
   try {
-    const res = await fetch(
-      `http://localhost:8080/api/phan-cong-sua-chua/nhan-vien/${myId}`,
+    // 🛑 BƯỚC TRUNG GIAN QUAN TRỌNG: Tìm maNhanVien dựa trên maNguoiDung
+    // Để tránh trường hợp maNguoiDung khác với maNhanVien khiến không hiện việc
+    const resProfile = await fetch(
+      `http://localhost:8080/api/nhan-vien-ky-thuat/nguoi-dung/${maNguoiDung}`,
       {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       },
     );
-    const result = await res.json();
-    const jobs = result.data || [];
+    const profileData = await resProfile.json();
 
-    const moiNhan = jobs.filter((j) => j.trangThai === "DaPhanCong").length;
-    const dangLam = jobs.filter((j) => j.trangThai === "DangThucHien").length;
-    const daXong = jobs.filter((j) => j.trangThai === "HoanThanh").length;
+    if (profileData.success && profileData.data) {
+      const realMaNhanVien = profileData.data.maNhanVien; // Lấy được ID thợ máy thực tế
+      console.log("Đã xác định ID thợ máy thực tế:", realMaNhanVien);
 
-    // 4. Đổi thông tin 4 Thẻ
-    const cards = document.querySelectorAll(".stat-card");
-    if (cards.length >= 4) {
-      cards[0].querySelector(".stat-title").textContent = "Mới Được Giao";
-      cards[0].querySelector(".stat-value").textContent = moiNhan;
-      cards[0].querySelector(".stat-card-icon i").className =
-        "fas fa-clipboard-list";
+      // 3. Gọi API Lấy số liệu việc của Thợ bằng ID thật
+      const res = await fetch(
+        `http://localhost:8080/api/phan-cong-sua-chua/nhan-vien/${realMaNhanVien}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      const result = await res.json();
+      const jobs = result.data || [];
 
-      cards[1].querySelector(".stat-title").textContent = "Đang Sửa Chữa";
-      cards[1].querySelector(".stat-value").textContent = dangLam;
-      cards[1].querySelector(".stat-card-icon i").className = "fas fa-wrench";
+      // 4. Phân loại trạng thái công việc
+      const moiNhan = jobs.filter((j) => j.trangThai === "DaPhanCong").length;
+      const dangLam = jobs.filter((j) => j.trangThai === "DangThucHien").length;
+      const daXong = jobs.filter((j) => j.trangThai === "HoanThanh").length;
 
-      cards[2].querySelector(".stat-title").textContent = "Đã Hoàn Thành";
-      cards[2].querySelector(".stat-value").textContent = daXong;
-      cards[2].querySelector(".stat-card-icon i").className =
-        "fas fa-check-circle";
+      // 5. Đổi thông tin 4 Thẻ thống kê
+      const cards = document.querySelectorAll(".stat-card");
+      if (cards.length >= 4) {
+        // Card 1: Mới giao
+        cards[0].querySelector(".stat-title").textContent = "Mới Được Giao";
+        cards[0].querySelector(".stat-value").textContent = moiNhan;
+        cards[0].querySelector(".stat-card-icon i").className =
+          "fas fa-clipboard-list";
 
-      cards[3].querySelector(".stat-title").textContent = "Tổng Xe Đã Nhận";
-      cards[3].querySelector(".stat-value").textContent = jobs.length;
-      cards[3].querySelector(".stat-card-icon i").className = "fas fa-car-side";
+        // Card 2: Đang sửa
+        cards[1].querySelector(".stat-title").textContent = "Đang Sửa Chữa";
+        cards[1].querySelector(".stat-value").textContent = dangLam;
+        cards[1].querySelector(".stat-card-icon i").className = "fas fa-wrench";
+
+        // Card 3: Hoàn thành
+        cards[2].querySelector(".stat-title").textContent = "Đã Hoàn Thành";
+        cards[2].querySelector(".stat-value").textContent = daXong;
+        cards[2].querySelector(".stat-card-icon i").className =
+          "fas fa-check-circle";
+
+        // Card 4: Tổng số
+        cards[3].querySelector(".stat-title").textContent = "Tổng Xe Đã Nhận";
+        cards[3].querySelector(".stat-value").textContent = jobs.length;
+        cards[3].querySelector(".stat-card-icon i").className =
+          "fas fa-car-side";
+      }
+    } else {
+      console.warn("Không tìm thấy thông tin nhân viên cho người dùng này.");
     }
   } catch (e) {
-    console.error("Lỗi dữ liệu thợ máy:", e);
+    console.error("Lỗi đồng bộ dữ liệu thợ máy:", e);
   }
 }

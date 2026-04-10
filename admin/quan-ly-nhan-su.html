@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Thợ máy - Gara Xe Việt</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/dashboard.css" />
+    <script src="js/utils/auth.js"></script>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <h2><i class="fas fa-car-side"></i> GARA ADMIN</h2>
+        </div>
+        <ul class="sidebar-menu">
+          <li class="menu-item">
+            <a href="dashboard.html"
+              ><i class="fas fa-chart-line"></i> Tổng quan</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="quan-ly-phuong-tien.html"
+              ><i class="fas fa-car"></i> Quản lý Phương tiện</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="quan-ly-thue-xe.html"
+              ><i class="fas fa-file-contract"></i> Dịch vụ Cho thuê</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="quan-ly-sua-chua.html"
+              ><i class="fas fa-tools"></i> Dịch vụ Sửa chữa</a
+            >
+          </li>
+          <li class="menu-item active">
+            <a href="quan-ly-nhan-su.html"
+              ><i class="fas fa-users"></i> Quản lý Nhân sự</a
+            >
+          </li>
+          <li class="menu-item">
+            <a href="thanh-toan.html"
+              ><i class="fas fa-money-bill-wave"></i> Thanh toán & CSKH</a
+            >
+          </li>
+        </ul>
+        <div class="sidebar-footer">
+          <a href="admin-login.html" id="btnLogout" class="btn-logout"
+            ><i class="fas fa-sign-out-alt"></i> Thoát</a
+          >
+        </div>
+      </aside>
+
+      <div class="main-wrapper">
+        <header class="header">
+          <div class="header-left">
+            <h2 class="page-title">Quản lý Nhân viên Kỹ thuật</h2>
+          </div>
+          <div class="header-right">
+            <div class="admin-profile">
+              <img
+                src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff"
+                class="avatar"
+              />
+              <span class="admin-name">Xin chào!</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="content">
+          <div
+            class="table-header"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+            "
+          >
+            <h3>Danh sách thợ máy trong xưởng</h3>
+            <button
+              id="btnAddNhanVien"
+              class="btn-action btn-approve"
+              style="
+                background: #10b981;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 6px;
+                font-weight: bold;
+              "
+            >
+              <i class="fas fa-user-plus"></i> Thêm Thợ Máy
+            </button>
+          </div>
+
+          <div class="table-container">
+            <div class="table-responsive">
+              <table class="data-table" id="nhanVienTable">
+                <thead>
+                  <tr>
+                    <th>Mã NV</th>
+                    <th>Họ Tên</th>
+                    <th>Số Điện Thoại</th>
+                    <th>Chuyên Môn</th>
+                    <th>Ca Làm Việc</th>
+                    <th>Thao Tác</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="nhanVienModal" class="modal">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3 id="modalTitle">Thông tin Thợ Máy</h3>
+                <span class="close-modal">&times;</span>
+              </div>
+              <form id="nhanVienForm">
+                <div class="modal-body">
+                  <input type="hidden" id="nhanVienId" />
+                  <div class="form-group" style="margin-bottom: 15px">
+                    <label
+                      style="
+                        display: block;
+                        margin-bottom: 5px;
+                        font-weight: 500;
+                      "
+                      >Họ và Tên:</label
+                    >
+                    <input
+                      type="text"
+                      id="nvHoTen"
+                      class="form-input"
+                      style="color: #333"
+                      required
+                    />
+                  </div>
+                  <div style="display: flex; gap: 10px; margin-bottom: 15px">
+                    <div style="flex: 1">
+                      <label
+                        style="
+                          display: block;
+                          margin-bottom: 5px;
+                          font-weight: 500;
+                        "
+                        >Số điện thoại:</label
+                      >
+                      <input
+                        type="text"
+                        id="nvDienThoai"
+                        class="form-input"
+                        style="color: #333"
+                        required
+                      />
+                    </div>
+                    <div style="flex: 1">
+                      <label
+                        style="
+                          display: block;
+                          margin-bottom: 5px;
+                          font-weight: 500;
+                        "
+                        >Email:</label
+                      >
+                      <input
+                        type="email"
+                        id="nvEmail"
+                        class="form-input"
+                        style="color: #333"
+                      />
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 10px; margin-bottom: 15px">
+                    <div style="flex: 1">
+                      <label
+                        style="
+                          display: block;
+                          margin-bottom: 5px;
+                          font-weight: 500;
+                        "
+                        >Chuyên môn:</label
+                      >
+                      <input
+                        type="text"
+                        id="nvChuyenMon"
+                        class="form-input"
+                        style="color: #333"
+                        placeholder="VD: Máy gầm"
+                      />
+                    </div>
+                    <div style="flex: 1">
+                      <label
+                        style="
+                          display: block;
+                          margin-bottom: 5px;
+                          font-weight: 500;
+                        "
+                        >Ca làm việc:</label
+                      >
+                      <input
+                        type="text"
+                        id="nvCaLamViec"
+                        class="form-input"
+                        style="color: #333"
+                        placeholder="VD: Hành chính"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="modal-footer"
+                  style="padding: 20px; text-align: right"
+                >
+                  <button
+                    type="submit"
+                    class="btn-login"
+                    style="width: auto; padding: 10px 30px; background: #2563eb"
+                  >
+                    Lưu dữ liệu
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <script src="js/pages/nhanSuApp.js"></script>
+    <script>
+      document.getElementById("btnLogout").addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("isAdminLoggedIn");
+        window.location.replace("admin-login.html");
+      });
+    </script>
+  </body>
+</html>

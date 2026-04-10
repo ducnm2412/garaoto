@@ -47,91 +47,63 @@ function togglePasswordVisibility() {
 
 // Hàm xử lý kịch bản chính khi người dùng bấm Đăng nhập
 function handleLogin(e) {
-  e.preventDefault(); // Ngăn form tự động reload trang
+  e.preventDefault();
   clearErrors();
   let isValid = true;
 
   const emailVal = emailInput.value.trim();
   const passwordVal = passwordInput.value.trim();
 
-  // Kiểm tra email
-  if (emailVal === "") {
+  if (emailVal === "" || !validateEmailFormat(emailVal)) {
     emailInput.classList.add("input-error");
-    emailError.textContent = "Vui lòng nhập email.";
-    isValid = false;
-  } else if (!validateEmailFormat(emailVal)) {
-    emailInput.classList.add("input-error");
-    emailError.textContent = "Định dạng email không hợp lệ.";
     isValid = false;
   }
-
-  // Kiểm tra mật khẩu
   if (passwordVal === "") {
     passwordInput.classList.add("input-error");
-    passwordError.textContent = "Vui lòng nhập mật khẩu.";
     isValid = false;
   }
 
-  // --- PHẦN GỌI API ĐĂNG NHẬP ---
   if (isValid) {
-    // Có thể thêm hiệu ứng loading ở đây để tăng UX (Ví dụ: Đổi text nút bấm thành "Đang đăng nhập...")
+    const loginData = { email: emailVal, matKhau: passwordVal };
 
-    const loginData = {
-      email: emailVal,
-      matKhau: passwordVal,
-    };
-
-    // Gọi API bằng fetch với method POST
     fetch("http://localhost:8080/api/auth/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginData),
     })
       .then((response) => response.json())
       .then((result) => {
-        // Kiểm tra kết quả trả về từ Backend
         if (result.success === true && result.data) {
-          // 1. Lấy vai trò (Role) từ dữ liệu Backend trả về
+          // 🛑 BƯỚC KIỂM TRA QUAN TRỌNG: Nhật nhấn F12, chọn tab Console để xem dòng này
+          console.log("Dữ liệu Backend trả về khi Login:", result.data);
+
           const userRole = result.data.vaiTro;
 
-          // 2. Kiểm tra phân quyền: Chỉ Admin và Thợ máy mới được vào
-          if (userRole === "Admin" || userRole === "NhanVienKyThuat") {
-            console.log("Đăng nhập thành công với vai trò:", userRole);
+          // Lưu các thông tin cơ bản
+          localStorage.setItem("isAdminLoggedIn", "true");
+          localStorage.setItem("adminToken", result.data.token);
+          localStorage.setItem("adminName", result.data.hoTen);
+          localStorage.setItem("adminRole", userRole);
 
-            // 3. LƯU TRỮ LOCALSTORAGE
-            localStorage.setItem("isAdminLoggedIn", "true");
-            localStorage.setItem("adminToken", result.data.token);
-            localStorage.setItem("adminName", result.data.hoTen);
-            localStorage.setItem("adminRole", userRole);
-            localStorage.setItem("adminId", result.data.maNguoiDung);
-
-            // 4. CHUYỂN HƯỚNG THEO ROLE (Nâng cao UX)
-            if (userRole === "NhanVienKyThuat") {
-              // Thợ máy không có quyền xem Dashboard Tổng quan, đẩy thẳng sang trang Sửa chữa
-              window.location.replace("dashboard.html");
-            } else {
-              // Admin thì vào trang Dashboard mặc định
-              window.location.replace("dashboard.html");
-            }
+          // Xử lý ID để hiển thị đúng công việc
+          if (userRole === "NhanVienKyThuat") {
+            // Nếu có maNhanVien thì lấy, không có thì dùng tạm maNguoiDung
+            const idToSave = result.data.maNhanVien || result.data.maNguoiDung;
+            localStorage.setItem("adminId", idToSave);
+            console.log("Đã lưu ID Thợ máy là:", idToSave);
           } else {
-            // Nếu là Khách Hàng cố tình đăng nhập vào trang Quản trị -> Chặn
-            passwordInput.classList.add("input-error");
-            passwordError.textContent =
-              "Tài khoản của bạn không có quyền truy cập khu vực Quản trị!";
+            localStorage.setItem("adminId", result.data.maNguoiDung);
           }
+
+          window.location.replace("dashboard.html");
         } else {
-          // Đăng nhập thất bại (Sai pass/email)
-          passwordInput.classList.add("input-error");
           passwordError.textContent =
-            result.message || "Email hoặc mật khẩu không đúng!";
+            result.message || "Sai thông tin đăng nhập!";
         }
       })
       .catch((error) => {
         console.error("Lỗi kết nối:", error);
-        emailError.textContent =
-          "Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại mạng hoặc liên hệ Admin.";
+        emailError.textContent = "Máy chủ không phản hồi!";
       });
   }
 }
