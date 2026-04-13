@@ -45,7 +45,7 @@ public class DonThueXeController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{MaNguoiDung}")
+    @GetMapping("/khach-hang/{maNguoiDung}")
     public ResponseEntity<ApiResponse<List<DonThueXeResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<DonThueXeResponse>>builder()
                 .success(true)

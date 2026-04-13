@@ -55,7 +55,7 @@ public class XeKhachHangController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{MaNguoiDung}")
+    @GetMapping("/khach-hang/{maNguoiDung}")
     public ResponseEntity<ApiResponse<List<XeKhachHangResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<XeKhachHangResponse>>builder()
                 .success(true)

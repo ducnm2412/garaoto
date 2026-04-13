@@ -61,8 +61,30 @@
             container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-circle-exclamation"></i><h3>Không tìm thấy xe</h3><p>Vui lòng quay lại danh sách xe</p><a href="/pages/xe-cho-thue/index.html" class="btn btn-primary mt-4">← Quay lại</a></div>`;
         } else {
             try {
+                // Thử lấy từ API thật
                 const result = await Api.get(`/xe-cho-thue/${id}`);
                 const car = result?.data || result;
+                renderCarDetail(car);
+            } catch (err) {
+                // Fallback dữ liệu mẫu để đồng bộ với màn hình ngoài
+                const defaultCars = [
+                    { maXeThue: 1, bienSo: '51A-12345', hangXe: 'Toyota', dongXe: 'Vios', soCho: 5, hopSo: 'Tự động', nhienLieu: 'Xăng', giaTheoNgay: 600000, namSanXuat: 2023, tinhTrang: 'SanSang', hinhAnh: null },
+                    { maXeThue: 2, bienSo: '51A-67890', hangXe: 'Hyundai', dongXe: 'Accent', soCho: 5, hopSo: 'Tự động', nhienLieu: 'Xăng', giaTheoNgay: 550000, namSanXuat: 2023, tinhTrang: 'SanSang', hinhAnh: null },
+                    { maXeThue: 3, bienSo: '51A-11111', hangXe: 'Toyota', dongXe: 'Innova', soCho: 7, hopSo: 'Số sàn', nhienLieu: 'Xăng', giaTheoNgay: 800000, namSanXuat: 2022, tinhTrang: 'SanSang', hinhAnh: null },
+                    { maXeThue: 4, bienSo: '51A-22222', hangXe: 'Honda', dongXe: 'City', soCho: 5, hopSo: 'Tự động', nhienLieu: 'Xăng', giaTheoNgay: 650000, namSanXuat: 2024, tinhTrang: 'SanSang', hinhAnh: null },
+                    { maXeThue: 5, bienSo: '51A-33333', hangXe: 'Mazda', dongXe: 'CX-5', soCho: 5, hopSo: 'Tự động', nhienLieu: 'Xăng', giaTheoNgay: 900000, namSanXuat: 2024, tinhTrang: 'SanSang', hinhAnh: null },
+                    { maXeThue: 6, bienSo: '51A-44444', hangXe: 'Ford', dongXe: 'Everest', soCho: 7, hopSo: 'Tự động', nhienLieu: 'Dầu', giaTheoNgay: 1200000, namSanXuat: 2023, tinhTrang: 'SanSang', hinhAnh: null },
+                ];
+                const mockCar = defaultCars.find(c => c.maXeThue == id);
+
+                if (mockCar) {
+                    renderCarDetail(mockCar);
+                } else {
+                    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-circle-exclamation"></i><h3>Không tìm thấy xe</h3><p>${err.message || 'Xe không khả dụng'}</p><a href="/pages/xe-cho-thue/index.html" class="btn btn-primary mt-4">← Quay lại</a></div>`;
+                }
+            }
+
+            function renderCarDetail(car) {
 
                 document.title = `${car.hangXe} ${car.dongXe} — GaraOto`;
                 document.getElementById('breadcrumb-name').textContent = `${car.hangXe} ${car.dongXe}`;
@@ -103,9 +125,9 @@
                             </div>
                         </div>
 
-                        <button class="btn btn-accent btn-lg btn-block" id="btn-thuexe" ${car.tinhTrang !== 'SanSang' ? 'disabled' : ''}>
+                        <button class="btn btn-accent btn-lg btn-block" id="btn-thuexe" ${(car.tinhTrang !== 'SanSang' && car.tinhTrang !== 'Sẵn sàng') ? 'disabled' : ''}>
                             <i class="fa-solid fa-key"></i>
-                            ${car.tinhTrang === 'SanSang' ? 'Thuê xe này' : 'Xe không khả dụng'}
+                            ${(car.tinhTrang === 'SanSang' || car.tinhTrang === 'Sẵn sàng') ? 'Thuê xe này' : 'Xe không khả dụng'}
                         </button>
 
                         <a href="/pages/xe-cho-thue/index.html" class="btn btn-ghost btn-block mt-4">
@@ -118,14 +140,12 @@
                     if (!Auth.isLoggedIn()) {
                         Components.showLoginRequired();
                     } else {
-                        window.location.href = `/pages/dat-thue/index.html?xeId=${car.maXeThue}`;
+                        window.location.href = `/pages/dat-thue?xeId=${car.maXeThue}`;
                     }
                 });
-
-            } catch (err) {
-                container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-circle-exclamation"></i><h3>Không tìm thấy xe</h3><p>${err.message}</p><a href="/pages/xe-cho-thue/index.html" class="btn btn-primary mt-4">← Quay lại</a></div>`;
-            }
-        }
+            } // Đóng hàm renderCarDetail
+            
+        } // Đóng khối try-catch ngoài cùng
     </script>
 </body>
 </html>

@@ -45,7 +45,7 @@ public class LichHenSuaChuaController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{MaNguoiDung}")
+    @GetMapping("/khach-hang/{maNguoiDung}")
     public ResponseEntity<ApiResponse<List<LichHenSuaChuaResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<LichHenSuaChuaResponse>>builder()
                 .success(true)

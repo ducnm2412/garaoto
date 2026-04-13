@@ -170,11 +170,12 @@
         // Load services
         async function loadServices() {
             try {
-                const result = await Api.get('/dich-vu');
+                const result = await Api.get('/dich-vu-sua-chua');
                 const list = Array.isArray(result) ? result : (result?.data || result?.content || []);
-                allServices = list.length > 0 ? list : defaultServices;
-            } catch {
-                allServices = defaultServices;
+                allServices = list;
+            } catch (err) {
+                console.error("Lỗi lấy danh sách dịch vụ:", err);
+                allServices = [];
             }
             renderServices(allServices);
         }

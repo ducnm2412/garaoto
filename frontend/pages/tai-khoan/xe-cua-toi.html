@@ -136,7 +136,7 @@
             saveBtn.disabled = true;
 
             const body = {
-                maKhachHang: user.maNguoiDung,
+                maNguoiDung: user.maNguoiDung || user.id, // Sửa tên biến cho đúng với DTO XeKhachHangRequest ('maNguoiDung' thay vì 'maKhachHang')
                 bienSo,
                 hangXe: document.getElementById('hangXe').value.trim() || null,
                 dongXe: document.getElementById('dongXe').value.trim() || null,

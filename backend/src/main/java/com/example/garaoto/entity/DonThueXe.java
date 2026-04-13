@@ -22,7 +22,7 @@ public class DonThueXe {
     private Integer maDonThue;
 
     @ManyToOne
-    @JoinColumn(name = "ma_nguoi_dung", nullable = false)
+    @JoinColumn(name = "ma_khach_hang", referencedColumnName = "ma_nguoi_dung", nullable = false)
     private com.example.garaoto.entity.KhachHang khachHang;
 
     @ManyToOne

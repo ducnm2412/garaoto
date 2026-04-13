@@ -276,7 +276,7 @@
             }
 
             const payload = {
-                maKhachHang: user.maNguoiDung,
+                maNguoiDung: user.maNguoiDung || user.id, // Sửa tên biến cho đúng DTO
                 maXeKh: parseInt(selectedVehicleInput.value),
                 ngayHen: ngayHenInput.value,
                 gioHen: gioHenInput.value + ':00',

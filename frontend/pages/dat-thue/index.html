@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Đặt thuê xe tự lái hoặc có lái — GaraOto">
+    <title>Đặt thuê xe — GaraOto</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/dat-lich.css">
+    <style>
+        .xe-summary-card {
+            display: flex;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            align-items: center;
+        }
+        .xe-summary-img {
+            width: 120px;
+            height: 80px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            background: var(--gray-200);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--gray-400);
+            font-size: 24px;
+        }
+        .xe-summary-info h3 {
+            margin-bottom: var(--space-1);
+        }
+        .xe-summary-price {
+            font-size: 1.1rem;
+            color: var(--primary-600);
+            font-weight: 600;
+        }
+        .summary-box {
+            background: var(--primary-50);
+            padding: var(--space-4);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-4);
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px dashed var(--primary-300);
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="dat-lich-page">
+        <div class="container">
+            <div class="dat-lich-header">
+                <h1>Tạo Đơn Thuê Xe</h1>
+                <p>Khám phá mọi nẻo đường với dàn xe chất lượng cao từ GaraOto.</p>
+            </div>
+
+            <div class="dat-lich-form-card">
+                <form id="booking-form" novalidate>
+                    
+                    <!-- Bước 1: Thông tin Xe -->
+                    <div class="form-section">
+                        <h2 class="form-section-title"><i class="fa-solid fa-car"></i> 1. Xe bạn đang chọn</h2>
+                        
+                        <div id="vehicle-summary">
+                            <div class="skeleton skeleton-title" style="height: 100px;"></div>
+                        </div>
+                        <input type="hidden" id="selected-vehicle" required>
+                    </div>
+
+                    <!-- Bước 2: Thời gian & Địa điểm -->
+                    <div class="form-section">
+                        <h2 class="form-section-title"><i class="fa-solid fa-clock"></i> 2. Thời gian & Lịch trình</h2>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Ngày nhận xe <span class="required">*</span></label>
+                                <div class="date-picker-wrapper">
+                                    <i class="fa-solid fa-calendar date-picker-icon"></i>
+                                    <input type="date" id="ngayNhan" class="form-control" required>
+                                </div>
+                                <div class="form-error" id="ngayNhan-error">Vui lòng chọn ngày nhận hợp lệ.</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ngày trả xe <span class="required">*</span></label>
+                                <div class="date-picker-wrapper">
+                                    <i class="fa-solid fa-calendar date-picker-icon"></i>
+                                    <input type="date" id="ngayTra" class="form-control" required>
+                                </div>
+                                <div class="form-error" id="ngayTra-error">Vui lòng chọn ngày trả hợp lệ (phải sau hoặc trong ngày nhận).</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Địa điểm nhận xe <span class="required">*</span></label>
+                                <input type="text" id="diaDiemNhan" class="form-control" placeholder="Ví dụ: GaraOto Cơ sở 1" required>
+                                <div class="form-error" id="diaDiemNhan-error">Vui lòng nhập địa điểm nhận xe.</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Địa điểm trả xe <span class="required">*</span></label>
+                                <input type="text" id="diaDiemTra" class="form-control" placeholder="Ví dụ: GaraOto Cơ sở 1" required>
+                                <div class="form-error" id="diaDiemTra-error">Vui lòng nhập địa điểm trả xe.</div>
+                            </div>
+                        </div>
+
+                        <div class="summary-box" id="price-calculator" style="display: none;">
+                            <div>
+                                <div><strong>Thời gian thuê:</strong> <span id="calc-days">0</span> ngày</div>
+                                <div style="font-size: 0.9rem; color: var(--gray-600);"><span id="calc-priceperday">0</span> /ngày</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.9rem; color: var(--gray-600);">Tạm tính</div>
+                                <strong style="color: var(--primary-600); font-size: 1.4rem;" id="calc-total">0 ₫</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nút Submit -->
+                    <div style="text-align: right; padding-top: var(--space-4);">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" disabled>
+                            <i class="fa-solid fa-file-signature"></i> Xác nhận gửi đơn
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Modal ... -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal" style="text-align: center; padding: var(--space-8);">
+            <i class="fa-solid fa-circle-check" style="font-size: 80px; color: var(--success); margin-bottom: var(--space-4);"></i>
+            <h2 style="margin-bottom: var(--space-2);">Tạo đơn thành công!</h2>
+            <p style="color: var(--gray-600); margin-bottom: var(--space-6);">
+                Cảm ơn bạn đã sử dụng dịch vụ thuê xe của GaraOto. Chúc bạn có những hành trình tuyệt vời.
+            </p>
+            <div style="display: flex; gap: var(--space-4); justify-content: center;">
+                <a href="/pages/xe-cho-thue/index.html" class="btn btn-outline">Về Danh sách xe</a>
+                <a href="/pages/tai-khoan/don-thue.html" class="btn btn-primary">Xem Đơn thuê</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script type="module">
+        import Components from '/js/components.js';
+        import Guard from '/js/guard.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Utils from '/js/utils.js';
+        import Toast from '/js/toast.js';
+
+        // Yêu cầu đăng nhập
+        if (!Guard.requireAuth()) throw new Error('redirect');
+
+        await Components.loadHeader();
+        await Components.loadFooter();
+
+        const user = Auth.getUser();
+        const xeId = Utils.getUrlParam('xeId');
+        
+        if (!xeId) {
+            Toast.error("Không tìm thấy thông tin xe. Đang quay lại trang trước...");
+            setTimeout(() => window.location.href = '/pages/xe-cho-thue/index.html', 1500);
+            throw new Error('No xeId');
+        }
+
+        // Elements
+        const vehicleSummary = document.getElementById('vehicle-summary');
+        const selectedVehicleInput = document.getElementById('selected-vehicle');
+        
+        const ngayNhanInput = document.getElementById('ngayNhan');
+        const ngayTraInput = document.getElementById('ngayTra');
+        const diaDiemNhanInput = document.getElementById('diaDiemNhan');
+        const diaDiemTraInput = document.getElementById('diaDiemTra');
+        
+        const form = document.getElementById('booking-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const successModal = document.getElementById('success-modal');
+
+        let currentCarPrice = 0;
+
+        // Ngày mặc định
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const minDate = `${yyyy}-${mm}-${dd}`;
+        
+        ngayNhanInput.min = minDate;
+        ngayNhanInput.value = minDate;
+        ngayTraInput.min = minDate;
+        ngayTraInput.value = minDate;
+
+        // Load chi tiết xe
+        async function loadCarInfo() {
+            try {
+                const result = await Api.get(`/xe-cho-thue/${xeId}`);
+                const car = result?.data || result;
+                
+                selectedVehicleInput.value = car.maXeThue;
+                currentCarPrice = car.giaTheoNgay || 0;
+
+                vehicleSummary.innerHTML = `
+                    <div class="xe-summary-card">
+                        ${car.hinhAnh ? `<img src="${car.hinhAnh}" class="xe-summary-img" alt="${car.hangXe}">` : `<div class="xe-summary-img"><i class="fa-solid fa-car"></i></div>`}
+                        <div class="xe-summary-info">
+                            <h3>${car.hangXe} ${car.dongXe}</h3>
+                            <div><i class="fa-solid fa-id-card"></i> ${car.bienSo} · <i class="fa-solid fa-chair"></i> ${car.soCho} chỗ</div>
+                            <div class="xe-summary-price">${Utils.formatMoney(car.giaTheoNgay)} /ngày</div>
+                        </div>
+                    </div>
+                `;
+                
+                submitBtn.disabled = false;
+                calculateTotal();
+            } catch (err) {
+                vehicleSummary.innerHTML = `<div class="alert alert-error">Không thể tải thông tin xe. Vui lòng thử lại.</div>`;
+            }
+        }
+        
+        loadCarInfo();
+
+        function calculateTotal() {
+            const nhan = new Date(ngayNhanInput.value);
+            const tra = new Date(ngayTraInput.value);
+            
+            if (nhan && tra && tra >= nhan) {
+                const timeDiff = Math.abs(tra.getTime() - nhan.getTime());
+                let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // Tính cả ngày nhận và trả
+                
+                document.getElementById('price-calculator').style.display = 'flex';
+                document.getElementById('calc-days').textContent = diffDays;
+                document.getElementById('calc-priceperday').textContent = Utils.formatMoney(currentCarPrice);
+                document.getElementById('calc-total').textContent = Utils.formatMoney(diffDays * currentCarPrice);
+            } else {
+                document.getElementById('price-calculator').style.display = 'none';
+            }
+        }
+
+        ngayNhanInput.addEventListener('change', () => {
+            document.getElementById('ngayNhan-error').classList.remove('show');
+            ngayNhanInput.classList.remove('error');
+            // Ngày trả phải >= Ngày nhận
+            if (ngayTraInput.value < ngayNhanInput.value) {
+                ngayTraInput.value = ngayNhanInput.value;
+            }
+            ngayTraInput.min = ngayNhanInput.value;
+            calculateTotal();
+        });
+        
+        ngayTraInput.addEventListener('change', () => {
+            document.getElementById('ngayTra-error').classList.remove('show');
+            ngayTraInput.classList.remove('error');
+            calculateTotal();
+        });
+
+        // Xóa lỗi input text
+        [diaDiemNhanInput, diaDiemTraInput].forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('error');
+                document.getElementById(`${input.id}-error`).classList.remove('show');
+            });
+        });
+
+        // Submit form
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            let isValid = true;
+
+            if (!ngayNhanInput.value || ngayNhanInput.value < minDate) {
+                document.getElementById('ngayNhan-error').classList.add('show');
+                ngayNhanInput.classList.add('error');
+                isValid = false;
+            }
+            if (!ngayTraInput.value || ngayTraInput.value < ngayNhanInput.value) {
+                document.getElementById('ngayTra-error').classList.add('show');
+                ngayTraInput.classList.add('error');
+                isValid = false;
+            }
+            if (!diaDiemNhanInput.value.trim()) {
+                document.getElementById('diaDiemNhan-error').classList.add('show');
+                diaDiemNhanInput.classList.add('error');
+                isValid = false;
+            }
+            if (!diaDiemTraInput.value.trim()) {
+                document.getElementById('diaDiemTra-error').classList.add('show');
+                diaDiemTraInput.classList.add('error');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            submitBtn.classList.add('btn-loading');
+            submitBtn.disabled = true;
+
+            const payload = {
+                maNguoiDung: user.maNguoiDung || user.id,
+                maXeThue: parseInt(selectedVehicleInput.value),
+                ngayNhan: ngayNhanInput.value,
+                ngayTra: ngayTraInput.value,
+                diaDiemNhan: diaDiemNhanInput.value.trim(),
+                diaDiemTra: diaDiemTraInput.value.trim()
+            };
+
+            try {
+                await Api.post('/don-thue-xe', payload);
+                successModal.classList.add('show');
+            } catch (err) {
+                Toast.error(err.message || 'Lỗi khi đặt thuê xe');
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

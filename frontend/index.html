@@ -209,7 +209,8 @@
             try {
                 const cars = await Api.get('/xe-cho-thue');
                 const list = Array.isArray(cars) ? cars : (cars?.data || cars?.content || []);
-                const featured = list.filter(c => c.tinhTrang === 'SanSang').slice(0, 3);
+                // Bỏ điều kiện lọc khắt khe để đảm bảo có xe nào sẽ hiển thị xe đó ra trang chủ
+                const featured = list.slice(0, 3);
 
                 if (featured.length === 0) {
                     container.innerHTML = `
@@ -243,8 +244,10 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <span class="badge badge-success">Sẵn sàng</span>
-                            <a href="/pages/xe-cho-thue/chi-tiet.html?id=${car.maXeThue}" class="btn btn-primary btn-sm">
+                            <span class="badge ${car.tinhTrang === 'Sẵn sàng' || car.tinhTrang === 'SanSang' ? 'badge-success' : 'badge-warning'}">
+                                ${car.tinhTrang || 'Sẵn sàng'}
+                            </span>
+                            <a href="/pages/xe-cho-thue/chi-tiet?id=${car.maXeThue}" class="btn btn-primary btn-sm">
                                 Chi tiết <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
