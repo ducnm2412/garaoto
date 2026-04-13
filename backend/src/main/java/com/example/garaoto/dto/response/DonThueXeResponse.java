@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class DonThueXeResponse {
     private Integer maDonThue;
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
     private Integer maXeThue;
     private LocalDate ngayNhan;
     private LocalDate ngayTra;

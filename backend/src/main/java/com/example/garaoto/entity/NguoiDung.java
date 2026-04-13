@@ -5,13 +5,16 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import lombok.experimental.SuperBuilder;
+
 @Entity
 @Table(name = "nguoi_dung")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class NguoiDung {
 
     @Id

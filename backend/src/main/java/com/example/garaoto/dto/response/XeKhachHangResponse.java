@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class XeKhachHangResponse {
     private Integer maXeKh;
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
     private String bienSo;
     private String hangXe;
     private String dongXe;

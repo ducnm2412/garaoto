@@ -36,12 +36,12 @@ public class PhanCongSuaChuaController {
                 .build());
     }
 
-    @GetMapping("/nhan-vien/{maNhanVien}")
-    public ResponseEntity<ApiResponse<List<PhanCongSuaChuaResponse>>> getByNhanVien(@PathVariable Integer maNhanVien) {
+    @GetMapping("/nhan-vien/{MaNguoiDung}")
+    public ResponseEntity<ApiResponse<List<PhanCongSuaChuaResponse>>> getByNhanVien(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<PhanCongSuaChuaResponse>>builder()
                 .success(true)
                 .message("Lấy danh sách phân công theo nhân viên thành công")
-                .data(phanCongSuaChuaService.getByNhanVien(maNhanVien))
+                .data(phanCongSuaChuaService.getByNhanVien(maNguoiDung))
                 .build());
     }
 

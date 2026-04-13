@@ -14,10 +14,10 @@ public class PhanCongSuaChuaRequest {
     private Integer maPhieuSua;
 
     @NotNull(message = "Mã nhân viên không được để trống")
-    private Integer maNhanVien;
+    private Integer maNguoiDungNv;
 
     @NotNull(message = "Mã admin không được để trống")
-    private Integer maAdmin;
+    private Integer maNguoiDungAdmin;
 
     private String ghiChu;
     private String trangThai;

@@ -30,7 +30,7 @@ public class DanhGiaServiceImpl implements DanhGiaService {
 
     @Override
     public DanhGiaResponse create(DanhGiaRequest request) {
-        KhachHang khachHang = khachHangRepository.findById(request.getMaKhachHang())
+        KhachHang khachHang = khachHangRepository.findById(request.getMaNguoiDung())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng"));
 
         PhieuSuaChua phieuSuaChua = null;
@@ -72,8 +72,8 @@ public class DanhGiaServiceImpl implements DanhGiaService {
     }
 
     @Override
-    public List<DanhGiaResponse> getByKhachHang(Integer maKhachHang) {
-        return danhGiaRepository.findByKhachHang_MaKhachHang(maKhachHang)
+    public List<DanhGiaResponse> getByKhachHang(Integer maNguoiDung) {
+        return danhGiaRepository.findByKhachHang_MaNguoiDung(maNguoiDung)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -82,7 +82,7 @@ public class DanhGiaServiceImpl implements DanhGiaService {
     private DanhGiaResponse mapToResponse(DanhGia danhGia) {
         return DanhGiaResponse.builder()
                 .maDanhGia(danhGia.getMaDanhGia())
-                .maKhachHang(danhGia.getKhachHang().getMaKhachHang())
+                .maNguoiDung(danhGia.getKhachHang().getMaNguoiDung())
                 .loaiDanhGia(danhGia.getLoaiDanhGia())
                 .maPhieuSua(danhGia.getPhieuSuaChua() != null ? danhGia.getPhieuSuaChua().getMaPhieuSua() : null)
                 .maDonThue(danhGia.getDonThueXe() != null ? danhGia.getDonThueXe().getMaDonThue() : null)

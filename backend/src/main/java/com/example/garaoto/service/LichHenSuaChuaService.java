@@ -9,7 +9,7 @@ public interface LichHenSuaChuaService {
     LichHenSuaChuaResponse create(LichHenSuaChuaRequest request);
     List<LichHenSuaChuaResponse> getAll();
     LichHenSuaChuaResponse getById(Integer id);
-    List<LichHenSuaChuaResponse> getByKhachHang(Integer maKhachHang);
+    List<LichHenSuaChuaResponse> getByKhachHang(Integer maNguoiDung);
     LichHenSuaChuaResponse updateStatus(Integer id, String trangThai);
     void delete(Integer id);
 }

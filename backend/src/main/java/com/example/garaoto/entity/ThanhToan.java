@@ -21,7 +21,7 @@ public class ThanhToan {
     private Integer maThanhToan;
 
     @ManyToOne
-    @JoinColumn(name = "ma_khach_hang", nullable = false)
+    @JoinColumn(name = "ma_nguoi_dung", nullable = false)
     private com.example.garaoto.entity.KhachHang khachHang;
 
     @Column(name = "loai_thanh_toan")

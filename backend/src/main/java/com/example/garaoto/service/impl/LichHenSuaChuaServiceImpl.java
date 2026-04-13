@@ -26,7 +26,7 @@ public class LichHenSuaChuaServiceImpl implements LichHenSuaChuaService {
 
     @Override
     public LichHenSuaChuaResponse create(LichHenSuaChuaRequest request) {
-        KhachHang khachHang = khachHangRepository.findById(request.getMaKhachHang())
+        KhachHang khachHang = khachHangRepository.findById(request.getMaNguoiDung())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng"));
 
         XeKhachHang xeKhachHang = xeKhachHangRepository.findById(request.getMaXeKh())
@@ -62,8 +62,8 @@ public class LichHenSuaChuaServiceImpl implements LichHenSuaChuaService {
     }
 
     @Override
-    public List<LichHenSuaChuaResponse> getByKhachHang(Integer maKhachHang) {
-        return lichHenSuaChuaRepository.findByKhachHang_MaKhachHang(maKhachHang)
+    public List<LichHenSuaChuaResponse> getByKhachHang(Integer maNguoiDung) {
+        return lichHenSuaChuaRepository.findByKhachHang_MaNguoiDung(maNguoiDung)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -89,7 +89,7 @@ public class LichHenSuaChuaServiceImpl implements LichHenSuaChuaService {
     private LichHenSuaChuaResponse mapToResponse(LichHenSuaChua lichHen) {
         return LichHenSuaChuaResponse.builder()
                 .maLichHen(lichHen.getMaLichHen())
-                .maKhachHang(lichHen.getKhachHang().getMaKhachHang())
+                .maNguoiDung(lichHen.getKhachHang().getMaNguoiDung())
                 .maXeKh(lichHen.getXeKhachHang().getMaXeKh())
                 .ngayHen(lichHen.getNgayHen())
                 .gioHen(lichHen.getGioHen())

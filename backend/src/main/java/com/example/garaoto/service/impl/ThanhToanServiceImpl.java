@@ -30,7 +30,7 @@ public class ThanhToanServiceImpl implements ThanhToanService {
 
     @Override
     public ThanhToanResponse create(ThanhToanRequest request) {
-        KhachHang khachHang = khachHangRepository.findById(request.getMaKhachHang())
+        KhachHang khachHang = khachHangRepository.findById(request.getMaNguoiDung())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng"));
 
         PhieuSuaChua phieuSuaChua = null;
@@ -83,8 +83,8 @@ public class ThanhToanServiceImpl implements ThanhToanService {
     }
 
     @Override
-    public List<ThanhToanResponse> getByKhachHang(Integer maKhachHang) {
-        return thanhToanRepository.findByKhachHang_MaKhachHang(maKhachHang)
+    public List<ThanhToanResponse> getByKhachHang(Integer maNguoiDung) {
+        return thanhToanRepository.findByKhachHang_MaNguoiDung(maNguoiDung)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -93,7 +93,7 @@ public class ThanhToanServiceImpl implements ThanhToanService {
     private ThanhToanResponse mapToResponse(ThanhToan thanhToan) {
         return ThanhToanResponse.builder()
                 .maThanhToan(thanhToan.getMaThanhToan())
-                .maKhachHang(thanhToan.getKhachHang().getMaKhachHang())
+                .maNguoiDung(thanhToan.getKhachHang().getMaNguoiDung())
                 .loaiThanhToan(thanhToan.getLoaiThanhToan())
                 .maPhieuSua(thanhToan.getPhieuSuaChua() != null ? thanhToan.getPhieuSuaChua().getMaPhieuSua() : null)
                 .maDonThue(thanhToan.getDonThueXe() != null ? thanhToan.getDonThueXe().getMaDonThue() : null)

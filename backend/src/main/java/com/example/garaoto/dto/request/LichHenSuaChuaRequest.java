@@ -14,7 +14,7 @@ import java.time.LocalTime;
 public class LichHenSuaChuaRequest {
 
     @NotNull(message = "Mã khách hàng không được để trống")
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
 
     @NotNull(message = "Mã xe khách hàng không được để trống")
     private Integer maXeKh;

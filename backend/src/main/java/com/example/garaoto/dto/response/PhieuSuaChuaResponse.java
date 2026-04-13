@@ -14,7 +14,7 @@ public class PhieuSuaChuaResponse {
     private Integer maPhieuSua;
     private Integer maLichHen;
     private Integer maXeKh;
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
     private LocalDateTime ngayNhanXe;
     private LocalDateTime ngayHoanThanh;
     private String chanDoan;

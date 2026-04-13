@@ -45,12 +45,12 @@ public class ThanhToanController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{maKhachHang}")
-    public ResponseEntity<ApiResponse<List<ThanhToanResponse>>> getByKhachHang(@PathVariable Integer maKhachHang) {
+    @GetMapping("/khach-hang/{MaNguoiDung}")
+    public ResponseEntity<ApiResponse<List<ThanhToanResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<ThanhToanResponse>>builder()
                 .success(true)
                 .message("Lấy thanh toán theo khách hàng thành công")
-                .data(thanhToanService.getByKhachHang(maKhachHang))
+                .data(thanhToanService.getByKhachHang(maNguoiDung))
                 .build());
     }
 }

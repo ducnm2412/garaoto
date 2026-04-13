@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class ThanhToanRequest {
 
     @NotNull(message = "Mã khách hàng không được để trống")
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
 
     @NotNull(message = "Loại thanh toán không được để trống")
     private String loaiThanhToan;

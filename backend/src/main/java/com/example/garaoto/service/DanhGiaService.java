@@ -8,5 +8,5 @@ import java.util.List;
 public interface DanhGiaService {
     DanhGiaResponse create(DanhGiaRequest request);
     List<DanhGiaResponse> getAll();
-    List<DanhGiaResponse> getByKhachHang(Integer maKhachHang);
+    List<DanhGiaResponse> getByKhachHang(Integer maNguoiDung);
 }

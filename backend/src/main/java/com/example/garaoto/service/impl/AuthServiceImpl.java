@@ -39,43 +39,53 @@ public class AuthServiceImpl implements AuthService {
             throw new DuplicateResourceException("Email đã tồn tại");
         }
 
-        NguoiDung nguoiDung = NguoiDung.builder()
-                .hoTen(request.getHoTen())
-                .email(request.getEmail())
-                .soDienThoai(request.getSoDienThoai())
-                .matKhau(passwordEncoder.encode(request.getMatKhau()))
-                .diaChi(request.getDiaChi())
-                .vaiTro(request.getVaiTro())
-                .trangThai("HoatDong")
-                .ngayTao(LocalDateTime.now())
-                .build();
-
-        nguoiDung = nguoiDungRepository.save(nguoiDung);
+        NguoiDung nguoiDung;
 
         switch (request.getVaiTro()) {
             case "KhachHang" -> {
                 KhachHang khachHang = KhachHang.builder()
-                        .nguoiDung(nguoiDung)
+                        .hoTen(request.getHoTen())
+                        .email(request.getEmail())
+                        .soDienThoai(request.getSoDienThoai())
+                        .matKhau(passwordEncoder.encode(request.getMatKhau()))
+                        .diaChi(request.getDiaChi())
+                        .vaiTro(request.getVaiTro())
+                        .trangThai("HoatDong")
+                        .ngayTao(LocalDateTime.now())
                         .cccd(request.getCccd())
                         .soGplx(request.getSoGplx())
                         .hangGplx(request.getHangGplx())
                         .build();
-                khachHangRepository.save(khachHang);
+                nguoiDung = khachHangRepository.save(khachHang);
             }
             case "Admin" -> {
                 Admin admin = Admin.builder()
-                        .nguoiDung(nguoiDung)
+                        .hoTen(request.getHoTen())
+                        .email(request.getEmail())
+                        .soDienThoai(request.getSoDienThoai())
+                        .matKhau(passwordEncoder.encode(request.getMatKhau()))
+                        .diaChi(request.getDiaChi())
+                        .vaiTro(request.getVaiTro())
+                        .trangThai("HoatDong")
+                        .ngayTao(LocalDateTime.now())
                         .chucVu(request.getChucVu())
                         .build();
-                adminRepository.save(admin);
+                nguoiDung = adminRepository.save(admin);
             }
             case "NhanVienKyThuat" -> {
                 NhanVienKyThuat nhanVien = NhanVienKyThuat.builder()
-                        .nguoiDung(nguoiDung)
+                        .hoTen(request.getHoTen())
+                        .email(request.getEmail())
+                        .soDienThoai(request.getSoDienThoai())
+                        .matKhau(passwordEncoder.encode(request.getMatKhau()))
+                        .diaChi(request.getDiaChi())
+                        .vaiTro(request.getVaiTro())
+                        .trangThai("HoatDong")
+                        .ngayTao(LocalDateTime.now())
                         .chuyenMon(request.getChuyenMon())
                         .caLamViec(request.getCaLamViec())
                         .build();
-                nhanVienKyThuatRepository.save(nhanVien);
+                nguoiDung = nhanVienKyThuatRepository.save(nhanVien);
             }
             default -> throw new BadRequestException("Vai trò không hợp lệ");
         }

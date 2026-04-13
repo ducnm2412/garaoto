@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class DonThueXeRequest {
 
     @NotNull(message = "Mã khách hàng không được để trống")
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
 
     @NotNull(message = "Mã xe thuê không được để trống")
     private Integer maXeThue;

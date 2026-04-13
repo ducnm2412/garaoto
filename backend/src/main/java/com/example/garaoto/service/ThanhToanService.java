@@ -9,5 +9,5 @@ public interface ThanhToanService {
     ThanhToanResponse create(ThanhToanRequest request);
     List<ThanhToanResponse> getAll();
     ThanhToanResponse getById(Integer id);
-    List<ThanhToanResponse> getByKhachHang(Integer maKhachHang);
+    List<ThanhToanResponse> getByKhachHang(Integer maNguoiDung);
 }

@@ -1,8 +1,8 @@
 package com.example.garaoto.entity;
 
-import com.example.garaoto.entity.NguoiDung;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "admin")
@@ -10,17 +10,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Admin {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ma_admin")
-    private Integer maAdmin;
-
-    @OneToOne
-    @JoinColumn(name = "ma_nguoi_dung", nullable = false, unique = true)
-    private NguoiDung nguoiDung;
+@SuperBuilder
+@PrimaryKeyJoinColumn(name = "ma_nguoi_dung")
+public class Admin extends NguoiDung {
 
     @Column(name = "chuc_vu")
     private String chucVu;

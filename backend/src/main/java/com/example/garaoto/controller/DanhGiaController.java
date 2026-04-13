@@ -36,12 +36,12 @@ public class DanhGiaController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{maKhachHang}")
-    public ResponseEntity<ApiResponse<List<DanhGiaResponse>>> getByKhachHang(@PathVariable Integer maKhachHang) {
+    @GetMapping("/khach-hang/{MaNguoiDung}")
+    public ResponseEntity<ApiResponse<List<DanhGiaResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<DanhGiaResponse>>builder()
                 .success(true)
                 .message("Lấy đánh giá theo khách hàng thành công")
-                .data(danhGiaService.getByKhachHang(maKhachHang))
+                .data(danhGiaService.getByKhachHang(maNguoiDung))
                 .build());
     }
 }

@@ -32,10 +32,10 @@ public class PhanCongSuaChuaServiceImpl implements PhanCongSuaChuaService {
         PhieuSuaChua phieuSua = phieuSuaChuaRepository.findById(request.getMaPhieuSua())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiếu sửa"));
 
-        NhanVienKyThuat nhanVien = nhanVienKyThuatRepository.findById(request.getMaNhanVien())
+        NhanVienKyThuat nhanVien = nhanVienKyThuatRepository.findById(request.getMaNguoiDungNv())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên kỹ thuật"));
 
-        Admin admin = adminRepository.findById(request.getMaAdmin())
+        Admin admin = adminRepository.findById(request.getMaNguoiDungAdmin())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy admin"));
 
         PhanCongSuaChua phanCong = PhanCongSuaChua.builder()
@@ -60,8 +60,8 @@ public class PhanCongSuaChuaServiceImpl implements PhanCongSuaChuaService {
     }
 
     @Override
-    public List<PhanCongSuaChuaResponse> getByNhanVien(Integer maNhanVien) {
-        return phanCongSuaChuaRepository.findByNhanVienKyThuat_MaNhanVien(maNhanVien)
+    public List<PhanCongSuaChuaResponse> getByNhanVien(Integer maNguoiDung) {
+        return phanCongSuaChuaRepository.findByNhanVienKyThuat_MaNguoiDung(maNguoiDung)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -80,8 +80,8 @@ public class PhanCongSuaChuaServiceImpl implements PhanCongSuaChuaService {
         return PhanCongSuaChuaResponse.builder()
                 .maPhanCong(phanCong.getMaPhanCong())
                 .maPhieuSua(phanCong.getPhieuSuaChua().getMaPhieuSua())
-                .maNhanVien(phanCong.getNhanVienKyThuat().getMaNhanVien())
-                .maAdmin(phanCong.getAdmin().getMaAdmin())
+                .maNguoiDungNv(phanCong.getNhanVienKyThuat().getMaNguoiDung())
+                .maNguoiDungAdmin(phanCong.getAdmin().getMaNguoiDung())
                 .ngayPhanCong(phanCong.getNgayPhanCong())
                 .ghiChu(phanCong.getGhiChu())
                 .trangThai(phanCong.getTrangThai())

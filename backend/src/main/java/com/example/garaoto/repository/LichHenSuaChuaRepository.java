@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface LichHenSuaChuaRepository extends JpaRepository<LichHenSuaChua, Integer> {
-    List<LichHenSuaChua> findByKhachHang_MaKhachHang(Integer maKhachHang);
+    List<LichHenSuaChua> findByKhachHang_MaNguoiDung(Integer maNguoiDung);
     List<LichHenSuaChua> findByTrangThai(String trangThai);
     List<LichHenSuaChua> findByNgayHen(LocalDate ngayHen);
 }

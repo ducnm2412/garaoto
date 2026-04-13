@@ -17,7 +17,7 @@ public class AdminServiceImpl implements AdminService {
     public List<String> getAllAdminNames() {
         return adminRepository.findAll()
                 .stream()
-                .map(admin -> admin.getNguoiDung().getHoTen())
+                .map(admin -> admin.getHoTen())
                 .toList();
     }
 }

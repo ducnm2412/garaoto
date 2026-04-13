@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class PhieuSuaChuaRequest {
     private Integer maLichHen;
     private Integer maXeKh;
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
     private String chanDoan;
     private BigDecimal tongTien;
     private String trangThai;

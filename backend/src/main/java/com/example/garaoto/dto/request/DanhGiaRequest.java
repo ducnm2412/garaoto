@@ -13,7 +13,7 @@ import lombok.*;
 public class DanhGiaRequest {
 
     @NotNull(message = "Mã khách hàng không được để trống")
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
 
     @NotNull(message = "Loại đánh giá không được để trống")
     private String loaiDanhGia;

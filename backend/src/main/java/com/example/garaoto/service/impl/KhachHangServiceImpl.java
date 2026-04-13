@@ -31,7 +31,7 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public KhachHangResponse getByNguoiDungId(Integer maNguoiDung) {
-        KhachHang khachHang = khachHangRepository.findByNguoiDung_MaNguoiDung(maNguoiDung)
+        KhachHang khachHang = khachHangRepository.findById(maNguoiDung)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng"));
         return mapToResponse(khachHang);
     }
@@ -58,11 +58,10 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     private KhachHangResponse mapToResponse(KhachHang khachHang) {
         return KhachHangResponse.builder()
-                .maKhachHang(khachHang.getMaKhachHang())
-                .maNguoiDung(khachHang.getNguoiDung().getMaNguoiDung())
-                .hoTen(khachHang.getNguoiDung().getHoTen())
-                .email(khachHang.getNguoiDung().getEmail())
-                .soDienThoai(khachHang.getNguoiDung().getSoDienThoai())
+                .maNguoiDung(khachHang.getMaNguoiDung())
+                .hoTen(khachHang.getHoTen())
+                .email(khachHang.getEmail())
+                .soDienThoai(khachHang.getSoDienThoai())
                 .cccd(khachHang.getCccd())
                 .soGplx(khachHang.getSoGplx())
                 .hangGplx(khachHang.getHangGplx())

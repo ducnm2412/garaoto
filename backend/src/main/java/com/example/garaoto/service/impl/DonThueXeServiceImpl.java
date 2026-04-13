@@ -32,7 +32,7 @@ public class DonThueXeServiceImpl implements DonThueXeService {
             throw new BadRequestException("Ngày trả phải lớn hơn hoặc bằng ngày nhận");
         }
 
-        KhachHang khachHang = khachHangRepository.findById(request.getMaKhachHang())
+        KhachHang khachHang = khachHangRepository.findById(request.getMaNguoiDung())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng"));
 
         XeChoThue xeChoThue = xeChoThueRepository.findById(request.getMaXeThue())
@@ -76,8 +76,8 @@ public class DonThueXeServiceImpl implements DonThueXeService {
     }
 
     @Override
-    public List<DonThueXeResponse> getByKhachHang(Integer maKhachHang) {
-        return donThueXeRepository.findByKhachHang_MaKhachHang(maKhachHang)
+    public List<DonThueXeResponse> getByKhachHang(Integer maNguoiDung) {
+        return donThueXeRepository.findByKhachHang_MaNguoiDung(maNguoiDung)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -95,7 +95,7 @@ public class DonThueXeServiceImpl implements DonThueXeService {
     private DonThueXeResponse mapToResponse(DonThueXe donThueXe) {
         return DonThueXeResponse.builder()
                 .maDonThue(donThueXe.getMaDonThue())
-                .maKhachHang(donThueXe.getKhachHang().getMaKhachHang())
+                .maNguoiDung(donThueXe.getKhachHang().getMaNguoiDung())
                 .maXeThue(donThueXe.getXeChoThue().getMaXeThue())
                 .ngayNhan(donThueXe.getNgayNhan())
                 .ngayTra(donThueXe.getNgayTra())

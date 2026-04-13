@@ -27,7 +27,7 @@ public class XeKhachHangServiceImpl implements XeKhachHangService {
             throw new DuplicateResourceException("Biển số đã tồn tại");
         }
 
-        KhachHang khachHang = khachHangRepository.findById(request.getMaKhachHang())
+        KhachHang khachHang = khachHangRepository.findById(request.getMaNguoiDung())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng"));
 
         XeKhachHang xe = XeKhachHang.builder()
@@ -49,7 +49,7 @@ public class XeKhachHangServiceImpl implements XeKhachHangService {
         XeKhachHang xe = xeKhachHangRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy xe khách hàng"));
 
-        KhachHang khachHang = khachHangRepository.findById(request.getMaKhachHang())
+        KhachHang khachHang = khachHangRepository.findById(request.getMaNguoiDung())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng"));
 
         xe.setKhachHang(khachHang);
@@ -77,8 +77,8 @@ public class XeKhachHangServiceImpl implements XeKhachHangService {
     }
 
     @Override
-    public List<XeKhachHangResponse> getByKhachHang(Integer maKhachHang) {
-        return xeKhachHangRepository.findByKhachHang_MaKhachHang(maKhachHang)
+    public List<XeKhachHangResponse> getByKhachHang(Integer maNguoiDung) {
+        return xeKhachHangRepository.findByKhachHang_MaNguoiDung(maNguoiDung)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -95,7 +95,7 @@ public class XeKhachHangServiceImpl implements XeKhachHangService {
     private XeKhachHangResponse mapToResponse(XeKhachHang xe) {
         return XeKhachHangResponse.builder()
                 .maXeKh(xe.getMaXeKh())
-                .maKhachHang(xe.getKhachHang().getMaKhachHang())
+                .maNguoiDung(xe.getKhachHang().getMaNguoiDung())
                 .bienSo(xe.getBienSo())
                 .hangXe(xe.getHangXe())
                 .dongXe(xe.getDongXe())

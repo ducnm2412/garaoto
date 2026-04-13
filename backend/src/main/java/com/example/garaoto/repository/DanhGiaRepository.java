@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface DanhGiaRepository extends JpaRepository<DanhGia, Integer> {
-    List<DanhGia> findByKhachHang_MaKhachHang(Integer maKhachHang);
+    List<DanhGia> findByKhachHang_MaNguoiDung(Integer maNguoiDung);
     List<DanhGia> findByLoaiDanhGia(String loaiDanhGia);
     List<DanhGia> findByDonThueXe_MaDonThue(Integer maDonThue);
     List<DanhGia> findByPhieuSuaChua_MaPhieuSua(Integer maPhieuSua);

@@ -9,7 +9,7 @@ public interface PhieuSuaChuaService {
     PhieuSuaChuaResponse create(PhieuSuaChuaRequest request);
     List<PhieuSuaChuaResponse> getAll();
     PhieuSuaChuaResponse getById(Integer id);
-    List<PhieuSuaChuaResponse> getByKhachHang(Integer maKhachHang);
+    List<PhieuSuaChuaResponse> getByKhachHang(Integer maNguoiDung);
     PhieuSuaChuaResponse updateStatus(Integer id, String trangThai);
     PhieuSuaChuaResponse updateChanDoan(Integer id, String chanDoan, String trangThai);
 }

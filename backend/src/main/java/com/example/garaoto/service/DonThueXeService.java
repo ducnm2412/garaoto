@@ -9,6 +9,6 @@ public interface DonThueXeService {
     DonThueXeResponse create(DonThueXeRequest request);
     List<DonThueXeResponse> getAll();
     DonThueXeResponse getById(Integer id);
-    List<DonThueXeResponse> getByKhachHang(Integer maKhachHang);
+    List<DonThueXeResponse> getByKhachHang(Integer maNguoiDung);
     DonThueXeResponse updateStatus(Integer id, String trangThai);
 }

@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class NhanVienKyThuatResponse {
-    private Integer maNhanVien;
     private Integer maNguoiDung;
     private String hoTen;
     private String email;

@@ -45,12 +45,12 @@ public class DonThueXeController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{maKhachHang}")
-    public ResponseEntity<ApiResponse<List<DonThueXeResponse>>> getByKhachHang(@PathVariable Integer maKhachHang) {
+    @GetMapping("/khach-hang/{MaNguoiDung}")
+    public ResponseEntity<ApiResponse<List<DonThueXeResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<DonThueXeResponse>>builder()
                 .success(true)
                 .message("Lấy đơn thuê xe theo khách hàng thành công")
-                .data(donThueXeService.getByKhachHang(maKhachHang))
+                .data(donThueXeService.getByKhachHang(maNguoiDung))
                 .build());
     }
 

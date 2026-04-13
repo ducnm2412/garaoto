@@ -10,6 +10,6 @@ public interface XeKhachHangService {
     XeKhachHangResponse update(Integer id, XeKhachHangRequest request);
     List<XeKhachHangResponse> getAll();
     XeKhachHangResponse getById(Integer id);
-    List<XeKhachHangResponse> getByKhachHang(Integer maKhachHang);
+    List<XeKhachHangResponse> getByKhachHang(Integer maNguoiDung);
     void delete(Integer id);
 }

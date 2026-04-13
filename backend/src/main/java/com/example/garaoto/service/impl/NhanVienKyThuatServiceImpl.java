@@ -31,7 +31,7 @@ public class NhanVienKyThuatServiceImpl implements NhanVienKyThuatService {
 
     @Override
     public NhanVienKyThuatResponse getByNguoiDungId(Integer maNguoiDung) {
-        NhanVienKyThuat nhanVien = nhanVienKyThuatRepository.findByNguoiDung_MaNguoiDung(maNguoiDung)
+        NhanVienKyThuat nhanVien = nhanVienKyThuatRepository.findById(maNguoiDung)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhân viên kỹ thuật"));
         return mapToResponse(nhanVien);
     }
@@ -57,11 +57,10 @@ public class NhanVienKyThuatServiceImpl implements NhanVienKyThuatService {
 
     private NhanVienKyThuatResponse mapToResponse(NhanVienKyThuat nhanVien) {
         return NhanVienKyThuatResponse.builder()
-                .maNhanVien(nhanVien.getMaNhanVien())
-                .maNguoiDung(nhanVien.getNguoiDung().getMaNguoiDung())
-                .hoTen(nhanVien.getNguoiDung().getHoTen())
-                .email(nhanVien.getNguoiDung().getEmail())
-                .soDienThoai(nhanVien.getNguoiDung().getSoDienThoai())
+                .maNguoiDung(nhanVien.getMaNguoiDung())
+                .hoTen(nhanVien.getHoTen())
+                .email(nhanVien.getEmail())
+                .soDienThoai(nhanVien.getSoDienThoai())
                 .chuyenMon(nhanVien.getChuyenMon())
                 .caLamViec(nhanVien.getCaLamViec())
                 .build();

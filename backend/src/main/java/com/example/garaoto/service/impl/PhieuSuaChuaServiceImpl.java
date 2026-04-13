@@ -38,7 +38,7 @@ public class PhieuSuaChuaServiceImpl implements PhieuSuaChuaService {
         XeKhachHang xeKhachHang = xeKhachHangRepository.findById(request.getMaXeKh())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy xe khách hàng"));
 
-        KhachHang khachHang = khachHangRepository.findById(request.getMaKhachHang())
+        KhachHang khachHang = khachHangRepository.findById(request.getMaNguoiDung())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng"));
 
         PhieuSuaChua phieuSua = PhieuSuaChua.builder()
@@ -71,8 +71,8 @@ public class PhieuSuaChuaServiceImpl implements PhieuSuaChuaService {
     }
 
     @Override
-    public List<PhieuSuaChuaResponse> getByKhachHang(Integer maKhachHang) {
-        return phieuSuaChuaRepository.findByKhachHang_MaKhachHang(maKhachHang)
+    public List<PhieuSuaChuaResponse> getByKhachHang(Integer maNguoiDung) {
+        return phieuSuaChuaRepository.findByKhachHang_MaNguoiDung(maNguoiDung)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -109,7 +109,7 @@ public class PhieuSuaChuaServiceImpl implements PhieuSuaChuaService {
                 .maPhieuSua(phieuSua.getMaPhieuSua())
                 .maLichHen(phieuSua.getLichHenSuaChua() != null ? phieuSua.getLichHenSuaChua().getMaLichHen() : null)
                 .maXeKh(phieuSua.getXeKhachHang().getMaXeKh())
-                .maKhachHang(phieuSua.getKhachHang().getMaKhachHang())
+                .maNguoiDung(phieuSua.getKhachHang().getMaNguoiDung())
                 .ngayNhanXe(phieuSua.getNgayNhanXe())
                 .ngayHoanThanh(phieuSua.getNgayHoanThanh())
                 .chanDoan(phieuSua.getChanDoan())

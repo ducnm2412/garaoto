@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public class PhanCongSuaChuaResponse {
     private Integer maPhanCong;
     private Integer maPhieuSua;
-    private Integer maNhanVien;
-    private Integer maAdmin;
+    private Integer maNguoiDungNv;
+    private Integer maNguoiDungAdmin;
     private LocalDateTime ngayPhanCong;
     private String ghiChu;
     private String trangThai;

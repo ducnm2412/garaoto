@@ -24,11 +24,11 @@ public class PhanCongSuaChua {
     private com.example.garaoto.entity.PhieuSuaChua phieuSuaChua;
 
     @ManyToOne
-    @JoinColumn(name = "ma_nhan_vien", nullable = false)
+    @JoinColumn(name = "ma_nguoi_dung_nv", nullable = false)
     private com.example.garaoto.entity.NhanVienKyThuat nhanVienKyThuat;
 
     @ManyToOne
-    @JoinColumn(name = "ma_admin", nullable = false)
+    @JoinColumn(name = "ma_nguoi_dung_admin", nullable = false)
     private com.example.garaoto.entity.Admin admin;
 
     @Column(name = "ngay_phan_cong")

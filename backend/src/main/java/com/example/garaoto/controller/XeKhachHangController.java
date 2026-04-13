@@ -55,12 +55,12 @@ public class XeKhachHangController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{maKhachHang}")
-    public ResponseEntity<ApiResponse<List<XeKhachHangResponse>>> getByKhachHang(@PathVariable Integer maKhachHang) {
+    @GetMapping("/khach-hang/{MaNguoiDung}")
+    public ResponseEntity<ApiResponse<List<XeKhachHangResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<XeKhachHangResponse>>builder()
                 .success(true)
                 .message("Lấy danh sách xe theo khách hàng thành công")
-                .data(xeKhachHangService.getByKhachHang(maKhachHang))
+                .data(xeKhachHangService.getByKhachHang(maNguoiDung))
                 .build());
     }
 

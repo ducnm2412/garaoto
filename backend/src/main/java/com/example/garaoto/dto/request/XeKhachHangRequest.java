@@ -12,7 +12,7 @@ import lombok.*;
 public class XeKhachHangRequest {
 
     @NotNull(message = "Mã khách hàng không được để trống")
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
 
     @NotBlank(message = "Biển số không được để trống")
     private String bienSo;

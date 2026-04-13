@@ -45,12 +45,12 @@ public class PhieuSuaChuaController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{maKhachHang}")
-    public ResponseEntity<ApiResponse<List<PhieuSuaChuaResponse>>> getByKhachHang(@PathVariable Integer maKhachHang) {
+    @GetMapping("/khach-hang/{MaNguoiDung}")
+    public ResponseEntity<ApiResponse<List<PhieuSuaChuaResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<PhieuSuaChuaResponse>>builder()
                 .success(true)
                 .message("Lấy phiếu sửa theo khách hàng thành công")
-                .data(phieuSuaChuaService.getByKhachHang(maKhachHang))
+                .data(phieuSuaChuaService.getByKhachHang(maNguoiDung))
                 .build());
     }
 

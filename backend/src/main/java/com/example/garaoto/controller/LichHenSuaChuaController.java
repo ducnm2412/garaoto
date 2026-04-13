@@ -45,12 +45,12 @@ public class LichHenSuaChuaController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{maKhachHang}")
-    public ResponseEntity<ApiResponse<List<LichHenSuaChuaResponse>>> getByKhachHang(@PathVariable Integer maKhachHang) {
+    @GetMapping("/khach-hang/{MaNguoiDung}")
+    public ResponseEntity<ApiResponse<List<LichHenSuaChuaResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<LichHenSuaChuaResponse>>builder()
                 .success(true)
                 .message("Lấy lịch hẹn theo khách hàng thành công")
-                .data(lichHenSuaChuaService.getByKhachHang(maKhachHang))
+                .data(lichHenSuaChuaService.getByKhachHang(maNguoiDung))
                 .build());
     }
 

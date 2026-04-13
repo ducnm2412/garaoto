@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @Builder
 public class LichHenSuaChuaResponse {
     private Integer maLichHen;
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
     private Integer maXeKh;
     private LocalDate ngayHen;
     private LocalTime gioHen;

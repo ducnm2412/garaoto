@@ -8,6 +8,6 @@ import java.util.List;
 public interface PhanCongSuaChuaService {
     PhanCongSuaChuaResponse create(PhanCongSuaChuaRequest request);
     List<PhanCongSuaChuaResponse> getAll();
-    List<PhanCongSuaChuaResponse> getByNhanVien(Integer maNhanVien);
+    List<PhanCongSuaChuaResponse> getByNhanVien(Integer maNguoiDung);
     PhanCongSuaChuaResponse updateStatus(Integer id, String trangThai);
 }

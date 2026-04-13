@@ -29,7 +29,7 @@ public class PhieuSuaChua {
     private com.example.garaoto.entity.XeKhachHang xeKhachHang;
 
     @ManyToOne
-    @JoinColumn(name = "ma_khach_hang", nullable = false)
+    @JoinColumn(name = "ma_nguoi_dung", nullable = false)
     private com.example.garaoto.entity.KhachHang khachHang;
 
     @Column(name = "ngay_nhan_xe")

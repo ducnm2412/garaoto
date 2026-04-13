@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class DanhGiaResponse {
     private Integer maDanhGia;
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
     private String loaiDanhGia;
     private Integer maPhieuSua;
     private Integer maDonThue;

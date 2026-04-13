@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface NhanVienKyThuatRepository extends JpaRepository<NhanVienKyThuat, Integer> {
-    Optional<NhanVienKyThuat> findByNguoiDung(NguoiDung nguoiDung);
-    Optional<NhanVienKyThuat> findByNguoiDung_MaNguoiDung(Integer maNguoiDung);
+
+    Optional<NhanVienKyThuat> findById(Integer maNguoiDung);
 }

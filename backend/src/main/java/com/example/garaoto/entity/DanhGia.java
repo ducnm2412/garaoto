@@ -23,7 +23,7 @@ public class DanhGia {
     private Integer maDanhGia;
 
     @ManyToOne
-    @JoinColumn(name = "ma_khach_hang", nullable = false)
+    @JoinColumn(name = "ma_nguoi_dung", nullable = false)
     private KhachHang khachHang;
 
     @Column(name = "loai_danh_gia", length = 50)

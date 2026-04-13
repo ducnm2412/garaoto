@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ThanhToanResponse {
     private Integer maThanhToan;
-    private Integer maKhachHang;
+    private Integer maNguoiDung;
     private String loaiThanhToan;
     private Integer maPhieuSua;
     private Integer maDonThue;
