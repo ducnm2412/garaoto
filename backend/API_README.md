@@ -44,6 +44,36 @@
 ## 2. Quản lý Người Dùng & Quyền (User Management)
 *(Tất cả API từ bước này trở đi đều yêu cầu truyền Bearer Token)*
 
+### Lấy Danh Sách Đầu Ra Phân Quyền (Minh họa Đa Hình / Polymorphism)
+* `GET /api/nguoi-dung` (Lấy tất cả)
+* `GET /api/nguoi-dung/{id}` (Lấy cá nhân)
+> Nhờ áp dụng OOP, hệ thống tự động nhận diện và phân rã các thông tin cá nhân. Ví dụ một mảng JSON trả về sẽ hòa trộn cả Admin và Khách Hàng tự động như sau:
+```json
+[
+  {
+    "maNguoiDung": 1,
+    "hoTen": "Trần Quản Lý",
+    "email": "admin@gmail.com",
+    "vaiTro": "Admin",
+    "gioiThieuCongViec": "[ADMIN] Tôi tên Trần Quản Lý - Chức vụ: GiamDoc",
+    "chiTietRieng": {
+      "chucVu": "GiamDoc"
+    }
+  },
+  {
+    "maNguoiDung": 2,
+    "hoTen": "Nguyễn Văn Khách",
+    "email": "khach@gmail.com",
+    "vaiTro": "KhachHang",
+    "gioiThieuCongViec": "[KHÁCH] Tôi là Khách Hàng tên Nguyễn Văn Khách - Đang sở hữu Bằng Lái hạng: B2",
+    "chiTietRieng": {
+      "cccd": "079012345678",
+      "hangGplx": "B2"
+    }
+  }
+]
+```
+
 ### Cập nhật Thông tin Cơ bản
 * `PUT /api/nguoi-dung/{id}`
 ```json

@@ -72,6 +72,8 @@ public class NguoiDungServiceImpl implements NguoiDungService {
                 .vaiTro(nguoiDung.getVaiTro())
                 .trangThai(nguoiDung.getTrangThai())
                 .ngayTao(nguoiDung.getNgayTao())
+                .gioiThieuCongViec(nguoiDung.getGioiThieuCongViec())
+                .chiTietRieng(nguoiDung.layChiTietRieng())
                 .build();
     }
 }

@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class NguoiDung {
+public abstract class NguoiDung {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,4 +45,14 @@ public class NguoiDung {
 
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
+
+    // 1. TRỰC QUAN HÓA ĐA HÌNH (Ghi đè phương thức có sẵn - Virtual Polymorphism):
+    // Lớp cha CÓ phần thân mặc định. Các lớp con có thể chọn "Ghi đè" (Override) lại hoặc lấy xài luôn.
+    public String getGioiThieuCongViec() {
+        return "Tôi là người dùng chung của hệ thống GaraOto tên là: " + this.hoTen;
+    }
+
+    // 2. TRỰC QUAN HÓA TRỪU TƯỢNG (Abstraction / Abstract Polymorphism):
+    // Lớp cha CHỈ CÓ CÁI VỎ, KHÔNG CÓ THÂN. Ép buộc 100% lớp con phải định nghĩa mã nguồn.
+    public abstract java.util.Map<String, Object> layChiTietRieng();
 }

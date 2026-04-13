@@ -18,4 +18,6 @@ public class NguoiDungResponse {
     private String vaiTro;
     private String trangThai;
     private LocalDateTime ngayTao;
+    private String gioiThieuCongViec;
+    private java.util.Map<String, Object> chiTietRieng;
 }
