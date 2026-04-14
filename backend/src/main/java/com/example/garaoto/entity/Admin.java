@@ -17,13 +17,11 @@ public class Admin extends NguoiDung {
     @Column(name = "chuc_vu")
     private String chucVu;
 
-    // Ghi đè phương thức của NguoiDung (Tính Đa Hình)
     @Override
     public String getGioiThieuCongViec() {
         return "[ADMIN] Tôi là Bán Giám Đốc/Quản Lý tên " + this.getHoTen() + " - Chức vụ: " + this.chucVu;
     }
 
-    // Thực thi Đa hình lấy Response cho Business Logic
     @Override
     public java.util.Map<String, Object> layChiTietRieng() {
         return java.util.Map.of("chucVu", this.chucVu != null ? this.chucVu : "");

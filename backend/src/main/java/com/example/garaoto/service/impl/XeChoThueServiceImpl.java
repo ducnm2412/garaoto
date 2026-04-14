@@ -52,7 +52,7 @@ public class XeChoThueServiceImpl implements XeChoThueService {
         xe.setHopSo(request.getHopSo());
         xe.setNhienLieu(request.getNhienLieu());
         xe.setGiaTheoNgay(request.getGiaTheoNgay());
-        xe.setTinhTrang(request.getTinhTrang());
+        xe.capNhatTinhTrang(request.getTinhTrang());
         xe.setHinhAnh(request.getHinhAnh());
         xe.setNamSanXuat(request.getNamSanXuat());
 

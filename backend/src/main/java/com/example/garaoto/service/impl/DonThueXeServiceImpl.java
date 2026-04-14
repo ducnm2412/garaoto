@@ -88,7 +88,7 @@ public class DonThueXeServiceImpl implements DonThueXeService {
         DonThueXe donThueXe = donThueXeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn thuê"));
 
-        donThueXe.setTrangThai(trangThai);
+        donThueXe.chuyenTrangThai(trangThai);
         return mapToResponse(donThueXeRepository.save(donThueXe));
     }
 

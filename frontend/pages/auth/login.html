@@ -238,7 +238,18 @@
                 // Redirect
                 const returnUrl = Utils.getUrlParam('returnUrl');
                 setTimeout(() => {
-                    window.location.href = returnUrl ? decodeURIComponent(returnUrl) : '/';
+                    if (returnUrl) {
+                        window.location.href = decodeURIComponent(returnUrl);
+                    } else if (authData.vaiTro && authData.vaiTro.toUpperCase() === 'ADMIN') {
+                        // Nếu là Admin, tự động chuyển hướng vào trang quản trị
+                        window.location.href = '/pages/admin/index.html';
+                    } else if (authData.vaiTro && authData.vaiTro.toUpperCase() === 'NHANVIENKYTHUAT') {
+                        // Thợ sửa chữa
+                        window.location.href = '/pages/nhan-vien/index.html';
+                    } else {
+                        // Nhóm Khách Hàng hoặc còn lại về trang chủ
+                        window.location.href = '/';
+                    }
                 }, 500);
 
             } catch (err) {

@@ -60,7 +60,7 @@
                 <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item active">
                     <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
                 </a>
-                <a href="#" class="admin-nav-item" onclick="alert('Tính năng đang phát triển!')">
+                <a href="#" class="admin-nav-item" onclick="event.preventDefault(); if(window.Toast) window.Toast.info('Tính năng đang phát triển!')">
                     <i class="fa-solid fa-users"></i> Khách Hàng
                 </a>
             </nav>
@@ -76,7 +76,7 @@
             <div class="admin-header">
                 <h1>Quản lý Phiếu Sửa Chữa & Phân Công</h1>
                 <div class="header-actions">
-                    <button class="btn btn-primary" onclick="openCreateModal()"><i class="fa-solid fa-plus"></i> Lập Phiếu Mới</button>
+                    <!-- Nút lập phiếu thủ công đã được lược bỏ -->
                 </div>
             </div>
 
@@ -110,7 +110,7 @@
                             <th>Mã Phiếu</th>
                             <th>Lịch Hẹn Nguồn</th>
                             <th>Mã Xe KH</th>
-                            <th>Chẩn Đoán</th>
+                            <th>Chẩn Đoán & Thợ</th>
                             <th>Tổng Tiền</th>
                             <th>Trạng Thái</th>
                             <th>Thao Tác</th>
@@ -126,43 +126,30 @@
         </main>
     </div>
 
-    <!-- Create Modal -->
-    <div class="modal" id="create-modal">
+    <!-- Assign Modal -->
+    <div class="modal" id="assign-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Lập Phiếu Sửa Chữa Mới</h2>
-                <button class="btn-icon" onclick="closeCreateModal()"><i class="fa-solid fa-times"></i></button>
+                <h2>Phân Công Nhân Viên Cho Phiếu <span id="assign-maPhieuLabel"></span></h2>
+                <button class="btn-icon" onclick="closeAssignModal()"><i class="fa-solid fa-times"></i></button>
             </div>
-            <form id="create-form">
+            <form id="assign-form">
+                <input type="hidden" id="inp-maPhieuSuaAssign">
+                
                 <div class="form-group">
-                    <label class="form-label">Mã Lịch Hẹn Gốc (Mã Lịch đang ở trạng thái Đã XNA / Đang SC)</label>
-                    <input type="number" id="inp-maLichHen" class="form-control" required placeholder="VD: 1">
+                    <label class="form-label">Nhân Viên Kỹ Thuật (Thợ)</label>
+                    <select id="inp-maNhanVien" class="form-control" required>
+                        <option value="">-- Đang tải danh sách thợ... --</option>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Mã Xe Khách Hàng</label>
-                    <input type="number" id="inp-maXe" class="form-control" required placeholder="VD: 1">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Mã Khách Hàng</label>
-                    <input type="number" id="inp-maKhachHang" class="form-control" required placeholder="VD: 1">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Chẩn Đoán Lỗi</label>
-                    <textarea id="inp-chanDoan" class="form-control" rows="3" required placeholder="Ghi nhận lỗi từ thợ..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Tạm Tính (Tổng Tiền VND)</label>
-                    <input type="number" id="inp-tongTien" class="form-control" value="0" required>
-                </div>
-                <!-- Tích hợp Phân Công luôn -->
-                <div class="form-group" style="padding: 10px; border: 1px dashed var(--primary-400); background: var(--primary-50); border-radius: 5px;">
-                    <label class="form-label">Phân công Kỹ thuật viên (Tùy chọn)</label>
-                    <input type="number" id="inp-maNhanVien" class="form-control" placeholder="Nhập Mã Nhân Viên (ID NguoiDung)">
+                    <label class="form-label">Ghi Chú Phân Công</label>
+                    <textarea id="inp-ghiChuPhanCong" class="form-control" rows="3" placeholder="Ví dụ: Kiểm tra kỹ gầm xe..."></textarea>
                 </div>
 
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
-                    <button type="button" class="btn btn-outline" onclick="closeCreateModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu Phiếu & Phân Công</button>
+                    <button type="button" class="btn btn-outline" onclick="closeAssignModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Xác Nhận Phân Công</button>
                 </div>
             </form>
         </div>
@@ -175,19 +162,30 @@
         import Api from '/js/api.js';
         import Toast from '/js/toast.js';
         import Utils from '/js/utils.js';
+        import Components from '/js/components.js';
+
+        window.Toast = Toast;
 
         if (!Guard.requireAuth()) throw new Error('redirect');
-
-        document.getElementById('btn-admin-logout').addEventListener('click', (e) => {
+        // Logout
+        document.getElementById('btn-admin-logout').addEventListener('click', async (e) => {
             e.preventDefault();
-            Auth.logout();
+            const isOk = await Components.confirm('Bạn có chắc chắn muốn đăng xuất khỏi phiên Admin?');
+            if (!isOk) return;
+            Auth.logoutAndRedirect();
         });
 
         const user = Auth.getUser();
 
         // Modal triggers
-        window.openCreateModal = () => document.getElementById('create-modal').classList.add('active');
-        window.closeCreateModal = () => document.getElementById('create-modal').classList.remove('active');
+        window.openAssignModal = (id) => {
+            document.getElementById('inp-maPhieuSuaAssign').value = id;
+            document.getElementById('assign-maPhieuLabel').innerText = '#' + id;
+            document.getElementById('inp-maNhanVien').value = '';
+            document.getElementById('inp-ghiChuPhanCong').value = '';
+            document.getElementById('assign-modal').classList.add('active');
+        };
+        window.closeAssignModal = () => document.getElementById('assign-modal').classList.remove('active');
 
         // Load Phieu Sua Chua
         window.loadPhieuSua = async function() {
@@ -220,14 +218,23 @@
                             <td><strong>#${item.maPhieuSua}</strong></td>
                             <td>Lịch #${item.maLichHen || 'N/A'}</td>
                             <td>Xe KH: ${item.maXeKh}</td>
-                            <td>${item.chanDoan || '<em>Chưa khám</em>'}</td>
-                            <td><strong>${Utils.formatCurrency(item.tongTien || 0)}</strong></td>
+                            <td>
+                                <div>${item.chanDoan || '<em>Chưa chẩn đoán</em>'}</div>
+                                <div style="margin-top: 5px; color: var(--primary-600); font-size: 0.85em;">
+                                    <i class="fa-solid fa-user-gear"></i> ${item.tenNhanVien ? item.tenNhanVien : '<span style="color:var(--gray-500)">Chưa phân công</span>'}
+                                </div>
+                            </td>
+                            <td><strong>${Utils.formatMoney(item.tongTien || 0)}</strong></td>
                             <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
                             <td>
                                 <div class="action-buttons">
-                                    ${item.trangThai !== 'HoanThanh' ? `
-                                        <button class="btn-icon approve" title="Đánh dấu Hoàn Thành Sửa Lỗi" onclick="updateTrangThaiPhieu(${item.maPhieuSua}, 'HoanThanh')">
-                                            <i class="fa-solid fa-check-double"></i>
+                                    ${item.trangThai === 'TiepNhan' ? `
+                                        <button class="btn-icon approve" title="Phân Công Thợ" onclick="openAssignModal(${item.maPhieuSua})">
+                                            <i class="fa-solid fa-users-gear"></i> Phân công
+                                        </button>
+                                    ` : item.trangThai === 'DangSuaChua' ? `
+                                        <button class="btn-icon approve" title="Đánh dấu Hoàn Thành Sửa Lỗi" onclick="hoanThanhPhieu(${item.maPhieuSua})">
+                                            <i class="fa-solid fa-check-double"></i> Đã Xong
                                         </button>
                                     ` : `
                                         <button class="btn-icon" title="Đã xong" disabled style="opacity: 0.3;">
@@ -245,49 +252,67 @@
             }
         };
 
-        // Form Submit
-        document.getElementById('create-form').addEventListener('submit', async (e) => {
+        // Danh sách thợ
+        window.loadTho = async function() {
+            try {
+                const res = await Api.get('/nhan-vien-ky-thuat');
+                const list = Array.isArray(res) ? res : (res?.data || []);
+                const select = document.getElementById('inp-maNhanVien');
+                if (list.length === 0) {
+                    select.innerHTML = '<option value="">-- Không có thợ nào --</option>';
+                    return;
+                }
+                select.innerHTML = '<option value="">-- Trống (Chọn Thợ) --</option>' + list.map(t => 
+                    `<option value="${t.maNguoiDung}">${t.hoTen} (${t.chuyenMon || 'Thợ chung'} - ${t.caLamViec || 'Full time'})</option>`
+                ).join('');
+            } catch(e) {
+                console.error('Lỗi tải thợ', e);
+                document.getElementById('inp-maNhanVien').innerHTML = '<option value="">-- Lỗi tải dữ liệu --</option>';
+            }
+        }
+
+        // Form Submit cho Phân Công
+        document.getElementById('assign-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
-                // 1. Tạo Phiếu
-                const bodyPhieu = {
-                    maLichHen: document.getElementById('inp-maLichHen').value,
-                    maXeKh: document.getElementById('inp-maXe').value,
-                    maKhachHang: document.getElementById('inp-maKhachHang').value,
-                    chanDoan: document.getElementById('inp-chanDoan').value,
-                    tongTien: document.getElementById('inp-tongTien').value,
-                    trangThai: 'DangSuaChua'
-                };
-                const resPhieu = await Api.post('/phieu-sua-chua', bodyPhieu);
-                const newPhieuId = resPhieu?.data?.maPhieuSua || resPhieu?.maPhieuSua;
-                
-                // 2. Phân công (Nếu có nhập mã nhân viên)
-                const maNhanVien = document.getElementById('inp-maNhanVien').value;
-                if (maNhanVien && newPhieuId) {
-                    const bodyPhanCong = {
-                        maPhieuSua: newPhieuId,
-                        maNhanVien: maNhanVien,
-                        maAdmin: user.id || 1, // Fix cứng hoặc lấy từ user
-                        ghiChu: bodyPhieu.chanDoan,
-                        trangThai: 'DaPhanCong'
-                    };
-                    await Api.post('/phan-cong-sua-chua', bodyPhanCong);
-                    Toast.success(`Phân công thợ #${maNhanVien} thành công!`);
+                const maPhieuSua = parseInt(document.getElementById('inp-maPhieuSuaAssign').value);
+                const maNhanVien = parseInt(document.getElementById('inp-maNhanVien').value);
+                const ghiChu = document.getElementById('inp-ghiChuPhanCong').value;
+
+                if (!maNhanVien) {
+                    Toast.warning('Vui lòng nhập Mã nhân viên!');
+                    return;
                 }
 
-                Toast.success('Lập Phiếu Sửa Chữa thành công!');
-                closeCreateModal();
+                const bodyPhanCong = {
+                    maPhieuSua: maPhieuSua,
+                    maNguoiDungNv: maNhanVien,
+                    maNguoiDungAdmin: user?.id ? parseInt(user.id) : 1,
+                    ghiChu: ghiChu,
+                    trangThai: 'DaPhanCong'
+                };
+
+                // Gọi API Phân công
+                await Api.post('/phan-cong-sua-chua', bodyPhanCong);
+                
+                // Đồng thời cập nhật trạng thái phiếu sửa chữa thành đang sửa chữa (Tùy chọn)
+                await Api.patch(`/phieu-sua-chua/${maPhieuSua}/trang-thai?trangThai=DangSuaChua`);
+
+                Toast.success(`Phân công thợ #${maNhanVien} thành công!`);
+                closeAssignModal();
                 loadPhieuSua(); // reload table
             } catch (err) {
-                Toast.error('Không thể lập phiếu: ' + err.message);
+                Toast.error('Không thể phân công: ' + err.message);
             }
         });
 
         // Cập nhật trạng thái Phiếu
-        window.updateTrangThaiPhieu = async function(id, newStatus) {
-            if (!confirm(`Xác nhận đánh dấu Phiếu #${id} đã sửa chữa XONG?`)) return;
+        window.hoanThanhPhieu = async function(id) {
+            const isOk = await Components.confirm(`Xác nhận đánh dấu Phiếu #${id} đã sửa chữa XONG?`);
+            if (!isOk) return;
+
             try {
-                await Api.patch(`/phieu-sua-chua/${id}/trang-thai?trangThai=${encodeURIComponent(newStatus)}`);
+                await Api.patch(`/phieu-sua-chua/${id}/trang-thai?trangThai=HoanThanh`);
                 Toast.success(`Lưu trạng thái #${id} thành công!`);
                 
                 // (Tùy chọn) Mình nên đổi trạng thái Lịch Hẹn gốc thành Hoàn Thành luôn,
@@ -300,6 +325,16 @@
         }
 
         loadPhieuSua();
+        loadTho();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Remove the prefill logic since we don't open Create Modal automatically anymore.
+            // If they are redirected with query string, just clear it.
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('maLichHen')) {
+                window.history.replaceState({}, '', '/pages/admin/phieu-sua-chua.html');
+            }
+        });
     </script>
 </body>
 </html>

@@ -20,4 +20,5 @@ public class PhieuSuaChuaResponse {
     private String chanDoan;
     private BigDecimal tongTien;
     private String trangThai;
+    private String tenNhanVien;
 }

@@ -10,4 +10,5 @@ public interface PhieuSuaChuaRepository extends JpaRepository<PhieuSuaChua, Inte
     List<PhieuSuaChua> findByKhachHang_MaNguoiDung(Integer maNguoiDung);
     List<PhieuSuaChua> findByTrangThai(String trangThai);
     List<PhieuSuaChua> findByXeKhachHang_MaXeKh(Integer maXeKh);
+    boolean existsByLichHenSuaChua_MaLichHen(Integer maLichHen);
 }

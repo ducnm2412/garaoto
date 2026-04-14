@@ -9,6 +9,7 @@ import com.example.garaoto.entity.XeKhachHang;
 import com.example.garaoto.exception.ResourceNotFoundException;
 import com.example.garaoto.repository.KhachHangRepository;
 import com.example.garaoto.repository.LichHenSuaChuaRepository;
+import com.example.garaoto.repository.PhanCongSuaChuaRepository;
 import com.example.garaoto.repository.PhieuSuaChuaRepository;
 import com.example.garaoto.repository.XeKhachHangRepository;
 import com.example.garaoto.service.PhieuSuaChuaService;
@@ -26,6 +27,7 @@ public class PhieuSuaChuaServiceImpl implements PhieuSuaChuaService {
     private final LichHenSuaChuaRepository lichHenSuaChuaRepository;
     private final XeKhachHangRepository xeKhachHangRepository;
     private final KhachHangRepository khachHangRepository;
+    private final PhanCongSuaChuaRepository phanCongSuaChuaRepository;
 
     @Override
     public PhieuSuaChuaResponse create(PhieuSuaChuaRequest request) {
@@ -82,7 +84,7 @@ public class PhieuSuaChuaServiceImpl implements PhieuSuaChuaService {
     public PhieuSuaChuaResponse updateStatus(Integer id, String trangThai) {
         PhieuSuaChua phieuSua = phieuSuaChuaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiếu sửa"));
-        phieuSua.setTrangThai(trangThai);
+        phieuSua.capNhatTrangThai(trangThai);
 
         if ("DaSuaXong".equals(trangThai) || "BanGiao".equals(trangThai)) {
             phieuSua.setNgayHoanThanh(LocalDateTime.now());
@@ -98,13 +100,21 @@ public class PhieuSuaChuaServiceImpl implements PhieuSuaChuaService {
 
         phieuSua.setChanDoan(chanDoan);
         if (trangThai != null) {
-            phieuSua.setTrangThai(trangThai);
+            phieuSua.capNhatTrangThai(trangThai);
         }
 
         return mapToResponse(phieuSuaChuaRepository.save(phieuSua));
     }
 
     private PhieuSuaChuaResponse mapToResponse(PhieuSuaChua phieuSua) {
+        String tenNhanVien = null;
+        if (phieuSua.getMaPhieuSua() != null) {
+            var listPhanCong = phanCongSuaChuaRepository.findByPhieuSuaChua_MaPhieuSua(phieuSua.getMaPhieuSua());
+            if (!listPhanCong.isEmpty()) {
+                tenNhanVien = listPhanCong.get(listPhanCong.size() - 1).getNhanVienKyThuat().getHoTen();
+            }
+        }
+
         return PhieuSuaChuaResponse.builder()
                 .maPhieuSua(phieuSua.getMaPhieuSua())
                 .maLichHen(phieuSua.getLichHenSuaChua() != null ? phieuSua.getLichHenSuaChua().getMaLichHen() : null)
@@ -115,6 +125,7 @@ public class PhieuSuaChuaServiceImpl implements PhieuSuaChuaService {
                 .chanDoan(phieuSua.getChanDoan())
                 .tongTien(phieuSua.getTongTien())
                 .trangThai(phieuSua.getTrangThai())
+                .tenNhanVien(tenNhanVien)
                 .build();
     }
 }

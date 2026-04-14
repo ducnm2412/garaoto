@@ -19,5 +19,6 @@ public class LichHenSuaChuaResponse {
     private LocalTime gioHen;
     private String moTaLoi;
     private String trangThai;
+    private String tenKhachHang;
     private LocalDateTime ngayTao;
 }

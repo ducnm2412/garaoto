@@ -23,13 +23,11 @@ public class KhachHang extends NguoiDung {
     @Column(name = "hang_gplx")
     private String hangGplx;
 
-    // Ghi đè phương thức của NguoiDung (Tính Đa Hình)
     @Override
     public String getGioiThieuCongViec() {
         return "[KHÁCH] Tôi là Khách Hàng tên " + this.getHoTen() + " - Đang sở hữu Bằng Lái hạng: " + this.hangGplx;
     }
 
-    // Thực thi Đa hình lấy Response cho Business Logic
     @Override
     public java.util.Map<String, Object> layChiTietRieng() {
         return java.util.Map.of(

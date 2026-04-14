@@ -253,6 +253,46 @@ const Components = {
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) overlay.remove();
         });
+    },
+
+    /**
+     * Show Beautiful UI Confirm Modal
+     */
+    confirm(message) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay show';
+            overlay.innerHTML = `
+                <div class="modal" style="display: block; max-width: 400px; border-radius: var(--radius-lg); text-align: center; border-top: 4px solid var(--primary-500);">
+                    <div class="modal-body" style="padding: 2rem;">
+                        <div style="font-size: 3.5rem; color: var(--primary-500); margin-bottom: 1rem;">
+                            <i class="fa-solid fa-circle-question"></i>
+                        </div>
+                        <h3 style="margin-bottom: 0.5rem">Xác nhận thao tác</h3>
+                        <p style="color: var(--gray-600); margin-bottom: 2rem">${message}</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center;">
+                            <button class="btn btn-ghost" id="btn-modal-cancel">Hủy</button>
+                            <button class="btn btn-primary" id="btn-modal-ok">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            const btnCancel = overlay.querySelector('.btn-ghost');
+            const btnOk = overlay.querySelector('.btn-primary');
+
+            btnCancel.onclick = () => {
+                overlay.classList.remove('show');
+                setTimeout(() => overlay.remove(), 200);
+                resolve(false);
+            };
+            btnOk.onclick = () => {
+                overlay.classList.remove('show');
+                setTimeout(() => overlay.remove(), 200);
+                resolve(true);
+            };
+        });
     }
 };
 

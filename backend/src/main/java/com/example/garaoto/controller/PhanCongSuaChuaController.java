@@ -36,7 +36,7 @@ public class PhanCongSuaChuaController {
                 .build());
     }
 
-    @GetMapping("/nhan-vien/{MaNguoiDung}")
+    @GetMapping("/nhan-vien/{maNguoiDung}")
     public ResponseEntity<ApiResponse<List<PhanCongSuaChuaResponse>>> getByNhanVien(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<PhanCongSuaChuaResponse>>builder()
                 .success(true)

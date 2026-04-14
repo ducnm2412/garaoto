@@ -47,7 +47,9 @@ public class ChiTietSuaChuaServiceImpl implements ChiTietSuaChuaService {
                 .ghiChu(request.getGhiChu())
                 .build();
 
-        return mapToResponse(chiTietSuaChuaRepository.save(chiTiet));
+        chiTiet = chiTietSuaChuaRepository.save(chiTiet);
+        recalculateTongTien(phieuSua);
+        return mapToResponse(chiTiet);
     }
 
     @Override
@@ -60,10 +62,23 @@ public class ChiTietSuaChuaServiceImpl implements ChiTietSuaChuaService {
 
     @Override
     public void delete(Integer id) {
-        if (!chiTietSuaChuaRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Không tìm thấy chi tiết sửa chữa");
+        ChiTietSuaChua chiTiet = chiTietSuaChuaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy chi tiết sửa chữa"));
+        PhieuSuaChua phieuSua = chiTiet.getPhieuSuaChua();
+        chiTietSuaChuaRepository.delete(chiTiet);
+        recalculateTongTien(phieuSua);
+    }
+
+    private void recalculateTongTien(PhieuSuaChua phieuSua) {
+        List<ChiTietSuaChua> chiTiets = chiTietSuaChuaRepository.findByPhieuSuaChua_MaPhieuSua(phieuSua.getMaPhieuSua());
+        BigDecimal tong = BigDecimal.ZERO;
+        for (ChiTietSuaChua ct : chiTiets) {
+            if (ct.getThanhTien() != null) {
+                tong = tong.add(ct.getThanhTien());
+            }
         }
-        chiTietSuaChuaRepository.deleteById(id);
+        phieuSua.capNhatTongTien(tong);
+        phieuSuaChuaRepository.save(phieuSua);
     }
 
     private ChiTietSuaChuaResponse mapToResponse(ChiTietSuaChua chiTiet) {

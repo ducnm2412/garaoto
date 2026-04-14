@@ -30,7 +30,7 @@
                 <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
                     <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
                 </a>
-                <a href="#" class="admin-nav-item" onclick="alert('Tính năng đang phát triển!')">
+                <a href="#" class="admin-nav-item" onclick="event.preventDefault(); if(window.Toast) window.Toast.info('Tính năng đang phát triển!')">
                     <i class="fa-solid fa-users"></i> Khách Hàng
                 </a>
             </nav>
@@ -104,11 +104,14 @@
 
     <!-- Scripts -->
     <script type="module">
-        import Guard from '/js/guard.js';
-        import Auth from '/js/auth.js';
-        import Api from '/js/api.js';
-        import Toast from '/js/toast.js';
-        import Utils from '/js/utils.js';
+        import Guard from '/js/guard.js?v=2';
+        import Auth from '/js/auth.js?v=2';
+        import Api from '/js/api.js?v=2';
+        import Toast from '/js/toast.js?v=2';
+        import Utils from '/js/utils.js?v=2';
+        import Components from '/js/components.js?v=2';
+
+        window.Toast = Toast;
 
         // Check auth (Optionally verify if user role is Admin)
         if (!Guard.requireAuth()) throw new Error('redirect');
@@ -120,9 +123,11 @@
         }
 
         // Logout
-        document.getElementById('btn-admin-logout').addEventListener('click', (e) => {
+        document.getElementById('btn-admin-logout').addEventListener('click', async (e) => {
             e.preventDefault();
-            Auth.logout();
+            const isOk = await Components.confirm('Bạn có chắc chắn muốn đăng xuất khỏi phiên Admin?');
+            if (!isOk) return;
+            Auth.logoutAndRedirect();
         });
 
         // Load Lịch Hẹn
@@ -133,6 +138,7 @@
                 // Lấy toàn bộ lịch hẹn (Vì bạn là Admin)
                 const res = await Api.get('/lich-hen-sua-chua');
                 const list = Array.isArray(res) ? res : (res?.data || []);
+                window.currentLichHenList = list;
 
                 if (list.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Chưa có lịch hẹn nào</td></tr>`;
@@ -160,7 +166,7 @@
                     return `
                         <tr>
                             <td><strong>#${item.maLichHen}</strong></td>
-                            <td>Mã KH: ${item.maKhachHang}</td>
+                            <td><strong>${item.tenKhachHang || 'Khách Hàng'}</strong><br><small style="color:var(--gray-500)">Mã ID: ${item.maNguoiDung}</small></td>
                             <td>Mã Xe: ${item.maXeKh}</td>
                             <td>${Utils.formatDate(item.ngayHen)} ${item.gioHen || ''}</td>
                             <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
@@ -191,11 +197,19 @@
 
         // Đổi trạng thái lịch hẹn
         window.updateTrangThai = async function(id, newStatus) {
-            if (!confirm(`Bạn chắc chắn muốn đổi trạng thái mã #${id} thành [${newStatus}]?`)) return;
+            const isOk = await Components.confirm(`Bạn chắc chắn muốn đổi trạng thái mã #${id} thành [${newStatus}]?`);
+            if (!isOk) return;
+
             try {
                 // Gọi PATCH API lên Spring Boot
                 await Api.patch(`/lich-hen-sua-chua/${id}/trang-thai?trangThai=${encodeURIComponent(newStatus)}`);
                 Toast.success(`Cập nhật lịch #${id} thành công!`);
+                
+                if (newStatus === 'DaXacNhan') {
+                    // Phiếu sửa chữa đã được tự động tạo ở Backend
+                    Toast.info('Hệ thống đã tự động tạo Phiếu Sửa Chữa (trạng thái Tiếp Nhận).');
+                }
+                
                 loadLichHen();
             } catch (err) {
                 Toast.error('Cập nhật thất bại: ' + err.message);

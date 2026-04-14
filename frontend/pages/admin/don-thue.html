@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="/css/components.css">
     <link rel="stylesheet" href="/css/pages/admin.css">
 </head>
+
 <body class="admin-mode">
     <div class="admin-layout">
         <!-- Sidebar -->
@@ -30,7 +32,8 @@
                 <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
                     <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
                 </a>
-                <a href="#" class="admin-nav-item" onclick="alert('Tính năng đang phát triển!')">
+                <a href="#" class="admin-nav-item"
+                    onclick="event.preventDefault(); if(window.Toast) window.Toast.info('Tính năng đang phát triển!')">
                     <i class="fa-solid fa-users"></i> Khách Hàng
                 </a>
             </nav>
@@ -60,14 +63,16 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--success-100); color: var(--success-600);"><i class="fa-solid fa-check"></i></div>
+                    <div class="stat-icon" style="background: var(--success-100); color: var(--success-600);"><i
+                            class="fa-solid fa-check"></i></div>
                     <div class="stat-info">
                         <h3>Đã duyệt / Đang thuê</h3>
                         <div class="stat-value" id="stat-approved">0</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--primary-100); color: var(--primary-600);"><i class="fa-solid fa-sack-dollar"></i></div>
+                    <div class="stat-icon" style="background: var(--primary-100); color: var(--primary-600);"><i
+                            class="fa-solid fa-sack-dollar"></i></div>
                     <div class="stat-info">
                         <h3>Đã hoàn tất</h3>
                         <div class="stat-value" id="stat-completed">0</div>
@@ -79,7 +84,8 @@
             <div class="table-container">
                 <div class="table-header">
                     <h2>Danh sách yêu cầu thuê xe</h2>
-                    <button class="btn btn-primary btn-sm" onclick="loadDonThueXe()"><i class="fa-solid fa-rotate-right"></i> Làm mới</button>
+                    <button class="btn btn-primary btn-sm" onclick="loadDonThueXe()"><i
+                            class="fa-solid fa-rotate-right"></i> Làm mới</button>
                 </div>
                 <table class="data-table">
                     <thead>
@@ -95,7 +101,8 @@
                     </thead>
                     <tbody id="don-thue-tbody">
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: var(--space-6);">Đang tải dữ liệu...</td>
+                            <td colspan="7" style="text-align: center; padding: var(--space-6);">Đang tải dữ liệu...
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -110,18 +117,24 @@
         import Api from '/js/api.js';
         import Toast from '/js/toast.js';
         import Utils from '/js/utils.js';
+        import Components from '/js/components.js';
+
+        // Gán vào window để HTML event onclick gọi HTML được
+        window.Toast = Toast;
 
         // Check auth
         if (!Guard.requireAuth()) throw new Error('redirect');
 
         // Logout
-        document.getElementById('btn-admin-logout').addEventListener('click', (e) => {
+        document.getElementById('btn-admin-logout').addEventListener('click', async (e) => {
             e.preventDefault();
-            Auth.logout();
+            const isOk = await Components.confirm('Bạn có chắc chắn muốn đăng xuất khỏi phiên Admin?');
+            if (!isOk) return;
+            Auth.logoutAndRedirect();
         });
 
         // Load Đơn Thuê Xe
-        window.loadDonThueXe = async function() {
+        window.loadDonThueXe = async function () {
             const tbody = document.getElementById('don-thue-tbody');
             tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Đang tải dữ liệu...</td></tr>`;
             try {
@@ -134,48 +147,59 @@
                 }
 
                 // Cập nhật thống kê
-                document.getElementById('stat-pending').innerText = list.filter(x => x.trangThai === 'ChoXacNhan').length;
+                document.getElementById('stat-pending').innerText = list.filter(x => x.trangThai === 'ChoDuyet').length;
                 document.getElementById('stat-approved').innerText = list.filter(x => x.trangThai === 'DaXacNhan' || x.trangThai === 'DangThue').length;
-                document.getElementById('stat-completed').innerText = list.filter(x => x.trangThai === 'DaHoanTat').length;
+                document.getElementById('stat-completed').innerText = list.filter(x => x.trangThai === 'DaTra').length;
 
                 // Mới nhất lên đầu
-                list.sort((a,b) => b.maDonThue - a.maDonThue);
+                list.sort((a, b) => b.maDonThue - a.maDonThue);
 
                 tbody.innerHTML = list.map(item => {
                     let badgeClass = 'badge-info';
                     let displayTrangThai = item.trangThai;
-                    if (item.trangThai === 'ChoXacNhan') { badgeClass = 'badge-pending'; displayTrangThai = 'Chờ xác nhận'; }
+                    if (item.trangThai === 'ChoDuyet') { badgeClass = 'badge-pending'; displayTrangThai = 'Chờ duyệt'; }
                     if (item.trangThai === 'DaXacNhan' || item.trangThai === 'DangThue') badgeClass = 'badge-success';
-                    if (item.trangThai === 'DaXacNhan') displayTrangThai = 'Đã xác nhận';
+                    if (item.trangThai === 'DaXacNhan') displayTrangThai = 'Đã duyệt';
                     if (item.trangThai === 'DangThue') displayTrangThai = 'Đang thuê';
                     if (item.trangThai === 'DaHuy') { badgeClass = 'badge-danger'; displayTrangThai = 'Đã hủy'; }
-                    if (item.trangThai === 'DaHoanTat') displayTrangThai = 'Đã hoàn tất';
+                    if (item.trangThai === 'DaTra') displayTrangThai = 'Đã trả xe';
 
                     return `
                         <tr>
                             <td><strong>#${item.maDonThue}</strong></td>
-                            <td>KH: ${item.maKhachHang}</td>
+                            <td>KH: ${item.maNguoiDung}</td>
                             <td>Xe Thuê: ${item.maXeThue}</td>
                             <td>
                                 <div style="font-size: 0.8rem">
                                     <i class="fa-solid fa-arrow-right-to-bracket" style="color:var(--success-500)"></i>
-                                    ${Utils.formatDate(item.ngayNhanXe)}
+                                    ${Utils.formatDate(item.ngayNhan)}
                                 </div>
                                 <div style="font-size: 0.8rem">
                                     <i class="fa-solid fa-arrow-right-from-bracket" style="color:var(--danger-500)"></i>
-                                    ${Utils.formatDate(item.ngayTraXe)}
+                                    ${Utils.formatDate(item.ngayTra)}
                                 </div>
                             </td>
-                            <td><strong>${Utils.formatCurrency(item.tongTien)}</strong></td>
+                            <td><strong>${Utils.formatMoney(item.tongTien)}</strong></td>
                             <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
                             <td>
                                 <div class="action-buttons">
-                                    ${item.trangThai === 'ChoXacNhan' ? `
+                                    ${item.trangThai === 'ChoDuyet' ? `
                                         <button class="btn-icon approve" title="Duyệt đơn" onclick="updateTrangThaiDon(${item.maDonThue}, 'DaXacNhan')">
                                             <i class="fa-solid fa-check"></i>
                                         </button>
                                         <button class="btn-icon reject" title="Từ chối" onclick="updateTrangThaiDon(${item.maDonThue}, 'DaHuy')">
                                             <i class="fa-solid fa-ban"></i>
+                                        </button>
+                                    ` : item.trangThai === 'DaXacNhan' ? `
+                                        <button class="btn-icon approve" style="color: var(--primary-600)" title="Giao xe cho khách (Đang thuê)" onclick="updateTrangThaiDon(${item.maDonThue}, 'DangThue')">
+                                            <i class="fa-solid fa-key"></i>
+                                        </button>
+                                        <button class="btn-icon reject" title="Hủy đơn" onclick="updateTrangThaiDon(${item.maDonThue}, 'DaHuy')">
+                                            <i class="fa-solid fa-ban"></i>
+                                        </button>
+                                    ` : item.trangThai === 'DangThue' ? `
+                                        <button class="btn-icon" style="color: var(--success-600)" title="Thu hồi xe (Đã trả)" onclick="updateTrangThaiDon(${item.maDonThue}, 'DaTra')">
+                                            <i class="fa-solid fa-flag-checkered"></i>
                                         </button>
                                     ` : `
                                         <button class="btn-icon" title="Không thể đổi trạng thái" disabled style="opacity: 0.3;">
@@ -194,8 +218,10 @@
         };
 
         // Cập nhật trạng thái
-        window.updateTrangThaiDon = async function(id, newStatus) {
-            if (!confirm(`Xác nhận đổi trạng thái đơn thuê #${id} thành [${newStatus}]?`)) return;
+        window.updateTrangThaiDon = async function (id, newStatus) {
+            const isOk = await Components.confirm(`Bản chắc chắn muốn đổi trạng thái mã #${id} thành [${newStatus}]?`);
+            if (!isOk) return;
+
             try {
                 await Api.patch(`/don-thue-xe/${id}/trang-thai?trangThai=${encodeURIComponent(newStatus)}`);
                 Toast.success(`Cập nhật đơn #${id} thành công!`);
@@ -209,4 +235,5 @@
         loadDonThueXe();
     </script>
 </body>
+
 </html>

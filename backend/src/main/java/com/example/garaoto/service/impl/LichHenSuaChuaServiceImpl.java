@@ -4,10 +4,12 @@ import com.example.garaoto.dto.request.LichHenSuaChuaRequest;
 import com.example.garaoto.dto.response.LichHenSuaChuaResponse;
 import com.example.garaoto.entity.KhachHang;
 import com.example.garaoto.entity.LichHenSuaChua;
+import com.example.garaoto.entity.PhieuSuaChua;
 import com.example.garaoto.entity.XeKhachHang;
 import com.example.garaoto.exception.ResourceNotFoundException;
 import com.example.garaoto.repository.KhachHangRepository;
 import com.example.garaoto.repository.LichHenSuaChuaRepository;
+import com.example.garaoto.repository.PhieuSuaChuaRepository;
 import com.example.garaoto.repository.XeKhachHangRepository;
 import com.example.garaoto.service.LichHenSuaChuaService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class LichHenSuaChuaServiceImpl implements LichHenSuaChuaService {
     private final LichHenSuaChuaRepository lichHenSuaChuaRepository;
     private final KhachHangRepository khachHangRepository;
     private final XeKhachHangRepository xeKhachHangRepository;
+    private final PhieuSuaChuaRepository phieuSuaChuaRepository;
 
     @Override
     public LichHenSuaChuaResponse create(LichHenSuaChuaRequest request) {
@@ -75,7 +78,23 @@ public class LichHenSuaChuaServiceImpl implements LichHenSuaChuaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy lịch hẹn"));
 
         lichHen.setTrangThai(trangThai);
-        return mapToResponse(lichHenSuaChuaRepository.save(lichHen));
+        LichHenSuaChua savedLichHen = lichHenSuaChuaRepository.save(lichHen);
+
+        if ("DaXacNhan".equals(trangThai)) {
+            if (!phieuSuaChuaRepository.existsByLichHenSuaChua_MaLichHen(id)) {
+                PhieuSuaChua phieuSua = PhieuSuaChua.builder()
+                        .lichHenSuaChua(savedLichHen)
+                        .xeKhachHang(savedLichHen.getXeKhachHang())
+                        .khachHang(savedLichHen.getKhachHang())
+                        .ngayNhanXe(LocalDateTime.now())
+                        .chanDoan(savedLichHen.getMoTaLoi())
+                        .build();
+                phieuSua.capNhatTrangThai("TiepNhan");
+                phieuSuaChuaRepository.save(phieuSua);
+            }
+        }
+
+        return mapToResponse(savedLichHen);
     }
 
     @Override
@@ -95,6 +114,7 @@ public class LichHenSuaChuaServiceImpl implements LichHenSuaChuaService {
                 .gioHen(lichHen.getGioHen())
                 .moTaLoi(lichHen.getMoTaLoi())
                 .trangThai(lichHen.getTrangThai())
+                .tenKhachHang(lichHen.getKhachHang().getHoTen())
                 .ngayTao(lichHen.getNgayTao())
                 .build();
     }

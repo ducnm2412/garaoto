@@ -3,14 +3,16 @@ package com.example.garaoto.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import lombok.experimental.SuperBuilder;
+
 @Entity
 @Table(name = "xe_khach_hang")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class XeKhachHang {
+@SuperBuilder
+public class XeKhachHang extends XeBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,17 +23,7 @@ public class XeKhachHang {
     @JoinColumn(name = "ma_khach_hang", referencedColumnName = "ma_nguoi_dung", nullable = false)
     private com.example.garaoto.entity.KhachHang khachHang;
 
-    @Column(name = "bien_so", nullable = false)
-    private String bienSo;
 
-    @Column(name = "hang_xe")
-    private String hangXe;
-
-    @Column(name = "dong_xe")
-    private String dongXe;
-
-    @Column(name = "nam_san_xuat")
-    private Integer namSanXuat;
 
     @Column(name = "mau_sac")
     private String mauSac;

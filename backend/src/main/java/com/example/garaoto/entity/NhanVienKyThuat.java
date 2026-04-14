@@ -20,13 +20,11 @@ public class NhanVienKyThuat extends NguoiDung {
     @Column(name = "ca_lam_viec")
     private String caLamViec;
 
-    // Ghi đè phương thức của NguoiDung (Tính Đa Hình)
     @Override
     public String getGioiThieuCongViec() {
         return "[THỢ CƠ KHÍ] Tôi là Kỹ Thuật Viên tên " + this.getHoTen() + " - Chuyên môn: " + this.chuyenMon + " (Làm ca: " + this.caLamViec + ")";
     }
 
-    // Thực thi Đa hình lấy Response cho Business Logic
     @Override
     public java.util.Map<String, Object> layChiTietRieng() {
         return java.util.Map.of(

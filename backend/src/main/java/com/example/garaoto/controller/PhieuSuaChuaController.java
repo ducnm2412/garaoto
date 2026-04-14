@@ -45,7 +45,7 @@ public class PhieuSuaChuaController {
                 .build());
     }
 
-    @GetMapping("/khach-hang/{MaNguoiDung}")
+    @GetMapping("/khach-hang/{maNguoiDung}")
     public ResponseEntity<ApiResponse<List<PhieuSuaChuaResponse>>> getByKhachHang(@PathVariable Integer maNguoiDung) {
         return ResponseEntity.ok(ApiResponse.<List<PhieuSuaChuaResponse>>builder()
                 .success(true)
