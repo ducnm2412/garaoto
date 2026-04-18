@@ -19,6 +19,7 @@ public class DichVuSuaChuaController {
     private final DichVuSuaChuaService dichVuSuaChuaService;
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('Admin')")
     public ResponseEntity<ApiResponse<DichVuSuaChuaResponse>> create(@Valid @RequestBody DichVuSuaChuaRequest request) {
         return ResponseEntity.ok(ApiResponse.<DichVuSuaChuaResponse>builder()
                 .success(true)
@@ -28,6 +29,7 @@ public class DichVuSuaChuaController {
     }
 
     @PutMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('Admin')")
     public ResponseEntity<ApiResponse<DichVuSuaChuaResponse>> update(@PathVariable Integer id,
                                                                      @Valid @RequestBody DichVuSuaChuaRequest request) {
         return ResponseEntity.ok(ApiResponse.<DichVuSuaChuaResponse>builder()
@@ -56,6 +58,7 @@ public class DichVuSuaChuaController {
     }
 
     @DeleteMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('Admin')")
     public ResponseEntity<ApiResponse<Object>> delete(@PathVariable Integer id) {
         dichVuSuaChuaService.delete(id);
         return ResponseEntity.ok(ApiResponse.builder()

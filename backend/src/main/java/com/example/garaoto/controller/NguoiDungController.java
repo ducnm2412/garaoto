@@ -17,6 +17,7 @@ public class NguoiDungController {
     private final NguoiDungService nguoiDungService;
 
     @GetMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('Admin')")
     public ResponseEntity<ApiResponse<List<NguoiDungResponse>>> getAll() {
         return ResponseEntity.ok(ApiResponse.<List<NguoiDungResponse>>builder()
                 .success(true)
@@ -54,6 +55,7 @@ public class NguoiDungController {
     }
 
     @DeleteMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('Admin')")
     public ResponseEntity<ApiResponse<Object>> delete(@PathVariable Integer id) {
         nguoiDungService.delete(id);
         return ResponseEntity.ok(ApiResponse.builder()

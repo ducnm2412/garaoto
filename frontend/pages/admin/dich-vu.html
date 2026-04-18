@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Mục Dịch Vụ & Phụ Tùng — Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/admin.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 260px;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 99999;
+        }
+        .modal.active { 
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #ffffff;
+            padding: var(--space-6);
+            border-radius: var(--radius-lg);
+            width: 100%; max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalFadeIn 0.3s ease-out forwards;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: var(--space-5);
+            border-bottom: 2px solid var(--gray-100);
+            padding-bottom: var(--space-3);
+        }
+        .modal-header h2 { font-size: 1.25rem; font-weight: 800; color: var(--gray-900); margin: 0;}
+        .form-group { margin-bottom: var(--space-4); text-align: left; }
+        .form-label { display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700); font-size: 0.875rem;}
+        .form-control { width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; background: var(--gray-50); transition: all 0.2s;}
+        .form-control:focus { outline: none; border-color: var(--primary-500); background: #ffffff; box-shadow: 0 0 0 4px var(--primary-100); }
+    </style>
+</head>
+<body class="admin-mode">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <a href="/pages/admin/index.html" class="admin-logo">
+                <i class="fa-solid fa-car"></i> GaraOto Admin
+            </a>
+            <nav class="admin-nav">
+                <a href="/pages/admin/index.html" class="admin-nav-item">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+                <a href="/pages/admin/index.html" class="admin-nav-item">
+                    <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
+                </a>
+                <a href="/pages/admin/don-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
+                </a>
+                <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
+                    <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
+                </a>
+                <a href="/pages/admin/phan-cong.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users-gear"></i> Phân Công Tác
+                </a>
+                <a href="/pages/admin/dich-vu.html" class="admin-nav-item active">
+                    <i class="fa-solid fa-boxes-stacked"></i> Phụ Tùng / Dịch Vụ
+                </a>
+                <a href="/pages/admin/khach-hang.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users"></i> Khách Hàng / Nhân Sự
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="#" class="btn-logout" id="btn-admin-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1>Quản lý Danh Mục Phụ Tùng & Dịch Vụ</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> Thêm Dịch Vụ / Phụ Tùng</button>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Bảng Giá & Kho Phụ Tùng</h2>
+                    <button class="btn btn-primary btn-sm" onclick="loadData()"><i class="fa-solid fa-rotate-right"></i> Làm mới</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã DV/PT</th>
+                            <th>Tên Dịch Vụ / Phụ Tùng</th>
+                            <th>Mô Tả</th>
+                            <th>Giá Cơ Bản (VNĐ)</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-tbody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: var(--space-6);">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create/Edit Modal -->
+    <div class="modal" id="form-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Thêm Mới</h2>
+                <button class="btn-icon" onclick="closeModal()"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="data-form">
+                <input type="hidden" id="inp-id">
+                <div class="form-group">
+                    <label class="form-label">Tên Dịch Vụ / Phụ Tùng</label>
+                    <input type="text" id="inp-ten" class="form-control" required placeholder="VD: Thay nhớt Castrol, Cân chỉnh bánh xe...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mô Tả Chi Tiết</label>
+                    <textarea id="inp-mota" class="form-control" rows="3" placeholder="Cách tính công, xuất xứ..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Giá Cơ Bản (VND)</label>
+                    <input type="number" id="inp-gia" class="form-control" required min="0" placeholder="VD: 500000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Trạng Thái</label>
+                    <select id="inp-trangthai" class="form-control">
+                        <option value="HoatDong">Đang cung cấp</option>
+                        <option value="HetHang">Hết hàng / Tạm ngưng</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu Lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import Guard from '/js/guard.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Toast from '/js/toast.js';
+        import Utils from '/js/utils.js';
+
+        if (!Guard.requireAuth()) throw new Error('redirect');
+
+        document.getElementById('btn-admin-logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            Auth.logout();
+        });
+
+        const user = Auth.getUser();
+
+        let isEditing = false;
+        
+        window.openModal = () => {
+            isEditing = false;
+            document.getElementById('data-form').reset();
+            document.getElementById('inp-id').value = '';
+            document.getElementById('modal-title').innerText = 'Thêm Dịch Vụ / Phụ Tùng Mới';
+            document.getElementById('form-modal').classList.add('active');
+        };
+
+        window.openEditModal = (id, ten, mota, gia, trangthai) => {
+            isEditing = true;
+            document.getElementById('modal-title').innerText = 'Sửa Dịch Vụ / Phụ Tùng';
+            document.getElementById('inp-id').value = id;
+            document.getElementById('inp-ten').value = ten;
+            document.getElementById('inp-mota').value = mota || '';
+            document.getElementById('inp-gia').value = gia;
+            document.getElementById('inp-trangthai').value = trangthai || 'HoatDong';
+            document.getElementById('form-modal').classList.add('active');
+        };
+
+        window.closeModal = () => document.getElementById('form-modal').classList.remove('active');
+
+        window.loadData = async function() {
+            const tbody = document.getElementById('data-tbody');
+            tbody.innerHTML = \`<tr><td colspan="6" style="text-align: center;">Đang tải...</td></tr>\`;
+            try {
+                const res = await Api.get('/dich-vu-sua-chua');
+                const list = Array.isArray(res) ? res : (res?.data || []);
+
+                if (list.length === 0) {
+                    tbody.innerHTML = \`<tr><td colspan="6" style="text-align: center;">Chưa có dịch vụ hay phụ tùng nào.</td></tr>\`;
+                    return;
+                }
+
+                tbody.innerHTML = list.map(item => {
+                    let badgeClass = item.trangThai === 'HoatDong' ? 'badge-success' : 'badge-danger';
+                    let displayTrangThai = item.trangThai === 'HoatDong' ? 'Sẵn sàng' : 'Tạm ngưng';
+                    
+                    return \`
+                        <tr>
+                            <td><strong>#\${item.maDichVu}</strong></td>
+                            <td>\${Utils.escapeHtml(item.tenDichVu)}</td>
+                            <td>\${Utils.escapeHtml(item.moTa || '')}</td>
+                            <td><strong>\${Utils.formatMoney(item.giaCoBan || 0)}</strong></td>
+                            <td><span class="badge \${badgeClass}">\${displayTrangThai}</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon approve" title="Sửa" onclick="openEditModal(\${item.maDichVu}, '\${Utils.escapeQuotes(item.tenDichVu)}', '\${Utils.escapeQuotes(item.moTa || '')}', \${item.giaCoBan}, '\${item.trangThai}')">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="btn-icon reject" title="Xóa" onclick="deleteData(\${item.maDichVu})">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    \`;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = \`<tr><td colspan="6" style="text-align: center; color: var(--danger-500);">Lỗi tải dữ liệu.</td></tr>\`;
+            }
+        };
+
+        window.deleteData = async function(id) {
+            if(!confirm('Bạn có chắc chắn muốn xóa dịch vụ/phụ tùng này?')) return;
+            try {
+                await Api.delete('/dich-vu-sua-chua/' + id);
+                Toast.success('Xóa thành công!');
+                loadData();
+            } catch (err) {
+                Toast.error('Không thể xóa: ' + err.message);
+            }
+        };
+
+        document.getElementById('data-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const body = {
+                    tenDichVu: document.getElementById('inp-ten').value,
+                    moTa: document.getElementById('inp-mota').value,
+                    giaCoBan: document.getElementById('inp-gia').value,
+                    trangThai: document.getElementById('inp-trangthai').value
+                };
+
+                const currentId = document.getElementById('inp-id').value;
+
+                if (isEditing && currentId) {
+                    await Api.put('/dich-vu-sua-chua/' + currentId, body);
+                    Toast.success('Cập nhật thành công!');
+                } else {
+                    await Api.post('/dich-vu-sua-chua', body);
+                    Toast.success('Thêm mới thành công!');
+                }
+                
+                closeModal();
+                loadData();
+            } catch (err) {
+                Toast.error('Lỗi: ' + err.message);
+            }
+        });
+
+        loadData();
+    </script>
+</body>
+</html>

@@ -129,6 +129,21 @@ const Utils = {
             timeout = setTimeout(() => func.apply(this, args), wait);
         };
     },
+
+    escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return unsafe.toString()
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+    },
+    
+    escapeQuotes(str) {
+        if (!str) return '';
+        return str.toString().replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    }
 };
 
 export default Utils;

@@ -172,6 +172,9 @@
                             <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
                             <td>
                                 <div class="action-buttons">
+                                    <button class="btn-icon" style="color: var(--primary-500);" title="Xem chi tiết" onclick="alert('Chi tiết yêu cầu:\\n' + '${Utils.escapeQuotes(item.moTaLoi || 'Không có mô tả')}')">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                    </button>
                                     ${item.trangThai === 'ChoXacNhan' ? `
                                         <button class="btn-icon approve" title="Xác nhận" onclick="updateTrangThai(${item.maLichHen}, 'DaXacNhan')">
                                             <i class="fa-solid fa-check"></i>

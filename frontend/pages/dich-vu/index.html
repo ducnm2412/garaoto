@@ -148,7 +148,7 @@
                             ${Utils.formatMoney(dv.giaCoBan)}
                             <span>Giá từ</span>
                         </div>
-                        <button class="btn btn-primary btn-sm btn-datlich-dv" data-id="${dv.maDichVu}">
+                        <button class="btn btn-primary btn-sm btn-datlich-dv" data-id="${dv.maDichVu}" data-name="${Utils.escapeHtml(dv.tenDichVu)}">
                             <i class="fa-solid fa-calendar-plus"></i> Đặt lịch
                         </button>
                     </div>
@@ -161,7 +161,8 @@
                     if (!Auth.isLoggedIn()) {
                         Components.showLoginRequired();
                     } else {
-                        window.location.href = '/pages/dat-lich/index.html';
+                        const serviceName = btn.getAttribute('data-name');
+                        window.location.href = `/pages/dat-lich/index.html?serviceName=${encodeURIComponent(serviceName)}`;
                     }
                 });
             });

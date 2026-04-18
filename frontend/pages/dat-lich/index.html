@@ -234,6 +234,37 @@
         }
         loadVehicles();
 
+        // Tự động điền nội dung từ trang Dịch vụ truyền qua
+        const prefillService = Utils.getUrlParam('serviceName');
+        if (prefillService) {
+            // Tạo một khung hiển thị rõ Dịch vụ đã chọn từ bên ngoài
+            const serviceSection = document.querySelectorAll('.form-section')[2];
+            if (serviceSection) {
+                const title = serviceSection.querySelector('h2');
+                const selectedInfo = document.createElement('div');
+                selectedInfo.style.padding = 'var(--space-3)';
+                selectedInfo.style.background = 'var(--primary-50)';
+                selectedInfo.style.borderLeft = '4px solid var(--primary-500)';
+                selectedInfo.style.marginBottom = 'var(--space-4)';
+                selectedInfo.style.borderRadius = 'var(--radius-md)';
+                selectedInfo.innerHTML = `<strong>Dịch vụ đang chọn:</strong> <span style="color: var(--primary-600); font-weight: bold;">${Utils.escapeHtml(prefillService)}</span>`;
+                title.after(selectedInfo);
+            }
+
+            // Tự động đẩy dịch vụ đó vào mảng được chọn ngầm để lúc Gửi API nó gửi đi
+            if (!selectedServices.includes(prefillService)) {
+                selectedServices.push(prefillService);
+            }
+
+            // Tìm pill xem có trùng với dịch vụ mặc định không và ấn vào đó (để nó đổi màu xanh)
+            document.querySelectorAll('.service-pill').forEach(pill => {
+                if (pill.dataset.value.toLowerCase() === prefillService.toLowerCase()) {
+                    pill.classList.add('selected');
+                    pill.querySelector('i').className = 'fa-solid fa-check';
+                }
+            });
+        }
+
         ngayHenInput.addEventListener('change', () => {
             if (ngayHenInput.value >= minDate) {
                 dateError.classList.remove('show');

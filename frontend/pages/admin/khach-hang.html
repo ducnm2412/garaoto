@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Khách Hàng & Nhân Sự — Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/admin.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 260px;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 99999;
+        }
+        .modal.active { 
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #ffffff;
+            padding: var(--space-6);
+            border-radius: var(--radius-lg);
+            width: 100%; max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalFadeIn 0.3s ease-out forwards;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: var(--space-5);
+            border-bottom: 2px solid var(--gray-100);
+            padding-bottom: var(--space-3);
+        }
+        .modal-header h2 { font-size: 1.25rem; font-weight: 800; color: var(--gray-900); margin: 0;}
+        .form-group { margin-bottom: var(--space-4); text-align: left; }
+        .form-label { display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700); font-size: 0.875rem;}
+        .form-control { width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; background: var(--gray-50); transition: all 0.2s;}
+        .form-control:focus { outline: none; border-color: var(--primary-500); background: #ffffff; box-shadow: 0 0 0 4px var(--primary-100); }
+    </style>
+</head>
+<body class="admin-mode">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <a href="/pages/admin/index.html" class="admin-logo">
+                <i class="fa-solid fa-car"></i> GaraOto Admin
+            </a>
+            <nav class="admin-nav">
+                <a href="/pages/admin/index.html" class="admin-nav-item">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+                <a href="/pages/admin/index.html" class="admin-nav-item">
+                    <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
+                </a>
+                <a href="/pages/admin/don-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
+                </a>
+                <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
+                    <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
+                </a>
+                <a href="/pages/admin/phan-cong.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users-gear"></i> Phân Công Tác
+                </a>
+                <a href="/pages/admin/dich-vu.html" class="admin-nav-item">
+                    <i class="fa-solid fa-boxes-stacked"></i> Phụ Tùng / Dịch Vụ
+                </a>
+                <a href="/pages/admin/khach-hang.html" class="admin-nav-item active">
+                    <i class="fa-solid fa-users"></i> Khách Hàng / Nhân Sự
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="#" class="btn-logout" id="btn-admin-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1>Quản lý Người Dùng</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openStaffModal()"><i class="fa-solid fa-user-plus"></i> Cấp tài khoản Nhân sự</button>
+                    <div class="badge badge-info"><i class="fa-solid fa-user-shield"></i> Xin chào, Quản trị viên</div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="admin-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3>Tổng Khách Hàng</h3>
+                        <div class="stat-value" id="stat-kh">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--warning-100); color: var(--warning-600);"><i class="fa-solid fa-user-doctor"></i></div>
+                    <div class="stat-info">
+                        <h3>Nhân Viên Kỹ Thuật</h3>
+                        <div class="stat-value" id="stat-nv">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--danger-100); color: var(--danger-600);"><i class="fa-solid fa-user-shield"></i></div>
+                    <div class="stat-info">
+                        <h3>Quản Trị Viên</h3>
+                        <div class="stat-value" id="stat-admin">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Danh sách người dùng và nhân sự</h2>
+                    <button class="btn btn-primary btn-sm" onclick="loadUsers()"><i class="fa-solid fa-rotate-right"></i> Làm mới</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã ND</th>
+                            <th>Họ Tên</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Email</th>
+                            <th>Quyền Truy Cập</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-tbody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: var(--space-6);">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Staff Modal -->
+    <div class="modal" id="staff-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cấp tài khoản Nhân sự mới</h2>
+                <button class="btn-icon" onclick="closeStaffModal()"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="staff-form">
+                <div class="form-group">
+                    <label class="form-label">Họ và tên</label>
+                    <input type="text" id="reg-name" class="form-control" required placeholder="Nhập họ tên...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="reg-email" class="form-control" required placeholder="Email làm việc">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="tel" id="reg-phone" class="form-control" required placeholder="SĐT liên hệ...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu cấp</label>
+                    <input type="password" id="reg-pass" class="form-control" required minlength="6" placeholder="Mật khẩu mặc định">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Vai trò</label>
+                    <select id="reg-role" class="form-control" required>
+                        <option value="NhanVienKyThuat">Nhân Viên Kỹ Thuật (NhanVien)</option>
+                        <option value="Admin">Quản Trị Viên (Admin)</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn btn-outline" onclick="closeStaffModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-staff">Tạo Tài Khoản</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import Guard from '/js/guard.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Toast from '/js/toast.js';
+        import Utils from '/js/utils.js';
+
+        if (!Guard.requireAuth()) throw new Error('redirect');
+
+        document.getElementById('btn-admin-logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            Auth.logout();
+        });
+
+        window.openStaffModal = () => {
+            document.getElementById('staff-form').reset();
+            document.getElementById('staff-modal').classList.add('active');
+        };
+
+        window.closeStaffModal = () => {
+            document.getElementById('staff-modal').classList.remove('active');
+        };
+
+        window.loadUsers = async function() {
+            const tbody = document.getElementById('user-tbody');
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Đang tải dữ liệu...</td></tr>`;
+            try {
+                const res = await Api.get('/nguoi-dung');
+                const list = Array.isArray(res) ? res : (res?.data || []);
+
+                document.getElementById('stat-kh').innerText = list.filter(u => u.vaiTro.toLowerCase() === 'khachhang').length;
+                document.getElementById('stat-nv').innerText = list.filter(u => u.vaiTro.toLowerCase() === 'nhanvienkythuat' || u.vaiTro.toLowerCase() === 'nhanvien').length;
+                document.getElementById('stat-admin').innerText = list.filter(u => u.vaiTro.toLowerCase() === 'admin').length;
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Chưa có tài khoản nào.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = list.map(item => {
+                    let badgeClass = 'badge-info';
+                    let displayRole = item.vaiTro;
+                    if (item.vaiTro.toLowerCase() === 'khachhang') { badgeClass = 'badge-success'; displayRole = 'Khách Hàng'; }
+                    if (item.vaiTro.toLowerCase() === 'nhanvienkythuat') { badgeClass = 'badge-warning'; displayRole = 'NV Kỹ Thuật'; }
+                    if (item.vaiTro.toLowerCase() === 'admin') { badgeClass = 'badge-danger'; displayRole = 'Admin'; }
+
+                    return `
+                        <tr>
+                            <td><strong>#${item.maNguoiDung}</strong></td>
+                            <td>${Utils.escapeHtml(item.hoTen)}</td>
+                            <td>${Utils.escapeHtml(item.soDienThoai || '---')}</td>
+                            <td>${Utils.escapeHtml(item.email)}</td>
+                            <td><span class="badge ${badgeClass}">${displayRole}</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon reject" title="Xóa người dùng" onclick="deleteUser(${item.maNguoiDung})">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger-500);">Lỗi tải hệ thống.</td></tr>`;
+            }
+        };
+
+        window.deleteUser = async function(id) {
+            if(!confirm('Cảnh báo: Hành động này sẽ xóa vĩnh viễn người dùng. Bạn chắc chắn?')) return;
+            try {
+                await Api.delete('/nguoi-dung/' + id);
+                Toast.success('Xóa người dùng thành công!');
+                loadUsers();
+            } catch (err) {
+                Toast.error('Không thể xóa: ' + err.message);
+            }
+        };
+
+        document.getElementById('staff-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-staff');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+
+            try {
+                const body = {
+                    hoTen: document.getElementById('reg-name').value,
+                    email: document.getElementById('reg-email').value,
+                    soDienThoai: document.getElementById('reg-phone').value,
+                    matKhau: document.getElementById('reg-pass').value,
+                    vaiTro: document.getElementById('reg-role').value
+                };
+
+                await Api.post('/auth/register', body);
+                Toast.success('Đã cấp tài khoản ' + body.vaiTro + ' thành công!');
+                closeStaffModal();
+                loadUsers();
+            } catch (err) {
+                Toast.error(err.message || 'Lỗi cấp tài khoản');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Tạo Tài Khoản';
+            }
+        });
+
+        loadUsers();
+    </script>
+</body>
+</html>

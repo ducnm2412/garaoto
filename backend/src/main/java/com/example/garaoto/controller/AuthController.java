@@ -19,6 +19,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
+        if (request.getVaiTro() != null && !request.getVaiTro().equalsIgnoreCase("KhachHang")) {
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || auth.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_Admin"))) {
+                return ResponseEntity.status(403).body(ApiResponse.<AuthResponse>builder()
+                        .success(false)
+                        .message("Chỉ Admin mới có quyền tạo tài khoản nhân sự")
+                        .data(null).build());
+            }
+        }
+        
         AuthResponse response = authService.register(request);
         return ResponseEntity.ok(
                 ApiResponse.<AuthResponse>builder()
