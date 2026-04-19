@@ -88,6 +88,20 @@ public class DonThueXeServiceImpl implements DonThueXeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn thuê"));
 
         donThueXe.chuyenTrangThai(trangThai);
+        
+        // Đồng bộ trạng thái xe cho thuê
+        XeChoThue xe = donThueXe.getXeChoThue();
+        if (xe != null) {
+            String status = trangThai != null ? trangThai.toUpperCase() : "";
+            if (status.contains("DANGTHUE") || status.contains("DANG_THUE") || status.contains("XACNHAN") || status.contains("DAXACNHAN")) {
+                xe.capNhatTinhTrang("DangThue");
+                xeChoThueRepository.save(xe);
+            } else if (status.contains("TRA") || status.contains("HUY") || status.contains("KHONGDUYET") || status.contains("TỪ CHỐI")) {
+                xe.capNhatTinhTrang("SanSang");
+                xeChoThueRepository.save(xe);
+            }
+        }
+
         return mapToResponse(donThueXeRepository.save(donThueXe));
     }
 

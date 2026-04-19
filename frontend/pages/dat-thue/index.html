@@ -224,7 +224,13 @@
                     </div>
                 `;
                 
-                submitBtn.disabled = false;
+                if (car.tinhTrang !== 'SanSang') {
+                    vehicleSummary.innerHTML += `<div class="alert alert-error" style="margin-top: 15px;">Xe này hiện không ở trạng thái Sẵn Sàng (Đang thuê/Bảo dưỡng). Bạn không thể đặt thuê.</div>`;
+                    submitBtn.disabled = true;
+                } else {
+                    submitBtn.disabled = false;
+                }
+                
                 calculateTotal();
             } catch (err) {
                 vehicleSummary.innerHTML = `<div class="alert alert-error">Không thể tải thông tin xe. Vui lòng thử lại.</div>`;

@@ -86,8 +86,14 @@ public class PhieuSuaChuaServiceImpl implements PhieuSuaChuaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiếu sửa"));
         phieuSua.capNhatTrangThai(trangThai);
 
-        if ("DaSuaXong".equals(trangThai) || "BanGiao".equals(trangThai)) {
+        if ("HoanThanh".equalsIgnoreCase(trangThai) || "DA_HOAN_THANH".equalsIgnoreCase(trangThai) || "DaSuaXong".equalsIgnoreCase(trangThai) || "BanGiao".equalsIgnoreCase(trangThai)) {
             phieuSua.setNgayHoanThanh(LocalDateTime.now());
+            // Tự động chuyển lịch hẹn thành hoàn thành luôn
+            if (phieuSua.getLichHenSuaChua() != null) {
+                com.example.garaoto.entity.LichHenSuaChua lh = phieuSua.getLichHenSuaChua();
+                lh.setTrangThai("HoanThanh");
+                lichHenSuaChuaRepository.save(lh);
+            }
         }
 
         return mapToResponse(phieuSuaChuaRepository.save(phieuSua));
