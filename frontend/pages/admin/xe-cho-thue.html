@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Xe Cho Thuê — Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/admin.css">
+    <style>
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-6);
+            margin-top: var(--space-4);
+        }
+        .car-card {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .car-card-img {
+            height: 180px;
+            background-color: var(--gray-100);
+            background-size: cover;
+            background-position: center;
+        }
+        .car-card-body {
+            padding: var(--space-4);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+        .car-card-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        .car-card-specs {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+        .car-card-spec span {
+            background: var(--gray-100);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+        }
+        .car-card-price {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-600);
+            margin-top: auto;
+            padding-top: var(--space-2);
+        }
+        .car-card-actions {
+            display: flex;
+            padding: var(--space-3) var(--space-4);
+            border-top: 1px solid var(--gray-100);
+            background: var(--gray-50);
+            gap: var(--space-2);
+        }
+        .form-row {
+            display: flex;
+            gap: var(--space-4);
+        }
+        .form-row > .form-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body class="admin-mode">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <a href="/pages/admin/index.html" class="admin-logo">
+                <i class="fa-solid fa-car"></i> GaraOto Admin
+            </a>
+            <nav class="admin-nav">
+                <a href="/pages/admin/index.html" class="admin-nav-item">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+                <a href="/pages/admin/duyet-lich.html" class="admin-nav-item">
+                    <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
+                </a>
+                <a href="/pages/admin/don-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
+                </a>
+                <a href="/pages/admin/xe-cho-thue.html" class="admin-nav-item active">
+                    <i class="fa-solid fa-car-side"></i> Xe Cho Thuê
+                </a>
+                <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
+                    <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
+                </a>
+                <a href="/pages/admin/phan-cong.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users-gear"></i> Phân Công Tác
+                </a>
+                <a href="/pages/admin/dich-vu.html" class="admin-nav-item">
+                    <i class="fa-solid fa-boxes-stacked"></i> Phụ Tùng / Dịch Vụ
+                </a>
+                <a href="/pages/admin/khach-hang.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users"></i> Khách Hàng / Nhân Sự
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="#" class="btn-logout" id="btn-admin-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1>Quản lý Xe Cho Thuê</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> Thêm Xe Mới</button>
+                    <button class="btn btn-outline" onclick="loadData()"><i class="fa-solid fa-rotate-right"></i> Làm mới</button>
+                </div>
+            </div>
+
+            <!-- View Area -->
+            <div id="car-list-container" class="car-grid">
+                <!-- Data loaded via JS -->
+            </div>
+            
+            <div id="empty-state" style="display: none; text-align: center; padding: 4rem; color: var(--gray-500);">
+                <h3>Không có xe cho thuê nào trong kho.</h3>
+                <p>Nhấp vào nút "Thêm Xe Mới" ở góc trên bên phải để bắt đầu thêm một chiếc xe vào hệ thống.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create/Edit Modal -->
+    <div class="modal-overlay" id="form-modal">
+        <div class="modal" style="display: block; max-width: 600px; padding: 2rem; border-radius: var(--radius-lg); border-top: 4px solid var(--primary-500); margin: 0; position: relative;">
+            <div style="font-size: 3rem; color: var(--primary-500); text-align: center; margin-bottom: 1rem;">
+                <i class="fa-solid fa-car-side"></i>
+            </div>
+            <div class="modal-header" style="justify-content: center; padding-bottom: 0; border-bottom: none; margin-bottom: 1.5rem;">
+                <h2 id="modal-title" style="text-align: center; width: 100%; margin: 0;">Thêm Mới Xe</h2>
+                <button class="btn-icon" onclick="closeModal()" style="position: absolute; right: 1.5rem; top: 1.5rem;"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form id="data-form">
+                <input type="hidden" id="inp-id">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Hãng Xe</label>
+                        <input type="text" id="inp-hangXe" class="form-control" required placeholder="VD: Toyota, Mazda...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dòng Xe</label>
+                        <input type="text" id="inp-dongXe" class="form-control" required placeholder="VD: Vios, Mazda 3...">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Biển Số</label>
+                        <input type="text" id="inp-bienSo" class="form-control" required placeholder="VD: 51H-123.45">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Năm Sản Xuất</label>
+                        <input type="number" id="inp-namSanXuat" class="form-control" required min="1990" max="2030" placeholder="VD: 2022">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Số Chỗ / Loại Xe</label>
+                        <select id="inp-soCho" class="form-control" required>
+                            <option value="4">4 Chỗ (Mini)</option>
+                            <option value="5">5 Chỗ (Sedan/SUV)</option>
+                            <option value="7">7 Chỗ (MPV/SUV)</option>
+                            <option value="16">16 Chỗ (Minibus)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hộp Số</label>
+                        <select id="inp-hopSo" class="form-control" required>
+                            <option value="Tự động">Tự động (AT)</option>
+                            <option value="Số sàn">Số sàn (MT)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nhiên Liệu</label>
+                        <select id="inp-nhienLieu" class="form-control" required>
+                            <option value="Xăng">Xăng</option>
+                            <option value="Dầu Diesel">Dầu Diesel</option>
+                            <option value="Điện">Điện</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Giá Thuê / Ngày (VNĐ)</label>
+                    <input type="number" id="inp-giaTheoNgay" class="form-control" required min="100000" placeholder="VD: 800000">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tình Trạng & Trạng Thái</label>
+                    <select id="inp-tinhTrang" class="form-control" required>
+                        <option value="SanSang">Sẵn Sàng Cho Thuê</option>
+                        <option value="DangThue">Đang Cho Thuê</option>
+                        <option value="DangBaoDuong">Đang Bảo Dưỡng</option>
+                        <option value="KhongSanSang">Tạm Ngưng/Hỏng</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">URL Ảnh Minh Họa</label>
+                    <input type="url" id="inp-hinhAnh" class="form-control" placeholder="Link ảnh từ internet...">
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu Lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import Guard from '/js/guard.js';
+        import Auth from '/js/auth.js';
+        import Api from '/js/api.js';
+        import Toast from '/js/toast.js';
+        import Utils from '/js/utils.js';
+        import Components from '/js/components.js';
+
+        if (!Guard.requireAuth()) throw new Error('redirect');
+
+        document.getElementById('btn-admin-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const isOk = await Components.confirm('Xác nhận đăng xuất khỏi Admin?');
+            if(isOk) { Auth.logoutAndRedirect(); }
+        });
+
+        const user = Auth.getUser();
+        let isEditing = false;
+        
+        window.openModal = () => {
+            isEditing = false;
+            document.getElementById('data-form').reset();
+            document.getElementById('inp-id').value = '';
+            document.getElementById('modal-title').innerText = 'Thêm Xe Mới';
+            document.getElementById('form-modal').classList.add('show');
+        };
+
+        window.openEditModal = (carObjString) => {
+            isEditing = true;
+            try {
+                const car = JSON.parse(decodeURIComponent(carObjString));
+                document.getElementById('modal-title').innerText = 'Sửa Thông Tin Xe';
+                document.getElementById('inp-id').value = car.maXeThue;
+                document.getElementById('inp-hangXe').value = car.hangXe;
+                document.getElementById('inp-dongXe').value = car.dongXe;
+                document.getElementById('inp-bienSo').value = car.bienSo;
+                document.getElementById('inp-namSanXuat').value = car.namSanXuat || new Date().getFullYear();
+                document.getElementById('inp-soCho').value = car.soCho;
+                document.getElementById('inp-hopSo').value = car.hopSo;
+                document.getElementById('inp-nhienLieu').value = car.nhienLieu;
+                document.getElementById('inp-giaTheoNgay').value = car.giaTheoNgay;
+                document.getElementById('inp-tinhTrang').value = car.tinhTrang || 'SanSang';
+                document.getElementById('inp-hinhAnh').value = car.hinhAnh || '';
+                
+                document.getElementById('form-modal').classList.add('show');
+            } catch(e) {
+                Toast.error('Không thể tải thông tin xe');
+                console.error(e);
+            }
+        };
+
+        window.closeModal = () => document.getElementById('form-modal').classList.remove('show');
+
+        // Form Submit
+        document.getElementById('data-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const body = {
+                    bienSo: document.getElementById('inp-bienSo').value,
+                    hangXe: document.getElementById('inp-hangXe').value,
+                    dongXe: document.getElementById('inp-dongXe').value,
+                    soCho: parseInt(document.getElementById('inp-soCho').value),
+                    hopSo: document.getElementById('inp-hopSo').value,
+                    nhienLieu: document.getElementById('inp-nhienLieu').value,
+                    giaTheoNgay: parseFloat(document.getElementById('inp-giaTheoNgay').value),
+                    tinhTrang: document.getElementById('inp-tinhTrang').value,
+                    hinhAnh: document.getElementById('inp-hinhAnh').value,
+                    namSanXuat: parseInt(document.getElementById('inp-namSanXuat').value)
+                };
+
+                const currentId = document.getElementById('inp-id').value;
+
+                if (isEditing && currentId) {
+                    await Api.put('/xe-cho-thue/' + currentId, body);
+                    Toast.success('Cập nhật xe thành công!');
+                } else {
+                    await Api.post('/xe-cho-thue', body);
+                    Toast.success('Đã thêm xe mới!');
+                }
+                
+                closeModal();
+                loadData();
+            } catch (err) {
+                Toast.error('Lỗi: ' + err.message);
+            }
+        });
+
+        window.deleteData = async function(id) {
+            const isOk = await Components.confirm('Bạn có chắc chắn muốn xóa chiếc xe này hoàn toàn khỏi hệ thống?');
+            if(!isOk) return;
+            try {
+                await Api.delete('/xe-cho-thue/' + id);
+                Toast.success('Xóa xe thành công!');
+                loadData();
+            } catch (err) {
+                Toast.error('Không thể xóa xe này (Có thể đã có đơn đặt): ' + err.message);
+            }
+        };
+
+        window.loadData = async function() {
+            const container = document.getElementById('car-list-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem;">Đang tải danh sách xe...</div>`;
+            emptyState.style.display = 'none';
+
+            try {
+                const res = await Api.get('/xe-cho-thue');
+                const list = Array.isArray(res) ? res : (res?.data || []);
+
+                if (list.length === 0) {
+                    container.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                container.innerHTML = list.map(car => {
+                    let statusBadgeClass = 'badge-success';
+                    let statusText = 'Sẵn sàng';
+                    
+                    if(car.tinhTrang === 'DangThue') { statusBadgeClass = 'badge-warning'; statusText = 'Đang cho thuê'; }
+                    if(car.tinhTrang === 'DangBaoDuong') { statusBadgeClass = 'badge-info'; statusText = 'Đang bảo dưỡng'; }
+                    if(car.tinhTrang === 'KhongSanSang') { statusBadgeClass = 'badge-danger'; statusText = 'Chưa sẵn sàng'; }
+
+                    const fallbackImg = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=600';
+                    const imgUrl = car.hinhAnh ? car.hinhAnh : fallbackImg;
+                    
+                    // JSON stringify and URI encode for onclick handling safely
+                    const carEncoded = encodeURIComponent(JSON.stringify(car));
+
+                    return `
+                        <div class="car-card">
+                            <div class="car-card-img" style="background-image: url('${Utils.escapeHtml(imgUrl)}')"></div>
+                            <div class="car-card-body">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <div class="car-card-title">${Utils.escapeHtml(car.hangXe)} ${Utils.escapeHtml(car.dongXe)}</div>
+                                    <span class="badge ${statusBadgeClass}">${statusText}</span>
+                                </div>
+                                <div style="font-weight: 600; color: var(--gray-700); margin-bottom: 5px;">Biển: ${Utils.escapeHtml(car.bienSo)}</div>
+                                <div class="car-card-specs">
+                                    <span class="car-card-spec"><i class="fa-solid fa-users"></i> ${car.soCho} chỗ</span>
+                                    <span class="car-card-spec"><i class="fa-solid fa-gears"></i> ${car.hopSo}</span>
+                                    <span class="car-card-spec"><i class="fa-solid fa-gas-pump"></i> ${car.nhienLieu}</span>
+                                    <span class="car-card-spec"><i class="fa-solid fa-calendar-days"></i> ${car.namSanXuat}</span>
+                                </div>
+                                <div class="car-card-price">${Utils.formatMoney(car.giaTheoNgay)} / ngày</div>
+                            </div>
+                            <div class="car-card-actions">
+                                <button class="btn btn-outline" style="flex:1" onclick="openEditModal('${carEncoded}')">
+                                    <i class="fa-solid fa-pen"></i> Sửa
+                                </button>
+                                <button class="btn btn-danger" style="flex:1; background: var(--danger-100); color: var(--danger-600); border-color: transparent;" onclick="deleteData(${car.maXeThue})">
+                                    <i class="fa-solid fa-trash"></i> Xóa
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--danger-500); padding: 2rem;">Lỗi tải dữ liệu. Cần kiểm tra Backend.</div>`;
+            }
+        };
+
+        loadData();
+    </script>
+</body>
+</html>

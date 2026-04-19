@@ -80,19 +80,8 @@ public class LichHenSuaChuaServiceImpl implements LichHenSuaChuaService {
         lichHen.setTrangThai(trangThai);
         LichHenSuaChua savedLichHen = lichHenSuaChuaRepository.save(lichHen);
 
-        if ("DaXacNhan".equals(trangThai)) {
-            if (!phieuSuaChuaRepository.existsByLichHenSuaChua_MaLichHen(id)) {
-                PhieuSuaChua phieuSua = PhieuSuaChua.builder()
-                        .lichHenSuaChua(savedLichHen)
-                        .xeKhachHang(savedLichHen.getXeKhachHang())
-                        .khachHang(savedLichHen.getKhachHang())
-                        .ngayNhanXe(LocalDateTime.now())
-                        .chanDoan(savedLichHen.getMoTaLoi())
-                        .build();
-                phieuSua.capNhatTrangThai("TiepNhan");
-                phieuSuaChuaRepository.save(phieuSua);
-            }
-        }
+        // Không tự động tạo Phiếu Sửa Chữa ở trạng thái DaXacNhan như yêu cầu.
+        // Phiếu chỉ được tạo khi chuyển sang tiếp nhận xe.
 
         return mapToResponse(savedLichHen);
     }

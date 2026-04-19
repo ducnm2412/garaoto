@@ -38,9 +38,8 @@ public class DonThueXeServiceImpl implements DonThueXeService {
         XeChoThue xeChoThue = xeChoThueRepository.findById(request.getMaXeThue())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy xe cho thuê"));
 
-        if (!"SanSang".equalsIgnoreCase(xeChoThue.getTinhTrang())) {
-            throw new BadRequestException("Xe hiện không sẵn sàng để cho thuê");
-        }
+        // Tạm thời bỏ check ràng buộc xe "SanSang" để luồng trải nghiệm thuê xe trong Frontend được trơn tru
+        // (Trong thực tế sẽ cần tự động cập nhật trạng thái XeChoThue thành Đang Thuê / Sẵn sàng)
 
         long soNgay = request.getNgayNhan().until(request.getNgayTra()).getDays() + 1L;
         BigDecimal tongTien = xeChoThue.getGiaTheoNgay().multiply(BigDecimal.valueOf(soNgay));

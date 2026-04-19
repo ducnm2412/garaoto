@@ -10,29 +10,6 @@
     <link rel="stylesheet" href="/css/components.css">
     <link rel="stylesheet" href="/css/pages/admin.css">
     <style>
-        .modal {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            align-items: center; justify-content: center;
-            z-index: 9999;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: #ffffff;
-            padding: var(--space-6);
-            border-radius: var(--radius-lg);
-            width: 100%; max-width: 550px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            position: relative;
-            z-index: 10000;
-        }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: var(--space-5);
-            border-bottom: 2px solid var(--gray-100);
-            padding-bottom: var(--space-3);
-        }
         .modal-header h2 { font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin: 0;}
         .form-group { margin-bottom: var(--space-4); }
         .form-label { display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700); font-size: 0.875rem;}
@@ -56,6 +33,9 @@
                 </a>
                 <a href="/pages/admin/don-thue.html" class="admin-nav-item">
                     <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
+                </a>
+                <a href="/pages/admin/xe-cho-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-car-side"></i> Xe Cho Thuê
                 </a>
                 <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item active">
                     <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
@@ -133,11 +113,14 @@
     </div>
 
     <!-- Assign Modal -->
-    <div class="modal" id="assign-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Phân Công Nhân Viên Cho Phiếu <span id="assign-maPhieuLabel"></span></h2>
-                <button class="btn-icon" onclick="closeAssignModal()"><i class="fa-solid fa-times"></i></button>
+    <div class="modal-overlay" id="assign-modal">
+        <div class="modal" style="max-width: 500px; border-radius: var(--radius-lg); border-top: 4px solid var(--primary-500); padding: 2rem; position: relative; margin: 0; display: block;">
+            <div style="font-size: 3rem; color: var(--primary-500); text-align: center; margin-bottom: 1rem;">
+                <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <div class="modal-header" style="justify-content: center; padding-bottom: 0; border-bottom: none; margin-bottom: 1.5rem;">
+                <h2 style="text-align: center; width: 100%; margin: 0;">Phân Công Phiếu <span id="assign-maPhieuLabel"></span></h2>
+                <button class="btn-icon" onclick="closeAssignModal()" style="position: absolute; right: 1.5rem; top: 1.5rem;"><i class="fa-solid fa-times"></i></button>
             </div>
             <form id="assign-form">
                 <input type="hidden" id="inp-maPhieuSuaAssign">
@@ -162,14 +145,17 @@
     </div>
 
     <!-- Modal Chi Tiết Phụ Tùng -->
-    <div class="modal" id="chitiet-modal">
-        <div class="modal-content" style="max-width: 800px;">
-            <div class="modal-header">
-                <h2>Chi Tiết Phiếu <span id="chitiet-maPhieuLabel"></span></h2>
-                <button class="close-btn" onclick="closeChiTietModal()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-overlay" id="chitiet-modal">
+        <div class="modal" style="max-width: 800px; border-radius: var(--radius-lg); border-top: 4px solid var(--primary-500); padding: 2rem; position: relative; margin: 0; display: block;">
+            <div style="font-size: 3rem; color: var(--primary-500); text-align: center; margin-bottom: 1rem;">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <div class="modal-header" style="justify-content: center; padding-bottom: 0; border-bottom: none; margin-bottom: 1.5rem;">
+                <h2 style="text-align: center; width: 100%; margin: 0;">Chi Tiết Phiếu <span id="chitiet-maPhieuLabel"></span></h2>
+                <button class="btn-icon" onclick="closeChiTietModal()" style="position: absolute; right: 1.5rem; top: 1.5rem;"><i class="fa-solid fa-times"></i></button>
             </div>
             
-            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end;">
+            <div class="form-group" id="chitiet-add-form" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end;">
                 <div style="flex: 2;">
                     <label class="form-label">Chọn Dịch vụ / Phụ tùng</label>
                     <select id="inp-ct-maDichVu" class="form-control" required>
@@ -261,17 +247,24 @@
             document.getElementById('assign-maPhieuLabel').innerText = '#' + id;
             document.getElementById('inp-maNhanVien').value = '';
             document.getElementById('inp-ghiChuPhanCong').value = '';
-            document.getElementById('assign-modal').classList.add('active');
+            document.getElementById('assign-modal').classList.add('show');
         };
-        window.closeAssignModal = () => document.getElementById('assign-modal').classList.remove('active');
+        window.closeAssignModal = () => document.getElementById('assign-modal').classList.remove('show');
 
-        window.openChiTietModal = async (id) => {
+        window.openChiTietModal = async (id, trangThai) => {
             currentPhieuSuaId = id;
+            window.isCurrentPhieuCompleted = (trangThai === 'HoanThanh');
             document.getElementById('chitiet-maPhieuLabel').innerText = '#' + id;
-            document.getElementById('chitiet-modal').classList.add('active');
+            document.getElementById('chitiet-modal').classList.add('show');
+            
+            const addForm = document.getElementById('chitiet-add-form');
+            if (addForm) {
+                addForm.style.display = window.isCurrentPhieuCompleted ? 'none' : 'flex';
+            }
+            
             await reloadChiTietTable();
         };
-        window.closeChiTietModal = () => document.getElementById('chitiet-modal').classList.remove('active');
+        window.closeChiTietModal = () => document.getElementById('chitiet-modal').classList.remove('show');
 
         window.reloadChiTietTable = async () => {
             const tbody = document.getElementById('chitiet-tbody');
@@ -295,9 +288,10 @@
                                 <td>${item.soLuong}</td>
                                 <td><strong>${Utils.formatMoney(item.thanhTien)}</strong></td>
                                 <td>
+                                    ${window.isCurrentPhieuCompleted ? '<span style="color:var(--gray-400)"><i class="fa-solid fa-lock"></i></span>' : `
                                     <button class="btn-icon reject" title="Xóa" onclick="deleteChiTiet(${item.maChiTietSua})">
                                         <i class="fa-solid fa-trash"></i>
-                                    </button>
+                                    </button>`}
                                 </td>
                             </tr>
                         `;
@@ -318,6 +312,10 @@
                 Toast.error('Vui lòng chọn phụ tùng và nhập số lượng hợp lệ!');
                 return;
             }
+            if (window.isCurrentPhieuCompleted) {
+                Toast.error('Phiếu đã hoàn thành, không thể thêm dịch vụ!');
+                return;
+            }
             
             try {
                 await Api.post('/chi-tiet-sua-chua', {
@@ -336,6 +334,10 @@
         };
 
         window.deleteChiTiet = async (id) => {
+            if (window.isCurrentPhieuCompleted) {
+                Toast.error('Phiếu đã hoàn thành, không thể xóa dịch vụ!');
+                return;
+            }
             if(!confirm('Bạn có chắc chắn muốn xóa chi tiết này?')) return;
             try {
                 await Api.delete('/chi-tiet-sua-chua/' + id);
@@ -388,20 +390,20 @@
                             <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
                             <td>
                                 <div class="action-buttons" style="display: flex; gap: 5px;">
-                                    <button class="btn-icon view" title="Chi Tiết Phụ Tùng & Giá" onclick="openChiTietModal(${item.maPhieuSua})" style="color: var(--primary-600); background: var(--primary-100);">
+                                    <button class="btn-icon view" title="Chi Tiết Phụ Tùng & Giá" onclick="openChiTietModal(${item.maPhieuSua}, '${item.trangThai}')" style="color: var(--primary-600); background: var(--primary-100);">
                                         <i class="fa-solid fa-list"></i>
                                     </button>
                                     ${item.trangThai === 'TiepNhan' ? `
                                         <button class="btn-icon approve" title="Phân Công Thợ" onclick="openAssignModal(${item.maPhieuSua})">
                                             <i class="fa-solid fa-users-gear"></i> Phân công
                                         </button>
-                                    ` : item.trangThai === 'DangSuaChua' ? `
-                                        <button class="btn-icon approve" title="Đánh dấu Hoàn Thành Sửa Lỗi" onclick="hoanThanhPhieu(${item.maPhieuSua})">
-                                            <i class="fa-solid fa-check-double"></i> Đã Xong
+                                    ` : (item.trangThai === 'DangSuaChua' || item.trangThai === 'DaPhanCong') ? `
+                                        <button class="btn-icon" title="Đang chờ Kỹ thuật viên xác nhận hoàn thành" disabled style="opacity: 0.5; color: var(--warning-600); border: 1px solid var(--warning-200); width: auto; padding: 0 10px; font-weight: 600; font-size: 0.8rem;">
+                                            <i class="fa-solid fa-hourglass-half"></i> Chờ Thợ Xong
                                         </button>
                                     ` : `
-                                        <button class="btn-icon" title="Đã xong" disabled style="opacity: 0.3;">
-                                            <i class="fa-solid fa-lock"></i>
+                                        <button class="btn-icon" title="Đã hoàn tất phiếu" disabled style="opacity: 0.5; color: var(--success-600); border: 1px solid var(--success-200); width: auto; padding: 0 10px; font-weight: 600; font-size: 0.8rem;">
+                                            <i class="fa-solid fa-check-double"></i> Đã Xong
                                         </button>
                                     `}
                                 </div>
@@ -450,7 +452,7 @@
                 const bodyPhanCong = {
                     maPhieuSua: maPhieuSua,
                     maNguoiDungNv: maNhanVien,
-                    maNguoiDungAdmin: user?.id ? parseInt(user.id) : 1,
+                    maNguoiDungAdmin: user?.maNguoiDung ? parseInt(user.maNguoiDung) : null,
                     ghiChu: ghiChu,
                     trangThai: 'DaPhanCong'
                 };
@@ -458,8 +460,8 @@
                 // Gọi API Phân công
                 await Api.post('/phan-cong-sua-chua', bodyPhanCong);
                 
-                // Đồng thời cập nhật trạng thái phiếu sửa chữa thành đang sửa chữa (Tùy chọn)
-                await Api.patch(`/phieu-sua-chua/${maPhieuSua}/trang-thai?trangThai=DangSuaChua`);
+                // Chuyển Phiếu Sửa Chữa sang trạng thái Đã Phân Công (chưa tiến hành)
+                await Api.patch(`/phieu-sua-chua/${maPhieuSua}/trang-thai?trangThai=DaPhanCong`);
 
                 Toast.success(`Phân công thợ #${maNhanVien} thành công!`);
                 closeAssignModal();

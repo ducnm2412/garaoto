@@ -28,6 +28,9 @@
                 <a href="/pages/admin/don-thue.html" class="admin-nav-item">
                     <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
                 </a>
+                <a href="/pages/admin/xe-cho-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-car-side"></i> Xe Cho Thuê
+                </a>
                 <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
                     <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
                 </a>
@@ -142,34 +145,47 @@
         window.loadDashboard = async function() {
             try {
                 // Fetch metrics
-                const [phieuRes, lichRes, userRes] = await Promise.all([
+                const [phieuRes, lichRes, userRes, thueRes] = await Promise.all([
                     Api.get('/phieu-sua-chua'),
                     Api.get('/lich-hen-sua-chua'),
-                    Api.get('/nguoi-dung')
+                    Api.get('/nguoi-dung'),
+                    Api.get('/don-thue-xe')
                 ]);
 
                 const dsPhieu = Array.isArray(phieuRes) ? phieuRes : (phieuRes?.data || []);
                 const dsLich = Array.isArray(lichRes) ? lichRes : (lichRes?.data || []);
                 const dsUser = Array.isArray(userRes) ? userRes : (userRes?.data || []);
+                const dsThue = Array.isArray(thueRes) ? thueRes : (thueRes?.data || []);
                 
                 // Caculate Revenue & Orders
                 const hoanThanhPhieu = dsPhieu.filter(p => p.trangThai === 'HoanThanh');
-                const totalRevenue = hoanThanhPhieu.reduce((sum, p) => sum + (p.tongTien || 0), 0);
+                const hoanThanhThue = dsThue.filter(p => p.trangThai === 'DaTra');
+                
+                const revenuePhieu = hoanThanhPhieu.reduce((sum, p) => sum + (p.tongTien || 0), 0);
+                const revenueThue = hoanThanhThue.reduce((sum, p) => sum + (p.tongTien || 0), 0);
+                const totalRevenue = revenuePhieu + revenueThue;
                 
                 const pendingLich = dsLich.filter(l => l.trangThai === 'ChoXacNhan').length;
                 const totalKhachHang = dsUser.filter(u => u.vaiTro === 'KhachHang').length;
 
                 // Bind UI
                 document.getElementById('stat-revenue').innerText = Utils.formatMoney(totalRevenue);
-                document.getElementById('stat-orders').innerText = hoanThanhPhieu.length;
+                document.getElementById('stat-orders').innerText = hoanThanhPhieu.length + hoanThanhThue.length;
                 document.getElementById('stat-appointments').innerText = pendingLich;
                 document.getElementById('stat-users').innerText = totalKhachHang;
 
                 // Render Revenue Chart (Bar)
-                // Using 5 nearest Orders
-                const recentPhieu = [...hoanThanhPhieu].sort((a,b) => b.maPhieuSua - a.maPhieuSua).slice(0, 7).reverse();
-                const labelsRev = recentPhieu.map(p => `Phiếu #${p.maPhieuSua}`);
-                const dataRev = recentPhieu.map(p => p.tongTien || 0);
+                // Combine and sort recent orders
+                const combinedOrders = [
+                    ...hoanThanhPhieu.map(p => ({ label: `Sửa #${p.maPhieuSua}`, revenue: p.tongTien, id: p.maPhieuSua, type: 'sua' })),
+                    ...hoanThanhThue.map(t => ({ label: `Thuê #${t.maDonThue}`, revenue: t.tongTien, id: t.maDonThue, type: 'thue' }))
+                ];
+                combinedOrders.sort((a,b) => b.id - a.id);
+                const recentOrders = combinedOrders.slice(0, 10).reverse();
+
+                const labelsRev = recentOrders.map(p => p.label);
+                const dataRev = recentOrders.map(p => p.revenue || 0);
+                const colorMapRev = recentOrders.map(p => p.type === 'sua' ? '#2563eb' : '#10b981'); // Khác màu: Sửa (Xanh dương), Thuê (Xanh lá)
 
                 const ctxRev = document.getElementById('revenueChart').getContext('2d');
                 if(revenueChartInstance) revenueChartInstance.destroy();
@@ -180,7 +196,7 @@
                         datasets: [{
                             label: 'Doanh thu (VNĐ)',
                             data: dataRev.length ? dataRev : [0],
-                            backgroundColor: '#2563eb', // primary-600
+                            backgroundColor: colorMapRev.length ? colorMapRev : '#2563eb',
                             borderRadius: 6
                         }]
                     },

@@ -27,6 +27,9 @@
                 <a href="/pages/admin/don-thue.html" class="admin-nav-item">
                     <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
                 </a>
+                <a href="/pages/admin/xe-cho-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-car-side"></i> Xe Cho Thuê
+                </a>
                 <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
                     <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
                 </a>
@@ -175,12 +178,12 @@
                             <td>
                                 <div class="action-buttons">
                                     ${item.trangThai === 'DaPhanCong' ? `
-                                        <button class="btn-icon" style="color: var(--warning-600)" title="Theo dõi: Đang thực hiện" onclick="updateTrangThaiPC(${item.maPhanCong}, 'DangThucHien')">
+                                        <button class="btn-icon" style="color: var(--warning-600)" title="Theo dõi: Đang thực hiện" onclick="updateTrangThaiPC(${item.maPhanCong}, ${item.maPhieuSua}, 'DangThucHien')">
                                             <i class="fa-solid fa-person-digging"></i>
                                         </button>
                                     ` : (item.trangThai === 'DangThucHien' || item.trangThai === 'DangSuaChua') ? `
-                                        <button class="btn-icon" style="color: var(--success-600)" title="Nghiệm thu: Đã XONG" onclick="updateTrangThaiPC(${item.maPhanCong}, 'HoanThanh')">
-                                            <i class="fa-solid fa-check-double"></i>
+                                        <button class="btn-icon" title="Đang chờ thợ xác nhận xong" disabled style="opacity: 0.5; color: var(--warning-600); border: 1px solid var(--warning-200); width: auto; padding: 0 10px; font-weight: 600; font-size: 0.8rem;">
+                                            <i class="fa-solid fa-user-clock"></i> Chờ Thợ Xong
                                         </button>
                                     ` : `
                                         <button class="btn-icon" title="Không thể thao tác" disabled style="opacity: 0.3;">
@@ -199,12 +202,22 @@
         };
 
         // Đổi trạng thái Phân Công
-        window.updateTrangThaiPC = async function(id, newStatus) {
+        window.updateTrangThaiPC = async function(id, maPhieuSua, newStatus) {
             const isOk = await Components.confirm(`Xác nhận chuyển trạng thái Phân Công #${id} thành [${newStatus}]?`);
             if (!isOk) return;
 
             try {
                 await Api.patch(`/phan-cong-sua-chua/${id}/trang-thai?trangThai=${encodeURIComponent(newStatus)}`);
+                
+                // Đồng bộ phiếu sửa chữa (Dành cho admin báo bắt đầu làm)
+                if (newStatus === 'DangThucHien' && maPhieuSua) {
+                    try {
+                        await Api.patch(`/phieu-sua-chua/${maPhieuSua}/trang-thai?trangThai=DangSuaChua`);
+                    } catch(err) {
+                        console.error('Không thể đồng bộ phiếu sửa chữa sang DangSuaChua:', err);
+                    }
+                }
+                
                 Toast.success(`Cập nhật Phân Công #${id} thành công!`);
                 loadPhanCong();
             } catch (err) {

@@ -72,6 +72,9 @@
                 <a href="/pages/admin/don-thue.html" class="admin-nav-item">
                     <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
                 </a>
+                <a href="/pages/admin/xe-cho-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-car-side"></i> Xe Cho Thuê
+                </a>
                 <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
                     <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
                 </a>
@@ -104,25 +107,18 @@
 
             <!-- Stats -->
             <div class="admin-stats-grid">
-                <div class="stat-card">
+                <div class="stat-card" style="cursor: pointer; transition: 0.2s;" onclick="setFilter('KhachHang')" id="card-kh">
                     <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
                     <div class="stat-info">
                         <h3>Tổng Khách Hàng</h3>
                         <div class="stat-value" id="stat-kh">0</div>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" style="cursor: pointer; transition: 0.2s; background: var(--warning-50);" onclick="setFilter('NhanVienKyThuat')" id="card-nv">
                     <div class="stat-icon" style="background: var(--warning-100); color: var(--warning-600);"><i class="fa-solid fa-user-doctor"></i></div>
                     <div class="stat-info">
                         <h3>Nhân Viên Kỹ Thuật</h3>
                         <div class="stat-value" id="stat-nv">0</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--danger-100); color: var(--danger-600);"><i class="fa-solid fa-user-shield"></i></div>
-                    <div class="stat-info">
-                        <h3>Quản Trị Viên</h3>
-                        <div class="stat-value" id="stat-admin">0</div>
                     </div>
                 </div>
             </div>
@@ -179,9 +175,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Vai trò</label>
-                    <select id="reg-role" class="form-control" required>
                         <option value="NhanVienKyThuat">Nhân Viên Kỹ Thuật (NhanVien)</option>
-                        <option value="Admin">Quản Trị Viên (Admin)</option>
                     </select>
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
@@ -216,46 +210,76 @@
             document.getElementById('staff-modal').classList.remove('active');
         };
 
+        let allUsers = [];
+        let currentFilter = 'All';
+
+        window.setFilter = function(filterType) {
+            if (currentFilter === filterType) {
+                currentFilter = 'All';
+                document.getElementById('card-kh').style.border = 'none';
+                document.getElementById('card-nv').style.border = 'none';
+            } else {
+                currentFilter = filterType;
+                document.getElementById('card-kh').style.border = filterType === 'KhachHang' ? '2px solid var(--primary-500)' : 'none';
+                document.getElementById('card-nv').style.border = filterType === 'NhanVienKyThuat' ? '2px solid var(--warning-500)' : 'none';
+            }
+            renderUsers();
+        };
+
+        window.renderUsers = function() {
+            const tbody = document.getElementById('user-tbody');
+            // Filter out Admin explicitly everywhere
+            let filtered = allUsers.filter(u => u.vaiTro?.toLowerCase() !== 'admin');
+            
+            // Apply card filter if active
+            if (currentFilter === 'KhachHang') {
+                filtered = filtered.filter(u => u.vaiTro?.toLowerCase() === 'khachhang');
+            } else if (currentFilter === 'NhanVienKyThuat') {
+                filtered = filtered.filter(u => u.vaiTro?.toLowerCase() === 'nhanvienkythuat' || u.vaiTro?.toLowerCase() === 'nhanvien');
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Chưa có tài khoản nào.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                let badgeClass = 'badge-info';
+                let displayRole = item.vaiTro || 'Chưa định nghĩa';
+                if (item.vaiTro?.toLowerCase() === 'khachhang') { badgeClass = 'badge-success'; displayRole = 'Khách Hàng'; }
+                if (item.vaiTro?.toLowerCase() === 'nhanvienkythuat') { badgeClass = 'badge-warning'; displayRole = 'NV Kỹ Thuật'; }
+
+                return `
+                    <tr>
+                        <td><strong>#${item.maNguoiDung}</strong></td>
+                        <td>${Utils.escapeHtml(item.hoTen)}</td>
+                        <td>${Utils.escapeHtml(item.soDienThoai || '---')}</td>
+                        <td>${Utils.escapeHtml(item.email)}</td>
+                        <td><span class="badge ${badgeClass}">${displayRole}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon reject" title="Xóa người dùng" onclick="deleteUser(${item.maNguoiDung})">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
         window.loadUsers = async function() {
             const tbody = document.getElementById('user-tbody');
             tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Đang tải dữ liệu...</td></tr>`;
             try {
                 const res = await Api.get('/nguoi-dung');
-                const list = Array.isArray(res) ? res : (res?.data || []);
+                allUsers = Array.isArray(res) ? res : (res?.data || []);
 
-                document.getElementById('stat-kh').innerText = list.filter(u => u.vaiTro?.toLowerCase() === 'khachhang').length;
-                document.getElementById('stat-nv').innerText = list.filter(u => u.vaiTro?.toLowerCase() === 'nhanvienkythuat' || u.vaiTro?.toLowerCase() === 'nhanvien').length;
-                document.getElementById('stat-admin').innerText = list.filter(u => u.vaiTro?.toLowerCase() === 'admin').length;
+                const cleanList = allUsers.filter(u => u.vaiTro?.toLowerCase() !== 'admin');
+                document.getElementById('stat-kh').innerText = cleanList.filter(u => u.vaiTro?.toLowerCase() === 'khachhang').length;
+                document.getElementById('stat-nv').innerText = cleanList.filter(u => u.vaiTro?.toLowerCase() === 'nhanvienkythuat' || u.vaiTro?.toLowerCase() === 'nhanvien').length;
 
-                if (list.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Chưa có tài khoản nào.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = list.map(item => {
-                    let badgeClass = 'badge-info';
-                    let displayRole = item.vaiTro || 'Chưa định nghĩa';
-                    if (item.vaiTro?.toLowerCase() === 'khachhang') { badgeClass = 'badge-success'; displayRole = 'Khách Hàng'; }
-                    if (item.vaiTro?.toLowerCase() === 'nhanvienkythuat') { badgeClass = 'badge-warning'; displayRole = 'NV Kỹ Thuật'; }
-                    if (item.vaiTro?.toLowerCase() === 'admin') { badgeClass = 'badge-danger'; displayRole = 'Admin'; }
-
-                    return `
-                        <tr>
-                            <td><strong>#${item.maNguoiDung}</strong></td>
-                            <td>${Utils.escapeHtml(item.hoTen)}</td>
-                            <td>${Utils.escapeHtml(item.soDienThoai || '---')}</td>
-                            <td>${Utils.escapeHtml(item.email)}</td>
-                            <td><span class="badge ${badgeClass}">${displayRole}</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-icon reject" title="Xóa người dùng" onclick="deleteUser(${item.maNguoiDung})">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+                renderUsers();
             } catch (err) {
                 console.error(err);
                 tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger-500);">Lỗi tải hệ thống.</td></tr>`;

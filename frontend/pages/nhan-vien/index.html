@@ -10,30 +10,6 @@
     <link rel="stylesheet" href="/css/components.css">
     <link rel="stylesheet" href="/css/pages/admin.css"> <!-- Reusing admin styling for simplicity -->
     <style>
-        .modal {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            align-items: center; justify-content: center;
-            z-index: 9999;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: #ffffff;
-            padding: var(--space-6);
-            border-radius: var(--radius-lg);
-            width: 100%; max-width: 600px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            position: relative;
-            z-index: 10000;
-        }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: var(--space-5);
-            border-bottom: 2px solid var(--gray-100);
-            padding-bottom: var(--space-3);
-        }
-        .modal-header h2 { font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin: 0;}
         .form-group { margin-bottom: var(--space-4); }
         .form-label { display: block; font-weight: 600; margin-bottom: var(--space-2); color: var(--gray-700); font-size: 0.875rem;}
         .form-control { width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; }
@@ -43,7 +19,7 @@
 <body class="admin-mode">
     <div class="admin-layout">
         <!-- Sidebar -->
-        <aside class="admin-sidebar" id="admin-sidebar" style="background: var(--gray-900);">
+        <aside class="admin-sidebar" id="admin-sidebar">
             <a href="/pages/nhan-vien/index.html" class="admin-logo">
                 <i class="fa-solid fa-wrench"></i> GaraOto Thợ
             </a>
@@ -114,11 +90,14 @@
     </div>
 
     <!-- Cập Nhật Dịch Vụ Modal -->
-    <div class="modal" id="services-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Cập Nhật Dịch Vụ Phiếu <span id="sv-maPhieuLabel"></span></h2>
-                <button class="btn-icon" onclick="closeServicesModal()"><i class="fa-solid fa-times"></i></button>
+    <div class="modal-overlay" id="services-modal">
+        <div class="modal" style="max-width: 700px; border-radius: var(--radius-lg); border-top: 4px solid var(--primary-500); padding: 2rem; position: relative; margin: 0; display: block;">
+            <div style="font-size: 3rem; color: var(--primary-500); text-align: center; margin-bottom: 1rem;">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <div class="modal-header" style="justify-content: center; padding-bottom: 0; border-bottom: none; margin-bottom: 1.5rem; display: flex; position: relative;">
+                <h2 style="text-align: center; width: 100%; margin: 0; font-size: 1.25rem;">Cập Nhật Dịch Vụ Phiếu <span id="sv-maPhieuLabel"></span></h2>
+                <button class="btn-icon" onclick="closeServicesModal()" style="position: absolute; right: 0; top: -5px;"><i class="fa-solid fa-times"></i></button>
             </div>
             
             <div style="margin-bottom: var(--space-4);">
@@ -252,7 +231,7 @@
                                         <button class="btn-icon" style="color: var(--primary-600); border-color: var(--primary-200); background: var(--primary-50);" title="Thêm dịch vụ & Hóa đơn" onclick="openServicesModal(${item.maPhieuSua})">
                                             <i class="fa-solid fa-file-invoice-dollar"></i> Cập Nhật DV
                                         </button>
-                                        <button class="btn-icon approve" title="Đánh dấu sửa chữa xong" onclick="hoanThanhCongViec(${item.maPhieuSua}, ${item.maPhieuSua})">
+                                        <button class="btn-icon approve" title="Đánh dấu sửa chữa xong" onclick="hoanThanhCongViec(${item.maPhanCong}, ${item.maPhieuSua})">
                                             <i class="fa-solid fa-check"></i> Hoàn Thành
                                         </button>
                                     ` : `
@@ -300,7 +279,7 @@
         window.openServicesModal = async (maPhieuSua) => {
             document.getElementById('inp-sv-maPhieuSua').value = maPhieuSua;
             document.getElementById('sv-maPhieuLabel').innerText = '#' + maPhieuSua;
-            document.getElementById('services-modal').classList.add('active');
+            document.getElementById('services-modal').classList.add('show');
             
             // Xóa form
             document.getElementById('inp-sv-soLuong').value = 1;
@@ -310,7 +289,7 @@
             await Promise.all([loadAvailableServices(), loadChiTietSuaChua(maPhieuSua)]);
         };
 
-        window.closeServicesModal = () => document.getElementById('services-modal').classList.remove('active');
+        window.closeServicesModal = () => document.getElementById('services-modal').classList.remove('show');
 
         async function loadAvailableServices() {
             if (globalDichVuList.length === 0) {
