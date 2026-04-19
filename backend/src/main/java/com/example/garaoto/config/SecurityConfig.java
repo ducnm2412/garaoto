@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/xe-cho-thue", "/api/xe-cho-thue/**", "/api/dich-vu-sua-chua", "/api/dich-vu-sua-chua/**").permitAll()
                         .requestMatchers(
                                 "/api/auth/**",
+                                "/api/nguoi-dung/debug",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"

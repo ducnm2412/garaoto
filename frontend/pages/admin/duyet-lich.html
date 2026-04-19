@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — GaraOto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/admin.css">
+</head>
+<body class="admin-mode">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <a href="/pages/admin/index.html" class="admin-logo">
+                <i class="fa-solid fa-car"></i> GaraOto Admin
+            </a>
+                        <nav class="admin-nav">
+                <a href="/pages/admin/index.html" class="admin-nav-item">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+                <a href="/pages/admin/duyet-lich.html" class="admin-nav-item active">
+                    <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
+                </a>
+                <a href="/pages/admin/don-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
+                </a>
+                <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
+                    <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
+                </a>
+                <a href="/pages/admin/phan-cong.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users-gear"></i> Phân Công Tác
+                </a>
+                <a href="/pages/admin/dich-vu.html" class="admin-nav-item">
+                    <i class="fa-solid fa-boxes-stacked"></i> Phụ Tùng / Dịch Vụ
+                </a>
+                <a href="/pages/admin/khach-hang.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users"></i> Khách Hàng / Nhân Sự
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="#" class="btn-logout" id="btn-admin-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1>Tổng quan Lịch hẹn sửa chữa</h1>
+                <div class="header-actions">
+                    <div class="badge badge-info"><i class="fa-solid fa-user-shield"></i> Xin chào, Quản trị viên</div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="admin-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+                    <div class="stat-info">
+                        <h3>Chờ xác nhận</h3>
+                        <div class="stat-value" id="stat-pending">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--success-100); color: var(--success-600);"><i class="fa-solid fa-check"></i></div>
+                    <div class="stat-info">
+                        <h3>Đã xác nhận</h3>
+                        <div class="stat-value" id="stat-approved">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gray-100); color: var(--gray-600);"><i class="fa-solid fa-car-burst"></i></div>
+                    <div class="stat-info">
+                        <h3>Đang sửa chữa / Hoàn thành</h3>
+                        <div class="stat-value" id="stat-completed">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Danh sách lịch hẹn mới nhất</h2>
+                    <button class="btn btn-primary btn-sm" onclick="loadLichHen()"><i class="fa-solid fa-rotate-right"></i> Làm mới</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã Lịch</th>
+                            <th>Khách Hàng (Mã)</th>
+                            <th>Mã Xe KH</th>
+                            <th>Thời Gian Nhận</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lich-hen-tbody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: var(--space-6);">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import Guard from '/js/guard.js?v=2';
+        import Auth from '/js/auth.js?v=2';
+        import Api from '/js/api.js?v=2';
+        import Toast from '/js/toast.js?v=2';
+        import Utils from '/js/utils.js?v=2';
+        import Components from '/js/components.js?v=2';
+
+        window.Toast = Toast;
+
+        // Check auth (Optionally verify if user role is Admin)
+        if (!Guard.requireAuth()) throw new Error('redirect');
+        
+        const user = Auth.getUser();
+        // Giả sử có logic check role ở đây: 
+        if (user.vaiTro !== 'Admin' && user.vaiTro !== 'NhanVien') {
+            // Toast.warning('Thực ra bạn không có quyền Admin, nhưng do đang dev nên mình cho lướt qua!');
+        }
+
+        // Logout
+        document.getElementById('btn-admin-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const isOk = await Components.confirm('Bạn có chắc chắn muốn đăng xuất khỏi phiên Admin?');
+            if (!isOk) return;
+            Auth.logoutAndRedirect();
+        });
+
+        // Load Lịch Hẹn
+        window.loadLichHen = async function() {
+            const tbody = document.getElementById('lich-hen-tbody');
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Đang tải dữ liệu...</td></tr>`;
+            try {
+                // Lấy toàn bộ lịch hẹn (Vì bạn là Admin)
+                const res = await Api.get('/lich-hen-sua-chua');
+                const list = Array.isArray(res) ? res : (res?.data || []);
+                window.currentLichHenList = list;
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Chưa có lịch hẹn nào</td></tr>`;
+                    return;
+                }
+
+                // Cập nhật thống kê
+                document.getElementById('stat-pending').innerText = list.filter(x => x.trangThai === 'ChoXacNhan').length;
+                document.getElementById('stat-approved').innerText = list.filter(x => x.trangThai === 'DaXacNhan').length;
+                document.getElementById('stat-completed').innerText = list.filter(x => x.trangThai === 'HoanThanh' || x.trangThai === 'DangSuaChua').length;
+
+                // Sắp xếp lịch hẹn mới nhất lên đầu (theo Mã giảm dần hoặc Ngày)
+                list.sort((a,b) => b.maLichHen - a.maLichHen);
+
+                tbody.innerHTML = list.map(item => {
+                    let badgeClass = 'badge-info';
+                    let displayTrangThai = item.trangThai;
+                    if (item.trangThai === 'ChoXacNhan') { badgeClass = 'badge-pending'; displayTrangThai = 'Chờ xác nhận'; }
+                    if (item.trangThai === 'DaXacNhan' || item.trangThai === 'HoanThanh') { badgeClass = 'badge-success'; }
+                    if (item.trangThai === 'DaXacNhan') displayTrangThai = 'Đã xác nhận';
+                    if (item.trangThai === 'HoanThanh') displayTrangThai = 'Hoàn thành';
+                    if (item.trangThai === 'DangSuaChua') displayTrangThai = 'Đang sửa chữa';
+                    if (item.trangThai === 'DaHuy') { badgeClass = 'badge-danger'; displayTrangThai = 'Đã hủy'; }
+
+                    return `
+                        <tr>
+                            <td><strong>#${item.maLichHen}</strong></td>
+                            <td><strong>${item.tenKhachHang || 'Khách Hàng'}</strong><br><small style="color:var(--gray-500)">Mã ID: ${item.maNguoiDung}</small></td>
+                            <td>Mã Xe: ${item.maXeKh}</td>
+                            <td>${Utils.formatDate(item.ngayHen)} ${item.gioHen || ''}</td>
+                            <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" style="color: var(--primary-500);" title="Xem chi tiết" onclick="alert('Chi tiết yêu cầu:\\n' + '${Utils.escapeQuotes(item.moTaLoi || 'Không có mô tả')}')">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                    </button>
+                                    ${item.trangThai === 'ChoXacNhan' ? `
+                                        <button class="btn-icon approve" title="Xác nhận" onclick="updateTrangThai(${item.maLichHen}, 'DaXacNhan')">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                        <button class="btn-icon reject" title="Hủy bỏ" onclick="updateTrangThai(${item.maLichHen}, 'DaHuy')">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    ` : item.trangThai === 'DaXacNhan' ? `
+                                        <button class="btn-icon" style="color:var(--success-600)" title="Lập Phiếu Sửa Chữa (Tiếp nhận xe)" onclick="taoPhieuTuLichHen(${item.maLichHen}, ${item.maNguoiDung}, ${item.maXeKh}, '${Utils.escapeQuotes(item.moTaLoi || '')}')">
+                                            <i class="fa-solid fa-file-invoice"></i>
+                                        </button>
+                                    ` : `
+                                        <button class="btn-icon" title="Đã xử lý xong" disabled style="opacity: 0.3;">
+                                            <i class="fa-solid fa-lock"></i>
+                                        </button>
+                                    `}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger-500);">Lỗi tải dữ liệu. Cần kiểm tra Spring Boot Console.</td></tr>`;
+            }
+        };
+
+        // Đổi trạng thái lịch hẹn
+        window.updateTrangThai = async function(id, newStatus) {
+            const isOk = await Components.confirm(`Bạn chắc chắn muốn đổi trạng thái mã #${id} thành [${newStatus}]?`);
+            if (!isOk) return;
+
+            try {
+                // Gọi PATCH API lên Spring Boot
+                await Api.patch(`/lich-hen-sua-chua/${id}/trang-thai?trangThai=${encodeURIComponent(newStatus)}`);
+                Toast.success(`Cập nhật lịch #${id} thành công!`);
+                loadLichHen();
+            } catch (err) {
+                Toast.error('Cập nhật thất bại: ' + err.message);
+            }
+        }
+
+        // Bóc tách Lịch Hẹn thành Phiếu Sửa Chữa (Tiếp nhận xe)
+        window.taoPhieuTuLichHen = async function(maLichHen, maNguoiDung, maXeKh, moTaLoi) {
+            const isOk = await Components.confirm(`Tạo Phiếu Sửa Chữa tiếp nhận xe cho Lịch #${maLichHen}? (Hành động này sẽ báo khách xe đã tới Gara)`);
+            if(!isOk) return;
+            try {
+                // Đổi trạng thái Lịch Hẹn -> DangSuaChua
+                await Api.patch(`/lich-hen-sua-chua/${maLichHen}/trang-thai?trangThai=DangSuaChua`);
+                
+                // Tạo Phiếu Sửa Chữa mới
+                const phieuBody = {
+                    maLichHen: maLichHen,
+                    maKhachHang: maNguoiDung,
+                    maXeKh: maXeKh,
+                    chanDoan: moTaLoi ? `Khách báo: ${moTaLoi}` : 'Chưa được chẩn đoán chi tiết',
+                    trangThai: 'TiepNhan'
+                };
+                await Api.post('/phieu-sua-chua', phieuBody);
+                Toast.success('Đã tiếp nhận xe và khởi tạo Phiếu Sửa Chữa!');
+                loadLichHen();
+            } catch(e) {
+                Toast.error('Có lỗi khi tạo phiếu: ' + e.message);
+            }
+        }
+
+        // Tải danh sách ngay khi vào trang
+        loadLichHen();
+    </script>
+</body>
+</html>
+

@@ -47,11 +47,11 @@
             <a href="/pages/admin/index.html" class="admin-logo">
                 <i class="fa-solid fa-car"></i> GaraOto Admin
             </a>
-            <nav class="admin-nav">
+                        <nav class="admin-nav">
                 <a href="/pages/admin/index.html" class="admin-nav-item">
                     <i class="fa-solid fa-gauge-high"></i> Dashboard
                 </a>
-                <a href="/pages/admin/index.html" class="admin-nav-item">
+                <a href="/pages/admin/duyet-lich.html" class="admin-nav-item">
                     <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
                 </a>
                 <a href="/pages/admin/don-thue.html" class="admin-nav-item">
@@ -60,8 +60,14 @@
                 <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item active">
                     <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
                 </a>
-                <a href="#" class="admin-nav-item" onclick="event.preventDefault(); if(window.Toast) window.Toast.info('Tính năng đang phát triển!')">
-                    <i class="fa-solid fa-users"></i> Khách Hàng
+                <a href="/pages/admin/phan-cong.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users-gear"></i> Phân Công Tác
+                </a>
+                <a href="/pages/admin/dich-vu.html" class="admin-nav-item">
+                    <i class="fa-solid fa-boxes-stacked"></i> Phụ Tùng / Dịch Vụ
+                </a>
+                <a href="/pages/admin/khach-hang.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users"></i> Khách Hàng / Nhân Sự
                 </a>
             </nav>
             <div class="admin-sidebar-footer">
@@ -155,6 +161,55 @@
         </div>
     </div>
 
+    <!-- Modal Chi Tiết Phụ Tùng -->
+    <div class="modal" id="chitiet-modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Chi Tiết Phiếu <span id="chitiet-maPhieuLabel"></span></h2>
+                <button class="close-btn" onclick="closeChiTietModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end;">
+                <div style="flex: 2;">
+                    <label class="form-label">Chọn Dịch vụ / Phụ tùng</label>
+                    <select id="inp-ct-maDichVu" class="form-control" required>
+                        <option value="">-- Chọn Dịch vụ --</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label class="form-label">Số Lượng</label>
+                    <input type="number" id="inp-ct-soLuong" class="form-control" value="1" min="1" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="addChiTiet()"><i class="fa-solid fa-plus"></i> Thêm</button>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tên Dịch Vụ/Phụ Tùng</th>
+                        <th>Đơn Giá</th>
+                        <th>SL</th>
+                        <th>Thành Tiền</th>
+                        <th>Xóa</th>
+                    </tr>
+                </thead>
+                <tbody id="chitiet-tbody">
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Chưa có chi tiết nào.</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div style="text-align: right; margin-top: 15px; font-size: 18px; font-weight: bold;">
+                Tổng Tiền: <span id="chitiet-tongTien" style="color: var(--primary-600);">0 ₫</span>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+                <button class="btn btn-outline" onclick="closeChiTietModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script type="module">
         import Guard from '/js/guard.js';
@@ -177,6 +232,29 @@
 
         const user = Auth.getUser();
 
+        let cachedDichVu = [];
+        let currentPhieuSuaId = null;
+
+        // Fetch Dịch Vụ for Select options
+        async function fetchDichVu() {
+            try {
+                const res = await Api.get('/dich-vu-sua-chua');
+                cachedDichVu = Array.isArray(res) ? res : (res?.data || []);
+                const selectElement = document.getElementById('inp-ct-maDichVu');
+                cachedDichVu.forEach(dv => {
+                    if (dv.trangThai === 'HoatDong') {
+                        const option = document.createElement('option');
+                        option.value = dv.maDichVu;
+                        option.textContent = `${dv.tenDichVu} - ${Utils.formatMoney(dv.giaCoBan)}`;
+                        selectElement.appendChild(option);
+                    }
+                });
+            } catch (err) {
+                console.error("Không thể lấy danh sách dịch vụ", err);
+            }
+        }
+        fetchDichVu();
+
         // Modal triggers
         window.openAssignModal = (id) => {
             document.getElementById('inp-maPhieuSuaAssign').value = id;
@@ -186,6 +264,88 @@
             document.getElementById('assign-modal').classList.add('active');
         };
         window.closeAssignModal = () => document.getElementById('assign-modal').classList.remove('active');
+
+        window.openChiTietModal = async (id) => {
+            currentPhieuSuaId = id;
+            document.getElementById('chitiet-maPhieuLabel').innerText = '#' + id;
+            document.getElementById('chitiet-modal').classList.add('active');
+            await reloadChiTietTable();
+        };
+        window.closeChiTietModal = () => document.getElementById('chitiet-modal').classList.remove('active');
+
+        window.reloadChiTietTable = async () => {
+            const tbody = document.getElementById('chitiet-tbody');
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Đang tải...</td></tr>`;
+            try {
+                const res = await Api.get(`/chi-tiet-sua-chua/phieu-sua/${currentPhieuSuaId}`);
+                const list = Array.isArray(res) ? res : (res?.data || []);
+                
+                let tongTien = 0;
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Chưa có chi tiết nào.</td></tr>`;
+                } else {
+                    tbody.innerHTML = list.map(item => {
+                        const dvInfo = cachedDichVu.find(dv => dv.maDichVu === item.maDichVu);
+                        const ten = dvInfo ? dvInfo.tenDichVu : 'Dịch vụ #' + item.maDichVu;
+                        tongTien += item.thanhTien;
+                        return `
+                            <tr>
+                                <td>${Utils.escapeHtml(ten)}</td>
+                                <td>${Utils.formatMoney(item.donGia)}</td>
+                                <td>${item.soLuong}</td>
+                                <td><strong>${Utils.formatMoney(item.thanhTien)}</strong></td>
+                                <td>
+                                    <button class="btn-icon reject" title="Xóa" onclick="deleteChiTiet(${item.maChiTietSua})">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+                document.getElementById('chitiet-tongTien').innerText = Utils.formatMoney(tongTien);
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Lỗi tải chi tiết</td></tr>`;
+            }
+        };
+
+        window.addChiTiet = async () => {
+            const maDichVu = document.getElementById('inp-ct-maDichVu').value;
+            const soLuong = document.getElementById('inp-ct-soLuong').value;
+            
+            if(!maDichVu || !soLuong || soLuong < 1) {
+                Toast.error('Vui lòng chọn phụ tùng và nhập số lượng hợp lệ!');
+                return;
+            }
+            
+            try {
+                await Api.post('/chi-tiet-sua-chua', {
+                    maPhieuSua: currentPhieuSuaId,
+                    maDichVu: parseInt(maDichVu),
+                    soLuong: parseInt(soLuong)
+                });
+                Toast.success('Thêm chi tiết thành công!');
+                document.getElementById('inp-ct-soLuong').value = 1;
+                document.getElementById('inp-ct-maDichVu').value = '';
+                await reloadChiTietTable();
+                await loadPhieuSua(); // Refresh main table
+            } catch (err) {
+                Toast.error('Thêm thất bại: ' + err.message);
+            }
+        };
+
+        window.deleteChiTiet = async (id) => {
+            if(!confirm('Bạn có chắc chắn muốn xóa chi tiết này?')) return;
+            try {
+                await Api.delete('/chi-tiet-sua-chua/' + id);
+                Toast.success('Xóa chi tiết thành công!');
+                await reloadChiTietTable();
+                await loadPhieuSua(); // Refresh main table total
+            } catch (err) {
+                Toast.error('Xóa thất bại: ' + err.message);
+            }
+        };
 
         // Load Phieu Sua Chua
         window.loadPhieuSua = async function() {
@@ -227,7 +387,10 @@
                             <td><strong>${Utils.formatMoney(item.tongTien || 0)}</strong></td>
                             <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
                             <td>
-                                <div class="action-buttons">
+                                <div class="action-buttons" style="display: flex; gap: 5px;">
+                                    <button class="btn-icon view" title="Chi Tiết Phụ Tùng & Giá" onclick="openChiTietModal(${item.maPhieuSua})" style="color: var(--primary-600); background: var(--primary-100);">
+                                        <i class="fa-solid fa-list"></i>
+                                    </button>
                                     ${item.trangThai === 'TiepNhan' ? `
                                         <button class="btn-icon approve" title="Phân Công Thợ" onclick="openAssignModal(${item.maPhieuSua})">
                                             <i class="fa-solid fa-users-gear"></i> Phân công

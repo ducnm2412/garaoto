@@ -238,16 +238,21 @@
                 // Redirect
                 const returnUrl = Utils.getUrlParam('returnUrl');
                 setTimeout(() => {
-                    if (returnUrl) {
-                        window.location.href = decodeURIComponent(returnUrl);
-                    } else if (authData.vaiTro && authData.vaiTro.toUpperCase() === 'ADMIN') {
-                        // Nếu là Admin, tự động chuyển hướng vào trang quản trị
+                    const vaiTro = authData.vaiTro ? authData.vaiTro.toUpperCase() : '';
+                    
+                    // Nếu là Admin / Kỹ thuật viên mà không có returnUrl cụ thể, hoặc returnUrl là trang chủ
+                    if (vaiTro === 'ADMIN' && (!returnUrl || returnUrl === '/' || returnUrl.endsWith('/index.html'))) {
                         window.location.href = '/pages/admin/index.html';
-                    } else if (authData.vaiTro && authData.vaiTro.toUpperCase() === 'NHANVIENKYTHUAT') {
-                        // Thợ sửa chữa
+                    } else if (vaiTro === 'NHANVIENKYTHUAT' && (!returnUrl || returnUrl === '/' || returnUrl.endsWith('/index.html'))) {
+                        window.location.href = '/pages/nhan-vien/index.html';
+                    } else if (returnUrl) {
+                        // Nếu có returnUrl cụ thể khác (ví dụ bị bắt đăng nhập khi đang xem giỏ hàng)
+                        window.location.href = decodeURIComponent(returnUrl);
+                    } else if (vaiTro === 'ADMIN') {
+                        window.location.href = '/pages/admin/index.html';
+                    } else if (vaiTro === 'NHANVIENKYTHUAT') {
                         window.location.href = '/pages/nhan-vien/index.html';
                     } else {
-                        // Nhóm Khách Hàng hoặc còn lại về trang chủ
                         window.location.href = '/';
                     }
                 }, 500);

@@ -62,11 +62,11 @@
             <a href="/pages/admin/index.html" class="admin-logo">
                 <i class="fa-solid fa-car"></i> GaraOto Admin
             </a>
-            <nav class="admin-nav">
+                        <nav class="admin-nav">
                 <a href="/pages/admin/index.html" class="admin-nav-item">
                     <i class="fa-solid fa-gauge-high"></i> Dashboard
                 </a>
-                <a href="/pages/admin/index.html" class="admin-nav-item">
+                <a href="/pages/admin/duyet-lich.html" class="admin-nav-item">
                     <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
                 </a>
                 <a href="/pages/admin/don-thue.html" class="admin-nav-item">
@@ -223,9 +223,9 @@
                 const res = await Api.get('/nguoi-dung');
                 const list = Array.isArray(res) ? res : (res?.data || []);
 
-                document.getElementById('stat-kh').innerText = list.filter(u => u.vaiTro.toLowerCase() === 'khachhang').length;
-                document.getElementById('stat-nv').innerText = list.filter(u => u.vaiTro.toLowerCase() === 'nhanvienkythuat' || u.vaiTro.toLowerCase() === 'nhanvien').length;
-                document.getElementById('stat-admin').innerText = list.filter(u => u.vaiTro.toLowerCase() === 'admin').length;
+                document.getElementById('stat-kh').innerText = list.filter(u => u.vaiTro?.toLowerCase() === 'khachhang').length;
+                document.getElementById('stat-nv').innerText = list.filter(u => u.vaiTro?.toLowerCase() === 'nhanvienkythuat' || u.vaiTro?.toLowerCase() === 'nhanvien').length;
+                document.getElementById('stat-admin').innerText = list.filter(u => u.vaiTro?.toLowerCase() === 'admin').length;
 
                 if (list.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Chưa có tài khoản nào.</td></tr>`;
@@ -234,10 +234,10 @@
 
                 tbody.innerHTML = list.map(item => {
                     let badgeClass = 'badge-info';
-                    let displayRole = item.vaiTro;
-                    if (item.vaiTro.toLowerCase() === 'khachhang') { badgeClass = 'badge-success'; displayRole = 'Khách Hàng'; }
-                    if (item.vaiTro.toLowerCase() === 'nhanvienkythuat') { badgeClass = 'badge-warning'; displayRole = 'NV Kỹ Thuật'; }
-                    if (item.vaiTro.toLowerCase() === 'admin') { badgeClass = 'badge-danger'; displayRole = 'Admin'; }
+                    let displayRole = item.vaiTro || 'Chưa định nghĩa';
+                    if (item.vaiTro?.toLowerCase() === 'khachhang') { badgeClass = 'badge-success'; displayRole = 'Khách Hàng'; }
+                    if (item.vaiTro?.toLowerCase() === 'nhanvienkythuat') { badgeClass = 'badge-warning'; displayRole = 'NV Kỹ Thuật'; }
+                    if (item.vaiTro?.toLowerCase() === 'admin') { badgeClass = 'badge-danger'; displayRole = 'Admin'; }
 
                     return `
                         <tr>

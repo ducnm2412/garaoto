@@ -17,13 +17,25 @@ public class NguoiDungController {
     private final NguoiDungService nguoiDungService;
 
     @GetMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('Admin')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_Admin', 'ROLE_ADMIN', 'ROLE_admin')")
     public ResponseEntity<ApiResponse<List<NguoiDungResponse>>> getAll() {
         return ResponseEntity.ok(ApiResponse.<List<NguoiDungResponse>>builder()
                 .success(true)
                 .message("Lấy danh sách người dùng thành công")
                 .data(nguoiDungService.getAll())
                 .build());
+    }
+
+    @GetMapping("/debug")
+    public ResponseEntity<String> debugError() {
+        try {
+            nguoiDungService.getAll();
+            return ResponseEntity.ok("OK NO ERROR");
+        } catch (Exception e) {
+            java.io.StringWriter sw = new java.io.StringWriter();
+            e.printStackTrace(new java.io.PrintWriter(sw));
+            return ResponseEntity.status(500).body(sw.toString());
+        }
     }
 
     @GetMapping("/{id}")
@@ -55,7 +67,7 @@ public class NguoiDungController {
     }
 
     @DeleteMapping("/{id}")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('Admin')")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyAuthority('ROLE_Admin', 'ROLE_ADMIN', 'ROLE_admin')")
     public ResponseEntity<ApiResponse<Object>> delete(@PathVariable Integer id) {
         nguoiDungService.delete(id);
         return ResponseEntity.ok(ApiResponse.builder()

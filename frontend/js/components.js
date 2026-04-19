@@ -50,9 +50,15 @@ const Components = {
                             <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i>
                         </button>
                         <div class="user-dropdown" id="user-dropdown">
+                            ${Auth.getUser()?.vaiTro === 'Admin' ? `
+                            <a href="/pages/admin/index.html">
+                                <i class="fa-solid fa-user-shield"></i> Trang Quản Trị
+                            </a>
+                            ` : `
                             <a href="/pages/tai-khoan/index.html">
                                 <i class="fa-solid fa-gauge-high"></i> Dashboard
                             </a>
+                            `}
                             <a href="/pages/tai-khoan/cap-nhat.html">
                                 <i class="fa-solid fa-user-pen"></i> Thông tin cá nhân
                             </a>

@@ -62,11 +62,11 @@
             <a href="/pages/admin/index.html" class="admin-logo">
                 <i class="fa-solid fa-car"></i> GaraOto Admin
             </a>
-            <nav class="admin-nav">
+                        <nav class="admin-nav">
                 <a href="/pages/admin/index.html" class="admin-nav-item">
                     <i class="fa-solid fa-gauge-high"></i> Dashboard
                 </a>
-                <a href="/pages/admin/index.html" class="admin-nav-item">
+                <a href="/pages/admin/duyet-lich.html" class="admin-nav-item">
                     <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
                 </a>
                 <a href="/pages/admin/don-thue.html" class="admin-nav-item">
@@ -207,13 +207,13 @@
 
         window.loadData = async function() {
             const tbody = document.getElementById('data-tbody');
-            tbody.innerHTML = \`<tr><td colspan="6" style="text-align: center;">Đang tải...</td></tr>\`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Đang tải...</td></tr>`;
             try {
                 const res = await Api.get('/dich-vu-sua-chua');
                 const list = Array.isArray(res) ? res : (res?.data || []);
 
                 if (list.length === 0) {
-                    tbody.innerHTML = \`<tr><td colspan="6" style="text-align: center;">Chưa có dịch vụ hay phụ tùng nào.</td></tr>\`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Chưa có dịch vụ hay phụ tùng nào.</td></tr>`;
                     return;
                 }
 
@@ -221,29 +221,29 @@
                     let badgeClass = item.trangThai === 'HoatDong' ? 'badge-success' : 'badge-danger';
                     let displayTrangThai = item.trangThai === 'HoatDong' ? 'Sẵn sàng' : 'Tạm ngưng';
                     
-                    return \`
+                    return `
                         <tr>
-                            <td><strong>#\${item.maDichVu}</strong></td>
-                            <td>\${Utils.escapeHtml(item.tenDichVu)}</td>
-                            <td>\${Utils.escapeHtml(item.moTa || '')}</td>
-                            <td><strong>\${Utils.formatMoney(item.giaCoBan || 0)}</strong></td>
-                            <td><span class="badge \${badgeClass}">\${displayTrangThai}</span></td>
+                            <td><strong>#${item.maDichVu}</strong></td>
+                            <td>${Utils.escapeHtml(item.tenDichVu)}</td>
+                            <td>${Utils.escapeHtml(item.moTa || '')}</td>
+                            <td><strong>${Utils.formatMoney(item.giaCoBan || 0)}</strong></td>
+                            <td><span class="badge ${badgeClass}">${displayTrangThai}</span></td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn-icon approve" title="Sửa" onclick="openEditModal(\${item.maDichVu}, '\${Utils.escapeQuotes(item.tenDichVu)}', '\${Utils.escapeQuotes(item.moTa || '')}', \${item.giaCoBan}, '\${item.trangThai}')">
+                                    <button class="btn-icon approve" title="Sửa" onclick="openEditModal(${item.maDichVu}, '${Utils.escapeQuotes(item.tenDichVu)}', '${Utils.escapeQuotes(item.moTa || '')}', ${item.giaCoBan}, '${item.trangThai}')">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
-                                    <button class="btn-icon reject" title="Xóa" onclick="deleteData(\${item.maDichVu})">
+                                    <button class="btn-icon reject" title="Xóa" onclick="deleteData(${item.maDichVu})">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
-                    \`;
+                    `;
                 }).join('');
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = \`<tr><td colspan="6" style="text-align: center; color: var(--danger-500);">Lỗi tải dữ liệu.</td></tr>\`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger-500);">Lỗi tải dữ liệu.</td></tr>`;
             }
         };
 
