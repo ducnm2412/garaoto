@@ -2,27 +2,24 @@ package com.example.garaoto.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data
 public class DanhGiaRequest {
-
-    @NotNull(message = "Mã khách hàng không được để trống")
+    @NotNull(message = "Mã người dùng không được để trống")
     private Integer maNguoiDung;
 
-    @NotNull(message = "Loại đánh giá không được để trống")
-    private String loaiDanhGia;
+    @NotBlank(message = "Loại dịch vụ không được để trống")
+    private String loaiDichVu;
 
-    private Integer maPhieuSua;
-    private Integer maDonThue;
+    @NotNull(message = "Mã tham chiếu không được để trống")
+    private Integer maThamChieu;
 
-    @Min(value = 1, message = "Số sao phải từ 1 đến 5")
-    @Max(value = 5, message = "Số sao phải từ 1 đến 5")
+    @NotNull(message = "Số sao không được để trống")
+    @Min(value = 1, message = "Số sao tối thiểu là 1")
+    @Max(value = 5, message = "Số sao tối đa là 5")
     private Integer soSao;
 
     private String noiDung;

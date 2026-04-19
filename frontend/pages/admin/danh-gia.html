@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Đánh giá — GaraOto Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages/admin.css">
+</head>
+
+<body class="admin-mode">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <a href="/pages/admin/index.html" class="admin-logo">
+                <i class="fa-solid fa-car"></i> GaraOto Admin
+            </a>
+            <nav class="admin-nav">
+                <a href="/pages/admin/index.html" class="admin-nav-item">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+                <a href="/pages/admin/duyet-lich.html" class="admin-nav-item">
+                    <i class="fa-solid fa-calendar-check"></i> Duyệt Lịch Hẹn
+                </a>
+                <a href="/pages/admin/don-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-file-contract"></i> Đơn Thuê Xe
+                </a>
+                <a href="/pages/admin/xe-cho-thue.html" class="admin-nav-item">
+                    <i class="fa-solid fa-car-side"></i> Xe Cho Thuê
+                </a>
+                <a href="/pages/admin/phieu-sua-chua.html" class="admin-nav-item">
+                    <i class="fa-solid fa-wrench"></i> Phiếu Sửa Chữa
+                </a>
+                <a href="/pages/admin/phan-cong.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users-gear"></i> Phân Công Tác
+                </a>
+                <a href="/pages/admin/dich-vu.html" class="admin-nav-item">
+                    <i class="fa-solid fa-boxes-stacked"></i> Phụ Tùng / Dịch Vụ
+                </a>
+                <a href="/pages/admin/khach-hang.html" class="admin-nav-item">
+                    <i class="fa-solid fa-users"></i> Khách Hàng / Nhân Sự
+                </a>
+                <a href="/pages/admin/danh-gia.html" class="admin-nav-item active">
+                    <i class="fa-solid fa-star"></i> Đánh Giá Dịch Vụ
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <a href="#" class="btn-logout" id="btn-admin-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <div class="admin-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Tìm kiếm đánh giá...">
+                </div>
+                <div class="admin-user" id="admin-user-info">
+                    <div class="avatar">A</div>
+                    <span>Administrator</span>
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+                    <div>
+                        <h1 style="font-size: 1.5rem; color: var(--gray-900); margin-bottom: 5px;">Quản lý Đánh Giá</h1>
+                        <p style="color: var(--gray-600); font-size: 0.9rem;">Xem phản hồi từ khách hàng về chất lượng dịch vụ.</p>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--primary-100); color: var(--primary-600);"><i class="fa-solid fa-comments"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-total">0</h3>
+                            <p>Tổng số đánh giá</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--warning-100); color: var(--warning-600);"><i class="fa-solid fa-star"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-avg">0.0</h3>
+                            <p>Điểm trung bình</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--success-100); color: var(--success-600);"><i class="fa-solid fa-wrench"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-suachua">0</h3>
+                            <p>Đánh giá Sửa Chữa</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--accent-100); color: var(--accent-600);"><i class="fa-solid fa-car"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-thuexe">0</h3>
+                            <p>Đánh giá Thuê Xe</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container" style="margin-top: 30px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Khách hàng</th>
+                                <th>Loại DV</th>
+                                <th>Tham chiếu</th>
+                                <th>Đánh giá</th>
+                                <th>Nội dung</th>
+                                <th>Ngày</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="danh-gia-tbody">
+                            <tr><td colspan="7" style="text-align: center;">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import Guard from '/js/guard.js?v=3';
+        import Auth from '/js/auth.js?v=3';
+        import Api from '/js/api.js?v=3';
+        import Toast from '/js/toast.js?v=3';
+        import Utils from '/js/utils.js?v=3';
+        import Components from '/js/components.js?v=3';
+
+        window.Toast = Toast;
+        if (!Guard.requireAuth()) throw new Error('redirect');
+        
+        // Logout
+        document.getElementById('btn-admin-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const isOk = await Components.confirm('Bạn có chắc chắn muốn đăng xuất?');
+            if (!isOk) return;
+            Auth.logoutAndRedirect();
+        });
+
+        window.loadDanhGia = async function() {
+            const tbody = document.getElementById('danh-gia-tbody');
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Đang tải...</td></tr>`;
+            try {
+                const res = await Api.get('/danh-gia');
+                const list = Array.isArray(res) ? res : (res?.data || []);
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Chưa có đánh giá nào</td></tr>`;
+                    document.getElementById('stat-total').innerText = 0;
+                    document.getElementById('stat-avg').innerText = '0.0';
+                    return;
+                }
+
+                // Cập nhật thống kê
+                document.getElementById('stat-total').innerText = list.length;
+                const totalStars = list.reduce((sum, item) => sum + item.soSao, 0);
+                document.getElementById('stat-avg').innerText = (totalStars / list.length).toFixed(1);
+                
+                document.getElementById('stat-suachua').innerText = list.filter(x => x.loaiDichVu === 'SUA_CHUA').length;
+                document.getElementById('stat-thuexe').innerText = list.filter(x => x.loaiDichVu === 'THUE_XE').length;
+
+                // Mới nhất lên đầu
+                list.sort((a,b) => new Date(b.ngayDanhGia) - new Date(a.ngayDanhGia));
+
+                tbody.innerHTML = list.map(item => {
+                    let starsHtml = '';
+                    for (let i = 1; i <= 5; i++) {
+                        starsHtml += `<i class="fa-solid fa-star" style="color: ${i <= item.soSao ? 'var(--warning-500)' : 'var(--gray-300)'}"></i>`;
+                    }
+
+                    return `
+                        <tr>
+                            <td><strong>${item.tenKhachHang || 'Khách Hàng'}</strong><br><small>ID: ${item.maNguoiDung}</small></td>
+                            <td><span class="badge ${item.loaiDichVu === 'SUA_CHUA' ? 'badge-info' : 'badge-success'}">${item.loaiDichVu === 'SUA_CHUA' ? 'Sửa Xe' : 'Thuê Xe'}</span></td>
+                            <td>#${item.maThamChieu}</td>
+                            <td><div style="font-size: 0.9rem;">${starsHtml}</div></td>
+                            <td>${item.noiDung ? Utils.escapeQuotes(item.noiDung) : '<em style="color:var(--gray-400)">Không có nội dung</em>'}</td>
+                            <td>${Utils.formatDate(item.ngayDanhGia)}</td>
+                            <td>
+                                <button class="btn-icon reject" title="Xóa đánh giá" onclick="deleteDanhGia(${item.maDanhGia})">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--danger-500);">Lỗi tải dữ liệu.</td></tr>`;
+            }
+        };
+
+        window.deleteDanhGia = async function(id) {
+            const isOk = await Components.confirm(`Bạn muốn xóa bản ghi đánh giá này khỏi cơ sở dữ liệu?`);
+            if (!isOk) return;
+
+            try {
+                await Api.delete(`/danh-gia/${id}`);
+                Toast.success(`Xóa đánh giá #${id} thành công!`);
+                loadDanhGia();
+            } catch (err) {
+                Toast.error('Xóa thất bại: ' + err.message);
+            }
+        }
+
+        loadDanhGia();
+    </script>
+</body>
+</html>

@@ -1,20 +1,17 @@
 package com.example.garaoto.dto.response;
 
-import lombok.*;
-
+import lombok.Builder;
+import lombok.Data;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @Builder
 public class DanhGiaResponse {
     private Integer maDanhGia;
     private Integer maNguoiDung;
-    private String loaiDanhGia;
-    private Integer maPhieuSua;
-    private Integer maDonThue;
+    private String tenKhachHang;
+    private String loaiDichVu;
+    private Integer maThamChieu;
     private Integer soSao;
     private String noiDung;
     private LocalDateTime ngayDanhGia;

@@ -1,11 +1,7 @@
 package com.example.garaoto.entity;
 
-import com.example.garaoto.entity.DonThueXe;
-import com.example.garaoto.entity.KhachHang;
-import com.example.garaoto.entity.PhieuSuaChua;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,27 +18,22 @@ public class DanhGia {
     @Column(name = "ma_danh_gia")
     private Integer maDanhGia;
 
-    @ManyToOne
-    @JoinColumn(name = "ma_nguoi_dung", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ma_khach_hang", referencedColumnName = "ma_nguoi_dung", nullable = false)
     private KhachHang khachHang;
 
-    @Column(name = "loai_danh_gia", length = 50)
-    private String loaiDanhGia;
+    @Column(name = "loai_dich_vu", nullable = false)
+    private String loaiDichVu; 
 
-    @ManyToOne
-    @JoinColumn(name = "ma_phieu_sua")
-    private PhieuSuaChua phieuSuaChua;
+    @Column(name = "ma_tham_chieu", nullable = false)
+    private Integer maThamChieu; 
 
-    @ManyToOne
-    @JoinColumn(name = "ma_don_thue")
-    private DonThueXe donThueXe;
-
-    @Column(name = "so_sao")
-    private Integer soSao;
+    @Column(name = "so_sao", nullable = false)
+    private Integer soSao; 
 
     @Column(name = "noi_dung", columnDefinition = "TEXT")
     private String noiDung;
 
-    @Column(name = "ngay_danh_gia")
+    @Column(name = "ngay_danh_gia", nullable = false)
     private LocalDateTime ngayDanhGia;
 }

@@ -45,6 +45,41 @@
             </div>
         </div>
     </main>
+
+    <!-- Đánh Giá Modal -->
+    <div class="modal-overlay" id="rating-modal">
+        <div class="modal" style="max-width: 450px; border-radius: var(--radius-lg); text-align: center; border-top: 4px solid var(--primary-500); padding: 2rem; position: relative;">
+            <button class="btn-icon" onclick="closeRatingModal()" style="position: absolute; right: 10px; top: 10px;"><i class="fa-solid fa-times"></i></button>
+            <div style="font-size: 3rem; color: var(--warning-500); margin-bottom: 1rem;">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <h3 style="margin-bottom: 0.5rem">Đánh giá dịch vụ</h3>
+            <p style="color: var(--gray-600); margin-bottom: 1.5rem">Bạn cảm thấy chiếc xe và dịch vụ thế nào?</p>
+            
+            <form id="rating-form">
+                <input type="hidden" id="inp-rt-loaiDichVu" value="">
+                <input type="hidden" id="inp-rt-maThamChieu" value="">
+                
+                <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                    <label style="font-weight: 500; margin-bottom: 8px; display: block;">Mức độ hài lòng: <span style="color:var(--danger-500)">*</span></label>
+                    <select id="inp-rt-soSao" class="form-control" required style="width: 100%; border: 1px solid var(--gray-300); border-radius: var(--radius-md); padding: 10px; font-weight: bold; color: var(--warning-600);">
+                        <option value="5">⭐⭐⭐⭐⭐ 5 Sao - Xuất sắc</option>
+                        <option value="4">⭐⭐⭐⭐ 4 Sao - Rất tốt</option>
+                        <option value="3">⭐⭐⭐ 3 Sao - Tạm được</option>
+                        <option value="2">⭐⭐ 2 Sao - Chưa hài lòng</option>
+                        <option value="1">⭐ 1 Sao - Quá tệ</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                    <textarea id="inp-rt-noiDung" class="form-control" rows="3" placeholder="Chia sẻ cảm nhận của bạn về chuyến đi (không bắt buộc)..." style="width: 100%; border: 1px solid var(--gray-300); border-radius: var(--radius-md); padding: 10px;"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Gửi Đánh Giá</button>
+            </form>
+        </div>
+    </div>
+
     <div id="footer-placeholder"></div>
 
     <script type="module">
@@ -52,6 +87,7 @@
         import Guard from '/js/guard.js';
         import Auth from '/js/auth.js';
         import Api from '/js/api.js';
+        import Toast from '/js/toast.js';
         import Utils from '/js/utils.js';
 
         if (!Guard.requireAuth()) throw new Error('redirect');
@@ -62,9 +98,16 @@
         loadSidebar();
 
         let allDonThue = [];
+        let ratedDonThueIds = [];
 
         async function loadData() {
             try {
+                try {
+                    const reviewsRes = await Api.get('/danh-gia/khach-hang/' + user.maNguoiDung);
+                    const listReviews = Array.isArray(reviewsRes) ? reviewsRes : (reviewsRes?.data || []);
+                    ratedDonThueIds = listReviews.filter(r => r.loaiDichVu === 'THUE_XE').map(r => r.maThamChieu);
+                } catch(e) {}
+
                 const result = await Api.get(`/don-thue-xe/khach-hang/${user.maNguoiDung}`);
                 allDonThue = Array.isArray(result) ? result : (result?.data || []);
                 renderList(allDonThue);
@@ -99,6 +142,7 @@
                     </div>
                     <div class="item-actions">
                         ${Utils.getStatusBadge(dt.trangThai)}
+                        ${(dt.trangThai === 'DaTra' || dt.trangThai === 'HoanThanh') ? (ratedDonThueIds.includes(dt.maDonThue) ? `<button class="btn btn-outline btn-sm" style="margin-top: 10px; color: var(--gray-500); border-color: var(--gray-300); display: block;" disabled><i class="fa-solid fa-check"></i> Đã đánh giá</button>` : `<button class="btn btn-outline btn-sm" style="margin-top: 10px; color: var(--warning-600); border-color: var(--warning-300); display: block;" onclick="openRatingModal('THUE_XE', ${dt.maDonThue})"><i class="fa-solid fa-star"></i> Đánh giá</button>`) : ''}
                     </div>
                 </div>
             `).join('');
@@ -115,6 +159,48 @@
         });
 
         loadData();
+
+        window.openRatingModal = async function(loaiDichVu, maThamChieu) {
+            try {
+                const res = await Api.get(`/danh-gia/check?loaiDichVu=${loaiDichVu}&maThamChieu=${maThamChieu}`);
+                if (res?.data) {
+                    Toast.info("Bạn đã đánh giá dịch vụ này rồi!");
+                    return;
+                }
+            } catch (err) {}
+            
+            document.getElementById('inp-rt-loaiDichVu').value = loaiDichVu;
+            document.getElementById('inp-rt-maThamChieu').value = maThamChieu;
+            document.getElementById('inp-rt-noiDung').value = '';
+            document.getElementById('inp-rt-soSao').value = '5'; // default
+            document.getElementById('rating-modal').classList.add('show');
+        }
+        window.closeRatingModal = () => document.getElementById('rating-modal').classList.remove('show');
+        
+        document.getElementById('rating-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            try {
+                await Api.post('/danh-gia', {
+                    maNguoiDung: user.maNguoiDung,
+                    loaiDichVu: document.getElementById('inp-rt-loaiDichVu').value,
+                    maThamChieu: parseInt(document.getElementById('inp-rt-maThamChieu').value),
+                    soSao: parseInt(document.getElementById('inp-rt-soSao').value),
+                    noiDung: document.getElementById('inp-rt-noiDung').value
+                });
+                Toast.success("Cảm ơn bạn đã gửi đánh giá!");
+                closeRatingModal();
+                ratedDonThueIds.push(parseInt(document.getElementById('inp-rt-maThamChieu').value));
+                const activeTab = document.querySelector('#status-tabs .active').dataset.status;
+                if (activeTab === 'all') renderList(allDonThue);
+                else renderList(allDonThue.filter(dt => dt.trangThai === activeTab));
+            } catch (err) {
+                Toast.error("Thất bại: " + err.message);
+            } finally {
+                btn.disabled = false;
+            }
+        });
 
         function loadSidebar() {
             const sidebar = document.getElementById('account-sidebar');

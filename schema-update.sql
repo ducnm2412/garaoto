@@ -358,3 +358,15 @@ ALTER TABLE IF EXISTS public.xe_khach_hang
     ON DELETE CASCADE;
 
 END;
+
+-- Tao bang Danh_Gia (Da chay thong qua Hibernate)
+CREATE TABLE IF NOT EXISTS danh_gia (
+    ma_danh_gia SERIAL PRIMARY KEY,
+    ma_khach_hang INTEGER NOT NULL,
+    loai_dich_vu VARCHAR(50) NOT NULL,
+    ma_tham_chieu INTEGER NOT NULL,
+    so_sao INTEGER NOT NULL,
+    noi_dung TEXT,
+    ngay_danh_gia TIMESTAMP NOT NULL,
+    CONSTRAINT fk_danh_gia_khach_hang FOREIGN KEY (ma_khach_hang) REFERENCES nguoi_dung(ma_nguoi_dung)
+);
