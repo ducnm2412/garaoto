@@ -1,67 +1,152 @@
 # HỆ THỐNG QUẢN LÝ DỊCH VỤ GARA Ô TÔ (GARAOTO)
 
 ## 1. TỔNG QUAN DỰ ÁN
-GaraOto là hệ thống phần mềm Client-Server giúp xưởng dịch vụ/Gara ô tô điện tử hóa toàn bộ quy trình vận hành. 
-Dự án đặc biệt chia làm hai mảng kinh doanh chính:
-- **Dịch vụ Sửa Chữa (Maintenance & Repair):** Quản lý lịch hẹn, tiếp nhận xe, phân công kỹ thuật viên, xuất hóa đơn phụ tùng.
-- **Dịch vụ Cho Thuê Xe Tự Lái (Car Rental):** Quản lý danh sách xe cho thuê, tình trạng sẵn sàng, tiếp nhận đơn đặt xe, duyệt, giao xe và hoàn trả trạng thái.
-- Tích hợp thêm **Hệ thống đánh giá chất lượng dịch vụ (Rating Service)** để lắng nghe Feedback KH sau khi sử dụng 1 trong 2 dịch vụ trên.
+GaraOto là hệ thống Client-Server giúp gara ô tô số hóa quy trình vận hành, gồm hai mảng nghiệp vụ chính:
+- **Dịch vụ Sửa Chữa (Maintenance & Repair):** đặt lịch hẹn, tiếp nhận xe, lập phiếu sửa chữa (chẩn đoán + chi tiết dịch vụ), phân công kỹ thuật viên, tính tổng tiền, thanh toán.
+- **Dịch vụ Cho Thuê Xe Tự Lái (Car Rental):** quản lý danh sách xe cho thuê, đặt thuê, duyệt đơn, lập hợp đồng thuê, giao xe và thu hồi xe.
+- **Đánh giá dịch vụ (Rating):** khách hàng chấm 1–5 sao sau khi hoàn thành một lần sửa chữa hoặc thuê xe.
+
+### Vai trò người dùng
+| Vai trò | Giá trị `vaiTro` | Chức năng chính |
+|---|---|---|
+| Quản trị viên | `Admin` | Dashboard thống kê doanh thu (Chart.js), quản lý khách hàng, dịch vụ, xe cho thuê, đơn thuê, duyệt lịch hẹn, phiếu sửa chữa, phân công, đánh giá |
+| Khách hàng | `KhachHang` | Quản lý tài khoản, xe của tôi, đặt lịch sửa chữa, thuê xe, theo dõi lịch hẹn/đơn thuê, đánh giá |
+| Kỹ thuật viên | `NhanVienKyThuat` | Xem công việc được phân công và cập nhật tiến độ |
 
 ---
 
 ## 2. KIẾN TRÚC VÀ CÔNG NGHỆ (TECH STACK)
-Dự án sử dụng kiến trúc Monolithic nhưng phân mảnh rạch ròi Client-Server API:
+Kiến trúc Monolithic, tách biệt Frontend tĩnh và Backend REST API.
 
-### Backend (Java Spring Boot)
-- **Framework:** Spring Boot 3.x (Java 17).
-- **Core modules:** Spring Web (REST API), Spring Data JPA (Hibernate ORM), Spring Security.
-- **Bảo mật (Security):** Json Web Token (JWT) + BCrypt Password Encoder. Áp dụng `@PreAuthorize` để giới hạn các ROLE như `Admin`, `KhachHang`, `NhanVien`.
-- **Database:** PostgreSQL. Cơ chế cấu hình `spring.jpa.hibernate.ddl-auto` để sinh lược đồ CSDL tự động.
-- **Kiến trúc luồng dữ liệu:** `Controller` (Tiếp nhận/Trả về DTO) -> `Service` (Xử lý Business Logic) -> `Repository` (Thao tác Database) -> `Entity` (Bản đồ hóa Dữ liệu bảng Postgres).
+### Backend (`backend/`)
+| Hạng mục | Công nghệ |
+|---|---|
+| Ngôn ngữ | Java 17 |
+| Framework | Spring Boot 4.0.4 (Spring Web MVC, Spring Data JPA/Hibernate, Spring Security, Validation) |
+| Xác thực | JWT (jjwt 0.12.7, hết hạn sau 24h) + BCrypt; stateless session |
+| Database | PostgreSQL (`jdbc:postgresql://localhost:5432/garaoto`) |
+| Tài liệu API | springdoc-openapi — Swagger UI tại `http://localhost:8080/swagger-ui.html` |
+| Khác | Lombok, Maven Wrapper (`mvnw`), Flyway (đã khai báo nhưng đang tắt) |
 
-### Frontend (Vanilla HTML/CSS/JS)
-- Không sử dụng các Framework/Library nặng nề như React hay Vue. Hệ thống theo chuẩn Vanilla thuần nhằm tối ưu hóa Loading Time và rèn luyện kỹ năng Core Logic.
-- Điểm vượt trội: Tách biệt Javascript xử lý (Modules ES6) gồm `api.js` (Gọi Fetch REST), `auth.js` (Xử lý LocalStorage JWT), `guard.js` (Kiểm tra quyền Route), và `components.js` (Xử lý các Modal, Toast).
-- UI/UX: Áp dụng CSS Flexbox/Grid Design System tiên tiến. Sử dụng FontAwesome ICON. Cấu trúc Sidebar chuẩn SPA (Single Page Application) mà không cần reload trang.
+**Luồng xử lý:** `Controller` (nhận/trả DTO, bọc trong `ApiResponse`) → `Service` (interface + `impl`) → `Repository` (Spring Data JPA) → `Entity`. Lỗi được xử lý tập trung tại `GlobalExceptionHandler` (`BadRequest`, `ResourceNotFound`, `DuplicateResource`, `Forbidden`, `Unauthorized`).
 
----
+**Bảo mật:** `JwtAuthenticationFilter` đọc header `Authorization: Bearer <token>`, xác thực và nạp user vào `SecurityContext`.
+- Không cần đăng nhập: `/api/auth/**`, `GET /api/xe-cho-thue/**`, `GET /api/dich-vu-sua-chua/**`, Swagger.
+- Mọi endpoint khác yêu cầu đã đăng nhập. Phân quyền theo role bằng `@PreAuthorize` hiện mới áp dụng ở `DanhGiaController`, `DichVuSuaChuaController`, `NguoiDungController`; phần còn lại do Frontend (`guard.js`) giới hạn.
 
-## 3. CƠ SỞ DỮ LIỆU CỐT LÕI (DATABASE SCHEMA)
-Các Table chính (Entities) trong hệ thống:
-1. `nguoi_dung`: Chứa thông tin đăng nhập Account (email, matKhau, role, initial info).
-2. `xe_khach_hang`: Danh sách xe cá nhân của User sở hữu, kết nối với Lịch hẹn.
-3. `xe_cho_thue`: Danh mục xe thuộc quyền sở hữu của Gara đang cho mướn. Có cột `trangThai` (SanSang, DangChoThue, DangBaoDuong).
-4. `don_thue_xe`: Lưu thông tin KH nào mướn Xe nào, thời gian từ ngày bắt đầu đến kết thúc.
-5. `lich_hen_sua_chua`: Phiếu trung tâm xử lý giao dịch.
-6. `dich_vu_phu_tung`: Bảng giá niêm yết các loại vỏ lốp, nhớt, linh kiện máy móc Gara có.
-7. `phan_cong`: Bảng trung gian ghi nhận Lịch hẹn A dùng bao nhiêu cái Phụ tùng B, gán cho Nhân Viên Kỹ Thuật C làm. (Many to Many).
-8. `danh_gia`: Bảng điểm đánh giá (Rating từ 1->5 sao) dựa theo `loai_dich_vu` và `ma_tham_chieu`.
-
----
-
-## 4. QUY TRÌNH LUỒNG HOẠT ĐỘNG (WORKFLOWS)
-
-### Quy trình 1: Luồng Sửa Chữa Ô Tô (Maintenance Flow)
-1. Khách Hàng Login -> Đặt lịch hẹn sửa chữa (Ghi chú mô tả lỗi, chọn ngày/giờ hỏng).
-2. Trạng thái phiếu: `ChoXacNhan` (Mặc định).
-3. Admin nhận được: Xem mô tả lỗi -> Bấm Duyệt phiếu -> Phiếu chuyển sang `DaXacNhan`. Khách Hàng đem xe tới Gara.
-4. Admin bấm "Tiếp nhận xe" -> Phiếu sang trạng thái `DangTiepNhan`, sau đó Admin qua trang Phân Công.
-5. Tại Phân công: Admin Add các Phụ tùng hỏng vào Phiếu, gán "Nhân Viên KT" -> Phiếu mang trạng thái `DangSuaChua`.
-6. Hệ thống tự động tính thành "Tổng Tiền" trả về.
-7. Khi Thợ sửa xong -> Admin Confirm "Hoàn thành" -> Phiếu đổi sang `HoanThanh`.
-8. Lúc này tại màn hình Khách hàng xuất hiện nút màu vàng "Đánh Giá". Khách đánh giá xong hệ thống ghi nhận vào DB.
-
-### Quy trình 2: Luồng Thuê Xe (Rental Flow)
-1. Khách Hàng coi mục Xe Cho Thuê -> Chọn "Thuê Xế Hộp BMW".
-2. Hệ thống kiểm tra xe phải có trạng thái xe là `SanSang`. Lập đơn thuê với status `ChoXacNhan`.
-3. Admin phê duyệt trạng thái `DaXacNhan`. Hệ thống tự động kích hoạt Finite State Machine (Khóa xe, cập nhật Trạng thái xe kia ngoài bãi thành `DangThue` để chặn Booking chồng chéo).
-4. Khách đi du lịch về, giao lại chìa khóa => Admin bấm `DaTra` (Hoàn xe).
-5. Hệ thống hoàn lại Status của chiếc Xe kia về lại `SanSang` tự động.
-6. Màn hình Khách hàng xuất hiện nút "Đánh Giá" chuyến đi.
+### Frontend (`frontend/`)
+- **HTML/CSS/JavaScript thuần** (Vanilla, ES6 Modules), không framework, không bước build.
+- Module JS dùng chung:
+  - `config.js` — `API_BASE_URL = http://localhost:8080/api`
+  - `api.js` — wrapper `fetch` gắn JWT
+  - `auth.js` — lưu token/user trong `localStorage`
+  - `guard.js` — chặn truy cập trang theo vai trò
+  - `components.js`, `toast.js`, `utils.js` — modal, thông báo, định dạng tiền/ngày
+- CSS tự viết (Flexbox/Grid): `base.css`, `layout.css`, `components.css` + CSS theo trang trong `css/pages/`.
+- Thư viện qua CDN: Font Awesome 6.5.1, Chart.js (dashboard Admin).
+- Cấu trúc trang (multi-page): `pages/auth`, `pages/tai-khoan`, `pages/dat-lich`, `pages/dich-vu`, `pages/xe-cho-thue`, `pages/dat-thue`, `pages/admin`, `pages/nhan-vien`.
 
 ---
 
-## 5. CÁC THUẬT TOÁN ĐỈNH CAO TRONG DỰ ÁN
-- **Authentication JWT Filtering Pipeline:** Thuật toán màng lọc kiểm tra Token Auth Headers trên mọi Request. Extract Claim ra ID của User và đẩy SecurityContext. Nếu thiếu hoặc token thao túng => Trị chối Error 401/403 tại Filter Core.
-- **Workflow State Management Control:** Kỹ thuật FSM (Finite State Machine). Code Back-end nghiêm ngặt giới hạn cấm Admin không được nhảy cóc (Ví dụ không thể chuyển từ ChoXacNhan vọt lèo lên Hoạt Thành mà bỏ qua bước Sửa chữa). Các method Controller can thiệp vào Logic ném ra Exception nếu phát hiện gian lận trình tự API.
-- **Client Render Engine Logic:** Khả năng tự render hàng trăm Component ra HTML mà chả cần Lib. Các Modal được bọc bằng JS Event Delegation (chống trùng lặp Listener Memory Leak) gọi tới Server tự động khóa form để tránh tấn công DDos Double Submit. Mọi thứ là Non-Blocking Async/Await Fetch.
+## 3. CƠ SỞ DỮ LIỆU (DATABASE SCHEMA)
+
+**Người dùng** — kế thừa JPA kiểu `JOINED`:
+1. `nguoi_dung`: thông tin chung (họ tên, email, SĐT, mật khẩu, địa chỉ, `vai_tro`, `trang_thai`).
+2. `admin`: mở rộng từ `nguoi_dung` (chức vụ).
+3. `khach_hang`: mở rộng từ `nguoi_dung` (CCCD, số/hạng GPLX).
+4. `nhan_vien_ky_thuat`: mở rộng từ `nguoi_dung` (chuyên môn, ca làm việc).
+
+**Xe** — dùng chung lớp cha `XeBase` (biển số, hãng, dòng xe, năm sản xuất):
+
+5. `xe_khach_hang`: xe cá nhân của khách (màu, số khung, số máy).
+6. `xe_cho_thue`: xe của gara cho thuê (số chỗ, hộp số, nhiên liệu, giá theo ngày, hình ảnh, `tinh_trang`: `SanSang` / `DangThue` / `BaoTri`).
+
+**Sửa chữa:**
+
+7. `dich_vu_sua_chua`: bảng giá dịch vụ/phụ tùng (tên, mô tả, giá cơ bản).
+8. `lich_hen_sua_chua`: lịch hẹn của khách (xe, ngày/giờ hẹn, mô tả lỗi, trạng thái).
+9. `phieu_sua_chua`: phiếu sửa sinh ra từ lịch hẹn (ngày nhận xe, chẩn đoán, tổng tiền, trạng thái).
+10. `chi_tiet_sua_chua`: các dịch vụ dùng trong phiếu (số lượng, đơn giá, thành tiền).
+11. `phan_cong_sua_chua`: phiếu sửa được Admin giao cho kỹ thuật viên nào.
+
+**Thuê xe:**
+
+12. `don_thue_xe`: đơn thuê (ngày nhận/trả, địa điểm nhận/trả, tiền cọc, tổng tiền, trạng thái).
+13. `hop_dong_thue`: hợp đồng 1-1 với đơn thuê (điều khoản, ghi chú).
+
+**Khác:**
+
+14. `thanh_toan`: thanh toán cho phiếu sửa **hoặc** đơn thuê (`loai_thanh_toan`, số tiền, phương thức, trạng thái).
+15. `danh_gia`: đánh giá 1–5 sao, xác định dịch vụ qua cặp `loai_dich_vu` + `ma_tham_chieu`; mỗi dịch vụ chỉ được đánh giá một lần.
+
+> **Lưu ý:** `spring.jpa.hibernate.ddl-auto=none` và Flyway đang tắt, nên Hibernate **không** tự tạo bảng. Cần tạo schema thủ công bằng `schema-update.sql`.
+
+---
+
+## 4. QUY TRÌNH NGHIỆP VỤ (WORKFLOWS)
+
+### Quy trình 1: Sửa chữa ô tô
+1. Khách hàng đăng nhập → chọn xe của mình → đặt lịch hẹn (ngày, giờ, mô tả lỗi). Lịch hẹn có trạng thái `ChoXacNhan`.
+2. Admin (trang **Duyệt lịch**) xác nhận → `DaXacNhan`, hoặc hủy → `DaHuy`.
+3. Khi khách mang xe tới, Admin bấm tiếp nhận: lịch hẹn → `DangSuaChua`, đồng thời tạo **phiếu sửa chữa** trạng thái `TiepNhan`.
+4. Tại trang **Phiếu sửa chữa**, Admin nhập chẩn đoán và thêm các dịch vụ vào phiếu. Mỗi lần thêm/xóa chi tiết, Backend tự tính lại `tong_tien` = tổng `thanh_tien`.
+5. Admin phân công kỹ thuật viên: tạo bản ghi phân công (`DaPhanCong`), phiếu → `DaPhanCong`.
+6. Khi bắt đầu làm, phân công → `DangThucHien` và phiếu → `DangSuaChua`. Kỹ thuật viên theo dõi việc của mình ở trang `nhan-vien`.
+7. Admin xác nhận hoàn thành: phiếu → `HoanThanh`; Backend tự đưa lịch hẹn liên quan về `HoanThanh`.
+8. Khách hàng thấy nút **Đánh giá** trên lịch hẹn đã hoàn thành.
+
+### Quy trình 2: Thuê xe tự lái
+1. Khách hàng xem danh sách xe cho thuê (không cần đăng nhập) → xem chi tiết → đặt xe.
+2. Backend kiểm tra `ngayTra >= ngayNhan` rồi tính **tổng tiền = giá theo ngày × số ngày** và **tiền cọc = 30% tổng tiền**. Đơn có trạng thái `ChoDuyet`.
+3. Admin duyệt → `DaXacNhan` (hoặc từ chối → `DaHuy`). Khi đơn được xác nhận, Backend tự chuyển xe sang `DangThue`.
+4. Giao xe cho khách → đơn `DangThue`.
+5. Khách trả xe → Admin chuyển đơn sang `DaTra`, Backend tự đưa xe về `SanSang` (khi đơn bị hủy cũng vậy).
+6. Khách hàng thấy nút **Đánh giá** chuyến thuê.
+
+> **Lưu ý:** Hiện Backend **chưa** chặn chuyển trạng thái sai thứ tự; endpoint `PATCH .../{id}/trang-thai` chấp nhận mọi giá trị. Thứ tự các bước do giao diện Admin quy định. Việc kiểm tra xe phải đang `SanSang` khi tạo đơn thuê cũng đang tạm tắt (`DonThueXeServiceImpl`).
+
+---
+
+## 5. CÀI ĐẶT VÀ CHẠY
+
+### Yêu cầu
+- JDK 17+
+- PostgreSQL
+- Trình duyệt, cùng một static server bất kỳ (VS Code Live Server, `npx serve`, ...)
+
+### Backend
+1. Tạo database `garaoto` trong PostgreSQL rồi chạy `schema-update.sql`.
+2. Copy `backend/src/main/resources/application-local.properties.example` thành `application-local.properties` (đã `.gitignore`) rồi điền mật khẩu Postgres và JWT secret.
+3. Chạy:
+   ```bash
+   cd backend
+   ./mvnw spring-boot:run      # Windows: mvnw.cmd spring-boot:run
+   ```
+4. API chạy tại `http://localhost:8080/api`, Swagger tại `http://localhost:8080/swagger-ui.html`.
+
+### Frontend
+Mở thư mục `frontend/` bằng static server tại gốc domain (các đường dẫn đang dùng dạng tuyệt đối `/css/...`, `/pages/...`) và truy cập `index.html`. Khi chạy trên `localhost`, Frontend tự gọi `http://localhost:8080/api`; trên domain khác sẽ gọi `PRODUCTION_API_URL` trong `frontend/js/config.js`.
+
+---
+
+## 6. DEPLOY (PRODUCTION)
+Backend có sẵn `backend/Dockerfile` (dùng cho Render, Railway, Fly.io hoặc VPS). Cấu hình qua biến môi trường:
+
+| Biến | Bắt buộc | Ý nghĩa |
+|---|---|---|
+| `DB_URL` | ✔ | JDBC URL, ví dụ `jdbc:postgresql://<host>/<db>?sslmode=require` |
+| `DB_USERNAME` | ✔ | User Postgres |
+| `DB_PASSWORD` | ✔ | Mật khẩu Postgres |
+| `JWT_SECRET` | ✔ | Chuỗi **Base64**, tối thiểu 32 byte (`openssl rand -base64 48`) |
+| `CORS_ORIGINS` | ✔ | Domain Frontend, nhiều giá trị cách nhau bởi dấu phẩy |
+| `PORT` | | Cổng server (mặc định 8080; Render tự đặt) |
+| `SHOW_SQL`, `LOG_LEVEL_SECURITY`, `LOG_LEVEL_SQL`, `LOG_LEVEL_SQL_BIND` | | Bật log debug khi cần |
+
+Frontend là file tĩnh: deploy thư mục `frontend/` lên Netlify / Vercel / Cloudflare Pages, sau khi sửa `PRODUCTION_API_URL` trong `frontend/js/config.js`.
+
+---
+
+## 7. TÀI LIỆU API
+Danh sách endpoint kèm payload mẫu cho Postman: xem [`backend/API_README.md`](backend/API_README.md).
+
+Các nhóm API chính (prefix `/api`): `auth`, `nguoi-dung`, `khach-hang`, `nhan-vien-ky-thuat`, `admin`, `xe-khach-hang`, `xe-cho-thue`, `dich-vu-sua-chua`, `lich-hen-sua-chua`, `phieu-sua-chua`, `chi-tiet-sua-chua`, `phan-cong-sua-chua`, `don-thue-xe`, `hop-dong-thue`, `thanh-toan`, `danh-gia`.

@@ -1,0 +1,8 @@
+# Copy file nay thanh application-local.properties (da duoc .gitignore) de chay local.
+# Chi khai bao gia tri cho cac bien; bien moi truong that (khi deploy) luon duoc uu tien hon.
+DB_PASSWORD=your_local_postgres_password
+JWT_SECRET=your_base64_secret_at_least_32_bytes
+
+SHOW_SQL=true
+LOG_LEVEL_SECURITY=DEBUG
+LOG_LEVEL_SQL=DEBUG
